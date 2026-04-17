@@ -6,15 +6,16 @@ import (
 )
 
 type Config struct {
-	DatabaseURL        string
-	SupabaseURL        string
-	SupabaseAnonKey    string
-	SupabaseJWTSecret  string
-	StripeSecretKey    string
+	DatabaseURL         string
+	SupabaseURL         string
+	SupabaseAnonKey     string
+	SupabaseJWTSecret   string
+	StripeSecretKey     string
 	StripeWebhookSecret string
-	StripePriceID      string
-	Port               string
-	AdminUserID        string
+	StripePriceID       string
+	Port                string
+	AdminUserID         string
+	BaseDomain          string // e.g. "fader.bio" or "localhost:8080"
 }
 
 func Load() (*Config, error) {
@@ -28,6 +29,7 @@ func Load() (*Config, error) {
 		StripePriceID:       getEnv("STRIPE_PRICE_ID", ""),
 		AdminUserID:         getEnv("ADMIN_USER_ID", ""),
 		Port:                getEnv("PORT", "8080"),
+		BaseDomain:          getEnv("BASE_DOMAIN", "fader.bio"),
 	}
 	return c, nil
 }

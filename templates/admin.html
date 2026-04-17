@@ -77,7 +77,7 @@
         <tbody>
           {{range .Profiles}}
           <tr class="border-b border-gray-800 last:border-0 hover:bg-gray-800/50">
-            <td class="px-4 py-3"><a href="https://{{.Handle}}.fader.bio" target="_blank" class="hover:underline text-blue-400">{{.Handle}}</a></td>
+            <td class="px-4 py-3"><a href="{{profileURL .Handle}}" target="_blank" class="hover:underline text-blue-400">{{.Handle}}</a></td>
             <td class="px-4 py-3">{{.DisplayName}}</td>
             <td class="px-4 py-3 text-gray-500 capitalize">{{.Template}}</td>
             <td class="px-4 py-3 text-gray-500">{{.CreatedAt.Format "2 Jan 2006"}}</td>

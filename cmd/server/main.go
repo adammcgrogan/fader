@@ -41,6 +41,7 @@ func main() {
 		log.Fatalf("supabase client: %v", err)
 	}
 
+	handlers.BaseDomain = cfg.BaseDomain
 	handlers.LoadTemplates("templates")
 
 	auth := handlers.NewAuthHandler(queries, supa.Auth)
@@ -123,7 +124,7 @@ func main() {
 	mux.Handle("/admin/", requireAuth(admin.RequireAdmin(adminMux)))
 
 	// Wrap everything in subdomain extraction + method override
-	handler := middleware.SubdomainFromHeader(middleware.MethodOverride(mux))
+	handler := middleware.SubdomainFromHeader(cfg.BaseDomain)(middleware.MethodOverride(mux))
 
 	addr := ":" + cfg.Port
 	log.Printf("listening on %s", addr)

@@ -29,7 +29,7 @@
         <p class="text-sm text-gray-400">{{.DisplayName}}</p>
       </div>
       <div class="flex gap-3">
-        <a href="https://{{.Handle}}.fader.bio" target="_blank" class="text-sm text-gray-400 hover:text-white">View ↗</a>
+        <a href="{{profileURL .Handle}}" target="_blank" class="text-sm text-gray-400 hover:text-white">View ↗</a>
         <a href="/edit?profile={{.ID}}" class="px-3 py-1.5 bg-white text-black text-sm rounded font-medium hover:bg-gray-200 transition">Edit</a>
       </div>
     </div>

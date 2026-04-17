@@ -12,7 +12,16 @@ import (
 
 var templates *template.Template
 
+var BaseDomain = "fader.bio"
+
 var funcMap = template.FuncMap{
+	"baseDomain": func() string { return BaseDomain },
+	"profileURL": func(handle string) string {
+		if BaseDomain == "localhost:8080" || BaseDomain == "localhost" {
+			return "http://" + handle + ".localhost:8080"
+		}
+		return "https://" + handle + "." + BaseDomain
+	},
 	"unmarshalBio":        unmarshalFn[models.BioData],
 	"unmarshalSocial":     unmarshalFn[models.SocialData],
 	"unmarshalMusicLink":  unmarshalFn[models.MusicLinkData],
