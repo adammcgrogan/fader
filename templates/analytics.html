@@ -1,0 +1,92 @@
+{{template "base" .}}
+{{define "title"}}Analytics — {{.Profile.Handle}}.fader.bio{{end}}
+{{define "content"}}
+<div class="min-h-screen bg-gray-950 text-white">
+  <nav class="border-b border-gray-800 px-6 py-4 flex items-center gap-4">
+    <a href="/dashboard" class="text-sm text-gray-400 hover:text-white">← Dashboard</a>
+    <span class="text-gray-600">/</span>
+    <span class="text-sm">{{.Profile.Handle}}</span>
+    {{if gt (len .AllProfiles) 1}}
+    <select onchange="window.location='/analytics?profile='+this.value" class="ml-auto bg-gray-800 text-sm rounded px-2 py-1 border border-gray-700">
+      {{range .AllProfiles}}
+      <option value="{{.ID}}" {{if eq .ID $.Profile.ID}}selected{{end}}>{{.Handle}}</option>
+      {{end}}
+    </select>
+    {{end}}
+  </nav>
+
+  <main class="max-w-4xl mx-auto py-8 px-4 space-y-8">
+    <!-- Top stats -->
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+        <p class="text-sm text-gray-400">Total views</p>
+        <p class="text-4xl font-bold mt-1">{{.Summary.TotalViews}}</p>
+      </div>
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+        <p class="text-sm text-gray-400">Total clicks</p>
+        <p class="text-4xl font-bold mt-1">{{.Summary.TotalClicks}}</p>
+      </div>
+    </div>
+
+    <!-- Views by day -->
+    {{if .Summary.ViewsByDay}}
+    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+      <h2 class="font-semibold mb-4">Views — last 30 days</h2>
+      <div class="space-y-1">
+        {{$max := 1}}
+        {{range .Summary.ViewsByDay}}{{if gt .Views $max}}{{$max = .Views}}{{end}}{{end}}
+        {{range .Summary.ViewsByDay}}
+        <div class="flex items-center gap-3 text-sm">
+          <span class="text-gray-500 w-24 shrink-0">{{.Date}}</span>
+          <div class="flex-1 bg-gray-800 rounded-full h-2">
+            <div class="bg-white rounded-full h-2" style="width: {{percent .Views $max}}%"></div>
+          </div>
+          <span class="text-gray-400 w-8 text-right">{{.Views}}</span>
+        </div>
+        {{end}}
+      </div>
+    </div>
+    {{end}}
+
+    <!-- Top countries & referrers -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {{if .Summary.TopCountries}}
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+        <h2 class="font-semibold mb-3">Top countries</h2>
+        {{range .Summary.TopCountries}}
+        <div class="flex justify-between text-sm py-1 border-b border-gray-800 last:border-0">
+          <span>{{.Country}}</span>
+          <span class="text-gray-400">{{.Count}}</span>
+        </div>
+        {{end}}
+      </div>
+      {{end}}
+
+      {{if .Summary.TopReferrers}}
+      <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+        <h2 class="font-semibold mb-3">Top referrers</h2>
+        {{range .Summary.TopReferrers}}
+        <div class="flex justify-between text-sm py-1 border-b border-gray-800 last:border-0">
+          <span class="truncate max-w-48">{{.Referrer}}</span>
+          <span class="text-gray-400 shrink-0">{{.Count}}</span>
+        </div>
+        {{end}}
+      </div>
+      {{end}}
+    </div>
+
+    <!-- Clicks by block -->
+    {{if .Summary.ClicksByBlock}}
+    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+      <h2 class="font-semibold mb-3">Clicks by block</h2>
+      {{range .Summary.ClicksByBlock}}
+      <div class="flex justify-between text-sm py-2 border-b border-gray-800 last:border-0">
+        <span class="text-gray-300 capitalize">{{.Type}}</span>
+        <span class="text-gray-400">{{.Clicks}} clicks</span>
+      </div>
+      {{end}}
+    </div>
+    {{end}}
+  </main>
+</div>
+{{end}}

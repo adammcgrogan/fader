@@ -1,0 +1,12 @@
+name = "fader-bio-router"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+routes = [
+  { pattern = "fader.bio/*", zone_name = "fader.bio" },
+  { pattern = "*.fader.bio/*", zone_name = "fader.bio" },
+]
+
+[vars]
+# Set RAILWAY_ORIGIN in the Cloudflare dashboard (Workers > Settings > Variables)
+# e.g. your-app.railway.app

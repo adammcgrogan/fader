@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{.Profile.DisplayName}}</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+  <style>
+    .neon-border { border: 1px solid rgba(139,92,246,0.4); }
+    .neon-border:hover { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 12px rgba(139,92,246,0.3); }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen">
+  <main class="max-w-lg mx-auto py-12 px-4 space-y-6">
+    <div class="flex flex-col items-center text-center space-y-3">
+      {{if .Profile.AvatarURL}}
+      <img src="{{.Profile.AvatarURL}}" alt="{{.Profile.DisplayName}}" class="w-24 h-24 rounded-full object-cover ring-2 ring-purple-500">
+      {{else}}
+      <div class="w-24 h-24 rounded-full bg-purple-900 flex items-center justify-center text-3xl font-bold text-purple-300">
+        {{slice .Profile.DisplayName 0 1}}
+      </div>
+      {{end}}
+      <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">{{.Profile.DisplayName}}</h1>
+      {{if .Profile.Bio}}<p class="text-gray-400 text-sm max-w-xs">{{.Profile.Bio}}</p>{{end}}
+    </div>
+
+    <div class="space-y-3">
+      {{range .Blocks}}
+        {{template "block_neon" .}}
+      {{end}}
+    </div>
+
+    <footer class="text-center text-xs text-gray-700 pt-4">
+      <a href="https://fader.bio" class="hover:text-gray-500 transition">powered by fader.bio</a>
+    </footer>
+  </main>
+</body>
+</html>
+
+{{define "block_neon"}}
+{{if eq .Type "bio"}}
+  {{$d := unmarshalBio .Data}}
+  <p class="text-gray-400 text-sm text-center">{{$d.Text}}</p>
+{{else if eq .Type "social"}}
+  {{$d := unmarshalSocial .Data}}
+  <a href="/r/{{.ID}}" class="neon-border flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition font-medium">
+    <span class="capitalize text-purple-300">{{$d.Platform}}</span>
+  </a>
+{{else if eq .Type "music_link"}}
+  {{$d := unmarshalMusicLink .Data}}
+  <a href="/r/{{.ID}}" class="neon-border flex items-center justify-between w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition">
+    <span class="font-medium text-purple-200">{{$d.Title}}</span>
+    <span class="text-xs text-purple-500 capitalize">{{$d.Platform}}</span>
+  </a>
+{{else if eq .Type "gig"}}
+  {{$d := unmarshalGig .Data}}
+  <div class="neon-border w-full py-3 px-4 rounded-xl bg-purple-950/20">
+    <div class="flex justify-between items-start">
+      <div>
+        <p class="font-medium text-purple-200">{{$d.Venue}}</p>
+        <p class="text-xs text-purple-600">{{$d.Location}}</p>
+      </div>
+      <div class="text-right">
+        <p class="text-sm text-purple-400">{{$d.Date}}</p>
+        {{if $d.TicketURL}}<a href="/r/{{$.ID}}" class="text-xs text-pink-400 hover:underline">Tickets →</a>{{end}}
+      </div>
+    </div>
+  </div>
+{{else if eq .Type "custom_link"}}
+  {{$d := unmarshalCustomLink .Data}}
+  <a href="/r/{{.ID}}" class="neon-border flex items-center justify-center w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition font-medium text-purple-200">
+    {{$d.Label}}
+  </a>
+{{else if eq .Type "image"}}
+  {{$d := unmarshalImage .Data}}
+  <div class="rounded-xl overflow-hidden ring-1 ring-purple-800">
+    <img src="{{$d.URL}}" alt="{{$d.Caption}}" class="w-full object-cover">
+    {{if $d.Caption}}<p class="text-xs text-purple-600 text-center py-1">{{$d.Caption}}</p>{{end}}
+  </div>
+{{else if eq .Type "video_link"}}
+  {{$d := unmarshalVideoLink .Data}}
+  <a href="/r/{{.ID}}" class="neon-border flex items-center w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition">
+    <span class="font-medium text-purple-200">▶ {{$d.Title}}</span>
+  </a>
+{{end}}
+{{end}}

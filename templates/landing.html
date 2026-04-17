@@ -1,0 +1,17 @@
+{{template "base" .}}
+
+{{define "title"}}fader.bio — DJ link pages{{end}}
+
+{{define "content"}}
+<main class="min-h-screen bg-black text-white flex flex-col items-center justify-center px-4">
+  <div class="max-w-xl w-full text-center space-y-8">
+    <h1 class="text-5xl font-bold tracking-tight">fader.bio</h1>
+    <p class="text-xl text-gray-400">Your DJ identity, one link.</p>
+    <p class="text-gray-500">Create your profile, share your music, gigs, and socials — all on your own subdomain.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/auth/register" class="px-8 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition">Get started free</a>
+      <a href="/auth/login" class="px-8 py-3 border border-white text-white font-semibold rounded-lg hover:bg-white hover:text-black transition">Log in</a>
+    </div>
+  </div>
+</main>
+{{end}}

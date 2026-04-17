@@ -1,0 +1,10 @@
+{
+  "name": "fader-bio",
+  "scripts": {
+    "css": "tailwindcss -i ./static/css/input.css -o ./static/css/app.css",
+    "css:watch": "tailwindcss -i ./static/css/input.css -o ./static/css/app.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

@@ -1,0 +1,125 @@
+{{template "base" .}}
+{{define "title"}}Edit — {{.Profile.Handle}}.fader.bio{{end}}
+{{define "content"}}
+<div class="min-h-screen bg-gray-950 text-white flex">
+
+  <!-- Sidebar -->
+  <aside class="w-72 bg-gray-900 border-r border-gray-800 flex flex-col">
+    <div class="p-4 border-b border-gray-800">
+      <a href="/dashboard" class="text-sm text-gray-400 hover:text-white">← Dashboard</a>
+      <h2 class="font-bold mt-2">{{.Profile.Handle}}.fader.bio</h2>
+    </div>
+
+    <!-- Profile info -->
+    <div class="p-4 border-b border-gray-800">
+      <h3 class="text-xs text-gray-500 uppercase tracking-wider mb-3">Profile</h3>
+      <form hx-patch="/profile/info" hx-target="#save-status" hx-swap="innerHTML" class="space-y-3">
+        <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+        <div>
+          <label class="text-xs text-gray-400">Display name</label>
+          <input name="display_name" value="{{.Profile.DisplayName}}" class="w-full mt-1 px-3 py-1.5 bg-gray-800 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-600">
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">Bio</label>
+          <textarea name="bio" rows="2" class="w-full mt-1 px-3 py-1.5 bg-gray-800 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-600 resize-none">{{if .Profile.Bio}}{{.Profile.Bio}}{{end}}</textarea>
+        </div>
+        <button type="submit" class="w-full py-1.5 bg-white text-black text-sm rounded font-medium hover:bg-gray-200 transition">Save</button>
+      </form>
+    </div>
+
+    <!-- Handle -->
+    <div class="p-4 border-b border-gray-800">
+      <h3 class="text-xs text-gray-500 uppercase tracking-wider mb-3">Handle</h3>
+      <form hx-patch="/profile/handle" hx-target="#save-status" hx-swap="innerHTML" class="space-y-2">
+        <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+        <input name="handle" value="{{.Profile.Handle}}" class="w-full px-3 py-1.5 bg-gray-800 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-600 lowercase">
+        <button type="submit" class="w-full py-1.5 bg-white text-black text-sm rounded font-medium hover:bg-gray-200 transition">Update</button>
+      </form>
+    </div>
+
+    <!-- Template picker -->
+    <div class="p-4 border-b border-gray-800">
+      <h3 class="text-xs text-gray-500 uppercase tracking-wider mb-3">Theme</h3>
+      <form hx-patch="/profile/template" hx-target="#save-status" hx-swap="innerHTML">
+        <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+        <div class="space-y-2">
+          {{range (list "minimal" "dark" "neon")}}
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="template" value="{{.}}" {{if eq . $.Profile.Template}}checked{{end}}
+              class="accent-white" onchange="this.form.requestSubmit()">
+            <span class="capitalize text-sm">{{.}}</span>
+          </label>
+          {{end}}
+        </div>
+      </form>
+    </div>
+
+    <!-- Multiple personas (Pro) -->
+    {{if .User.IsPro}}
+    <div class="p-4 border-b border-gray-800">
+      <h3 class="text-xs text-gray-500 uppercase tracking-wider mb-2">Personas</h3>
+      {{range .AllProfiles}}
+      <a href="/edit?profile={{.ID}}" class="block py-1 text-sm {{if eq .ID $.Profile.ID}}text-white font-medium{{else}}text-gray-400 hover:text-white{{end}}">
+        {{.Handle}}
+      </a>
+      {{end}}
+      <form method="POST" action="/profiles/new" class="mt-3 flex gap-2">
+        <input name="handle" placeholder="new-handle" class="flex-1 px-2 py-1 bg-gray-800 rounded text-xs focus:outline-none">
+        <button type="submit" class="px-2 py-1 bg-gray-700 rounded text-xs hover:bg-gray-600">Add</button>
+      </form>
+    </div>
+    {{end}}
+
+    <div class="p-4">
+      <a href="https://{{.Profile.Handle}}.fader.bio" target="_blank" class="block w-full py-1.5 text-center border border-gray-700 text-sm rounded hover:bg-gray-800 transition">View live ↗</a>
+    </div>
+
+    <div id="save-status" class="px-4 pb-2 text-xs text-green-400"></div>
+  </aside>
+
+  <!-- Main editor area -->
+  <main class="flex-1 overflow-y-auto">
+    <div class="max-w-2xl mx-auto py-8 px-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-xl font-bold">Blocks</h1>
+        <div x-data="{ open: false }" class="relative">
+          <button @click="open = !open" class="px-4 py-2 bg-white text-black text-sm font-medium rounded-lg hover:bg-gray-200 transition">+ Add block</button>
+          <div x-show="open" @click.outside="open = false" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-10">
+            {{range (list "social" "music_link" "gig" "bio" "custom_link" "image" "video_link")}}
+            <button
+              hx-post="/blocks"
+              hx-vals='{"type": "{{.}}", "profile_id": "{{$.Profile.ID}}"}'
+              hx-target="#block-list"
+              hx-swap="beforeend"
+              @click="open = false"
+              class="w-full text-left px-4 py-2 text-sm hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg capitalize">
+              {{.}}
+            </button>
+            {{end}}
+          </div>
+        </div>
+      </div>
+
+      <div id="block-list" class="space-y-3">
+        {{range .Blocks}}
+          {{template "block_editor.html" .}}
+        {{end}}
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+  new Sortable(document.getElementById('block-list'), {
+    animation: 150,
+    handle: '.drag-handle',
+    onEnd: function() {
+      const ids = [...document.querySelectorAll('[data-block-id]')].map(el => el.dataset.blockId);
+      const params = new URLSearchParams();
+      ids.forEach(id => params.append('block_order[]', id));
+      fetch('/blocks/order', { method: 'PATCH', body: params });
+    }
+  });
+</script>
+{{end}}
