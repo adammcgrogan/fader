@@ -27,6 +27,10 @@ func NewStripeHandler(q *db.Queries, cfg *config.Config) *StripeHandler {
 }
 
 func (h *StripeHandler) Checkout(w http.ResponseWriter, r *http.Request) {
+	if h.cfg.StripeSecretKey == "" {
+		http.Error(w, "payments not yet configured", http.StatusServiceUnavailable)
+		return
+	}
 	userID, _ := middleware.GetUserID(r)
 	user, err := h.db.GetUserByID(r.Context(), userID)
 	if err != nil {
@@ -73,6 +77,10 @@ func (h *StripeHandler) Checkout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *StripeHandler) Portal(w http.ResponseWriter, r *http.Request) {
+	if h.cfg.StripeSecretKey == "" {
+		http.Error(w, "payments not yet configured", http.StatusServiceUnavailable)
+		return
+	}
 	userID, _ := middleware.GetUserID(r)
 	user, err := h.db.GetUserByID(r.Context(), userID)
 	if err != nil || user.StripeCustomerID == nil {

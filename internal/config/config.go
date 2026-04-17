@@ -23,10 +23,10 @@ func Load() (*Config, error) {
 		SupabaseURL:         mustEnv("SUPABASE_URL"),
 		SupabaseAnonKey:     mustEnv("SUPABASE_ANON_KEY"),
 		SupabaseJWTSecret:   mustEnv("SUPABASE_JWT_SECRET"),
-		StripeSecretKey:     mustEnv("STRIPE_SECRET_KEY"),
-		StripeWebhookSecret: mustEnv("STRIPE_WEBHOOK_SECRET"),
-		StripePriceID:       mustEnv("STRIPE_PRICE_ID"),
-		AdminUserID:         mustEnv("ADMIN_USER_ID"),
+		StripeSecretKey:     getEnv("STRIPE_SECRET_KEY", ""),
+		StripeWebhookSecret: getEnv("STRIPE_WEBHOOK_SECRET", ""),
+		StripePriceID:       getEnv("STRIPE_PRICE_ID", ""),
+		AdminUserID:         getEnv("ADMIN_USER_ID", ""),
 		Port:                getEnv("PORT", "8080"),
 	}
 	return c, nil
