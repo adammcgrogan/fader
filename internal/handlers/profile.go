@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -100,16 +101,9 @@ func hashIP(remote string) string {
 }
 
 func extractURL(data []byte) string {
-	// Quick JSON extract without full unmarshal for the common {"url":"..."} pattern
-	s := string(data)
-	start := strings.Index(s, `"url":"`)
-	if start == -1 {
+	var m map[string]string
+	if err := json.Unmarshal(data, &m); err != nil {
 		return ""
 	}
-	start += 7
-	end := strings.Index(s[start:], `"`)
-	if end == -1 {
-		return ""
-	}
-	return s[start : start+end]
+	return m["url"]
 }
