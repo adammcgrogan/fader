@@ -90,7 +90,7 @@ func (h *EditHandler) AddBlock(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderPartial(w, "block_editor.html", map[string]any{"Block": block})
+	renderPartial(w, "editable_block", block)
 }
 
 func (h *EditHandler) UpdateBlock(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +126,7 @@ func (h *EditHandler) UpdateBlock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	block.Data = data
-	renderPartial(w, "block_editor.html", map[string]any{"Block": block})
+	renderPartial(w, "editable_block", block)
 }
 
 func (h *EditHandler) DeleteBlock(w http.ResponseWriter, r *http.Request) {
@@ -226,7 +226,7 @@ func (h *EditHandler) UpdateTemplate(w http.ResponseWriter, r *http.Request) {
 
 func (h *EditHandler) UpdateProfileInfo(w http.ResponseWriter, r *http.Request) {
 	userID, _ := middleware.GetUserID(r)
-	if err := r.ParseMultipartForm(10 << 20); err != nil {
+	if err := r.ParseForm(); err != nil {
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}

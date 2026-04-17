@@ -3,19 +3,19 @@
 {{$card := "border border-gray-200 bg-white"}}
 {{$muted := "text-gray-500"}}
 {{$drawerBg := "bg-white border-gray-200 text-gray-900"}}
-{{$inputCls := "bg-gray-50 border border-gray-200 text-gray-900"}}
+{{$inputCls := "bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400"}}
 {{if eq .Profile.Template "dark"}}
   {{$bg = "bg-gray-950 text-white"}}
-  {{$card = "bg-gray-800"}}
+  {{$card = "bg-gray-800 border-gray-700"}}
   {{$muted = "text-gray-400"}}
   {{$drawerBg = "bg-gray-900 border-gray-700 text-white"}}
-  {{$inputCls = "bg-gray-800 border-gray-700 text-white"}}
+  {{$inputCls = "bg-gray-800 border-gray-700 text-white placeholder-gray-500"}}
 {{else if eq .Profile.Template "neon"}}
   {{$bg = "bg-black text-white"}}
   {{$card = "bg-purple-950/30 border border-purple-800/40"}}
   {{$muted = "text-purple-400"}}
   {{$drawerBg = "bg-gray-900 border-purple-800 text-white"}}
-  {{$inputCls = "bg-gray-900 border-purple-800 text-white"}}
+  {{$inputCls = "bg-gray-900 border-purple-800 text-white placeholder-gray-500"}}
 {{end}}
 
 <!DOCTYPE html>
@@ -29,39 +29,37 @@
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <style>
-    .block-wrap:hover .block-controls { opacity: 1; pointer-events: auto; }
-    .block-controls { opacity: 0; pointer-events: none; transition: opacity 0.15s; }
     [x-cloak] { display: none !important; }
   </style>
 </head>
-<body class="{{$bg}} min-h-screen pb-32" x-data="{
-  settingsOpen: false,
-  addOpen: false,
-  editingBlock: null
-}">
+<body class="{{$bg}} min-h-screen" style="padding-bottom: 80px;" x-data="{ settingsOpen: false, addOpen: false }">
 
 <!-- Top bar -->
-<div class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-2 bg-black/60 backdrop-blur-sm border-b border-white/10 text-white text-sm">
-  <a href="/dashboard" class="text-gray-400 hover:text-white">← Dashboard</a>
-  <span class="font-medium opacity-60">{{.Profile.Handle}}.{{baseDomain}}</span>
-  <a href="{{profileURL .Profile.Handle}}" target="_blank" class="text-gray-400 hover:text-white">View live ↗</a>
+<div style="position:fixed;top:0;left:0;right:0;z-index:50;" class="flex items-center justify-between px-4 py-3 bg-black/80 backdrop-blur border-b border-white/10 text-white text-sm">
+  <a href="/dashboard" class="text-gray-400 hover:text-white transition">← Dashboard</a>
+  <span class="font-medium text-gray-300">{{.Profile.Handle}}.{{baseDomain}}</span>
+  <a href="{{profileURL .Profile.Handle}}" target="_blank" class="text-gray-400 hover:text-white transition">View live ↗</a>
 </div>
 
 <!-- Profile header -->
-<main class="max-w-lg mx-auto pt-20 px-4 pb-6">
-  <div class="flex flex-col items-center text-center space-y-3 mb-6 relative group/header">
+<main class="max-w-lg mx-auto px-4 pb-6" style="padding-top: 72px;">
+
+  <!-- Avatar + name (non-editable preview, edit via Settings) -->
+  <div class="flex flex-col items-center text-center space-y-3 py-6">
     {{if .Profile.AvatarURL}}
     <img src="{{.Profile.AvatarURL}}" alt="{{.Profile.DisplayName}}" class="w-24 h-24 rounded-full object-cover">
     {{else}}
-    <div class="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center text-3xl font-bold opacity-60">
+    <div class="w-24 h-24 rounded-full bg-gray-600 flex items-center justify-center text-3xl font-bold opacity-70">
       {{slice .Profile.DisplayName 0 1}}
     </div>
     {{end}}
-    <h1 class="text-2xl font-bold">{{.Profile.DisplayName}}</h1>
-    {{if .Profile.Bio}}<p class="{{$muted}} text-sm max-w-xs">{{.Profile.Bio}}</p>{{end}}
+    <div>
+      <h1 class="text-2xl font-bold">{{.Profile.DisplayName}}</h1>
+      {{if .Profile.Bio}}<p class="{{$muted}} text-sm max-w-xs mt-1">{{.Profile.Bio}}</p>{{end}}
+    </div>
     <button @click="settingsOpen = true"
-      class="absolute top-0 right-0 opacity-0 group-hover/header:opacity-100 transition text-xs px-2 py-1 bg-black/50 text-white rounded-lg border border-white/20">
-      ✏ Edit profile
+      class="text-xs px-3 py-1.5 rounded-full border border-current/30 opacity-60 hover:opacity-100 transition">
+      Edit profile info
     </button>
   </div>
 
@@ -73,16 +71,17 @@
   </div>
 </main>
 
-<!-- Floating bottom toolbar -->
-<div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3">
+<!-- Bottom toolbar (full-width, no centering math) -->
+<div style="position:fixed;bottom:0;left:0;right:0;z-index:50;" class="flex items-center justify-center gap-3 px-4 py-3 bg-black/90 backdrop-blur border-t border-white/10">
   <!-- Add block -->
-  <div class="relative" x-data="{ addOpen: false }">
+  <div style="position:relative;" x-data="{ addOpen: false }">
     <button @click="addOpen = !addOpen"
-      class="flex items-center gap-2 px-5 py-2.5 bg-white text-black font-semibold rounded-full shadow-xl hover:bg-gray-100 transition text-sm">
+      class="flex items-center gap-2 px-5 py-2 bg-white text-black font-semibold rounded-full shadow-lg hover:bg-gray-100 transition text-sm">
       + Add block
     </button>
     <div x-show="addOpen" x-cloak @click.outside="addOpen = false"
-      class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-44 bg-gray-900 rounded-xl shadow-2xl border border-gray-700 overflow-hidden">
+      style="position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);width:176px;"
+      class="bg-gray-900 rounded-xl shadow-2xl border border-gray-700 overflow-hidden">
       {{range (list "social" "music_link" "gig" "bio" "custom_link" "image" "video_link")}}
       <button
         hx-post="/blocks"
@@ -97,92 +96,107 @@
     </div>
   </div>
 
-  <!-- Settings -->
   <button @click="settingsOpen = true"
-    class="px-4 py-2.5 bg-gray-800 text-white font-medium rounded-full shadow-xl hover:bg-gray-700 transition text-sm border border-gray-700">
+    class="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white font-medium rounded-full shadow-lg hover:bg-gray-600 transition text-sm border border-gray-600">
     ⚙ Settings
   </button>
 </div>
 
 <!-- Settings drawer -->
 <div x-show="settingsOpen" x-cloak
-  class="fixed inset-0 z-50 flex flex-col justify-end"
+  style="position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;justify-content:flex-end;"
   @keydown.escape.window="settingsOpen = false">
-  <div class="absolute inset-0 bg-black/50" @click="settingsOpen = false"></div>
-  <div class="relative {{$drawerBg}} border-t rounded-t-2xl p-6 space-y-5 max-h-[85vh] overflow-y-auto">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);" @click="settingsOpen = false"></div>
+  <div style="position:relative;max-height:85vh;" class="{{$drawerBg}} border-t rounded-t-2xl p-6 space-y-5 overflow-y-auto">
     <div class="flex items-center justify-between">
       <h2 class="font-bold text-lg">Profile settings</h2>
-      <button @click="settingsOpen = false" class="{{$muted}} hover:opacity-100 text-xl">✕</button>
+      <button @click="settingsOpen = false" class="text-2xl leading-none opacity-50 hover:opacity-100 transition">✕</button>
     </div>
 
-    <!-- Profile info form -->
+    <!-- Profile info -->
     <form hx-patch="/profile/info" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
       <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
       <div>
-        <label class="text-xs {{$muted}} uppercase tracking-wider">Display name</label>
+        <label class="block text-xs {{$muted}} uppercase tracking-wider mb-1">Display name</label>
         <input name="display_name" value="{{.Profile.DisplayName}}"
-          class="w-full mt-1 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-gray-500 {{$inputCls}}">
+          class="w-full px-3 py-2 rounded-lg text-sm border focus:outline-none focus:ring-1 focus:ring-gray-400 {{$inputCls}}">
       </div>
       <div>
-        <label class="text-xs {{$muted}} uppercase tracking-wider">Bio</label>
+        <label class="block text-xs {{$muted}} uppercase tracking-wider mb-1">Bio</label>
         <textarea name="bio" rows="2"
-          class="w-full mt-1 px-3 py-2 rounded-lg text-sm focus:outline-none resize-none {{$inputCls}}">{{if .Profile.Bio}}{{.Profile.Bio}}{{end}}</textarea>
+          class="w-full px-3 py-2 rounded-lg text-sm border focus:outline-none resize-none {{$inputCls}}">{{if .Profile.Bio}}{{.Profile.Bio}}{{end}}</textarea>
       </div>
-      <button type="submit" class="w-full py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Save</button>
+      <button type="submit" class="w-full py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Save info</button>
     </form>
 
     <!-- Handle -->
-    <form hx-patch="/profile/handle" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-2">
-      <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
-      <label class="text-xs {{$muted}} uppercase tracking-wider">Handle</label>
-      <div class="flex gap-2">
+    <div>
+      <label class="block text-xs {{$muted}} uppercase tracking-wider mb-1">Handle</label>
+      <form hx-patch="/profile/handle" hx-target="#settings-status" hx-swap="innerHTML" class="flex gap-2">
+        <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
         <input name="handle" value="{{.Profile.Handle}}"
-          class="flex-1 px-3 py-2 rounded-lg text-sm focus:outline-none lowercase {{$inputCls}}">
+          class="flex-1 px-3 py-2 rounded-lg text-sm border focus:outline-none lowercase {{$inputCls}}">
         <button type="submit" class="px-4 py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Update</button>
-      </div>
-    </form>
+      </form>
+    </div>
 
     <!-- Theme -->
     <div>
-      <label class="text-xs {{$muted}} uppercase tracking-wider block mb-2">Theme</label>
-      <form hx-patch="/profile/template" hx-target="#settings-status" hx-swap="innerHTML" class="flex gap-3">
+      <label class="block text-xs {{$muted}} uppercase tracking-wider mb-2">Theme</label>
+      <form hx-patch="/profile/template" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-2">
         <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+        <div class="flex gap-2">
         {{range (list "minimal" "dark" "neon")}}
         <label class="flex-1 text-center cursor-pointer">
-          <input type="radio" name="template" value="{{.}}" {{if eq . $.Profile.Template}}checked{{end}}
-            class="sr-only" onchange="this.form.requestSubmit()">
-          <span class="block py-2 rounded-lg text-sm border {{if eq . $.Profile.Template}}border-white bg-white/10 font-semibold{{else}}border-gray-700{{end}} capitalize hover:border-gray-400 transition">
+          <input type="radio" name="template" value="{{.}}" {{if eq . $.Profile.Template}}checked{{end}} class="sr-only">
+          <span class="block py-2 rounded-lg text-sm border capitalize transition
+            {{if eq . $.Profile.Template}}border-white bg-white/10 font-semibold{{else}}border-gray-600 hover:border-gray-400{{end}}">
             {{.}}
           </span>
         </label>
         {{end}}
+        </div>
+        <button type="submit" class="w-full py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Save theme</button>
       </form>
     </div>
 
     {{if .User.IsPro}}
-    <!-- Personas -->
     <div>
-      <label class="text-xs {{$muted}} uppercase tracking-wider block mb-2">Personas</label>
+      <label class="block text-xs {{$muted}} uppercase tracking-wider mb-2">Your personas</label>
       {{range .AllProfiles}}
       <a href="/edit?profile={{.ID}}"
-        class="block py-2 px-3 rounded-lg text-sm mb-1 {{if eq .ID $.Profile.ID}}bg-white/10 font-semibold{{else}}hover:bg-white/5{{end}}">
+        class="block py-2 px-3 rounded-lg text-sm mb-1 transition {{if eq .ID $.Profile.ID}}bg-white/10 font-semibold{{else}}hover:bg-white/5{{end}}">
         {{.Handle}}
       </a>
       {{end}}
       <form method="POST" action="/profiles/new" class="flex gap-2 mt-2">
         <input name="handle" placeholder="new-handle"
-          class="flex-1 px-3 py-2 rounded-lg text-sm focus:outline-none {{$inputCls}}">
-        <button type="submit" class="px-3 py-2 bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-600">Add</button>
+          class="flex-1 px-3 py-2 rounded-lg text-sm border focus:outline-none {{$inputCls}}">
+        <button type="submit" class="px-3 py-2 bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-600 transition">Add</button>
       </form>
     </div>
     {{end}}
 
-    <div id="settings-status" class="text-xs text-green-400 text-center"></div>
+    <div id="settings-status" class="text-xs text-green-400 text-center min-h-[1rem]"></div>
   </div>
 </div>
 
 <script>
-  // Drag to reorder
+  function toggleEdit(id) {
+    var el = document.getElementById('edit-form-' + id);
+    if (el) el.classList.toggle('hidden');
+  }
+
+  // Auto-open edit form when a new block is added
+  document.getElementById('block-list').addEventListener('htmx:afterSwap', function() {
+    var blocks = document.querySelectorAll('[data-block-id]');
+    if (blocks.length) {
+      var lastId = blocks[blocks.length - 1].dataset.blockId;
+      var form = document.getElementById('edit-form-' + lastId);
+      if (form) form.classList.remove('hidden');
+    }
+  });
+
   new Sortable(document.getElementById('block-list'), {
     animation: 150,
     handle: '.drag-handle',
@@ -198,27 +212,32 @@
 </html>
 
 {{define "editable_block"}}
-<div data-block-id="{{.ID}}" class="block-wrap relative">
-  <!-- Controls (shown on hover) -->
-  <div class="block-controls absolute -top-2 right-0 z-10 flex items-center gap-1">
-    <span class="drag-handle cursor-grab px-2 py-1 bg-black/70 text-white rounded text-xs select-none">⠿</span>
+<div data-block-id="{{.ID}}" class="relative">
+
+  <!-- Block preview -->
+  <div id="preview-{{.ID}}">
+    {{template "editable_block_preview" .}}
+  </div>
+
+  <!-- Controls row (always visible) -->
+  <div class="flex items-center gap-2 mt-1.5 px-1">
+    <span class="drag-handle cursor-grab text-gray-400 hover:text-gray-200 select-none text-lg leading-none">⠿</span>
     <button
-      onclick="document.getElementById('edit-form-{{.ID}}').classList.toggle('hidden')"
-      class="px-2 py-1 bg-black/70 text-white rounded text-xs hover:bg-black transition">✏</button>
+      onclick="toggleEdit('{{.ID}}')"
+      class="flex-1 text-xs text-left text-gray-500 hover:text-gray-300 transition capitalize">
+      Edit {{.Type}}
+    </button>
     <button
       hx-delete="/blocks/{{.ID}}"
       hx-target="[data-block-id='{{.ID}}']"
       hx-swap="outerHTML"
       hx-confirm="Delete this block?"
-      class="px-2 py-1 bg-red-600/80 text-white rounded text-xs hover:bg-red-600 transition">✕</button>
+      class="text-xs text-red-500 hover:text-red-400 transition px-1">
+      Delete
+    </button>
   </div>
 
-  <!-- Live preview (the actual block) -->
-  <div id="preview-{{.ID}}">
-    {{template "editable_block_preview" .}}
-  </div>
-
-  <!-- Inline edit form (hidden by default) -->
+  <!-- Inline edit form -->
   <div id="edit-form-{{.ID}}" class="hidden mt-2 p-3 bg-gray-900 rounded-xl border border-gray-700">
     <form
       hx-put="/blocks/{{.ID}}"
@@ -229,67 +248,67 @@
       {{if eq .Type "bio"}}
         {{$d := unmarshalBio .Data}}
         <textarea name="text" rows="3" placeholder="Write something..."
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none resize-none">{{$d.Text}}</textarea>
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none resize-none">{{$d.Text}}</textarea>
 
       {{else if eq .Type "social"}}
         {{$d := unmarshalSocial .Data}}
-        <select name="platform" class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm">
+        <select name="platform" class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm">
           {{range (list "instagram" "twitter" "tiktok" "youtube" "facebook" "soundcloud" "spotify" "mixcloud" "twitch" "other")}}
           <option value="{{.}}" {{if eq . $d.Platform}}selected{{end}}>{{.}}</option>
           {{end}}
         </select>
         <input name="url" type="url" value="{{$d.URL}}" placeholder="https://..."
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
 
       {{else if eq .Type "music_link"}}
         {{$d := unmarshalMusicLink .Data}}
         <input name="title" value="{{$d.Title}}" placeholder="Title"
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
-        <select name="platform" class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+        <select name="platform" class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm">
           {{range (list "soundcloud" "spotify" "mixcloud" "bandcamp" "apple music" "other")}}
           <option value="{{.}}" {{if eq . $d.Platform}}selected{{end}}>{{.}}</option>
           {{end}}
         </select>
         <input name="url" type="url" value="{{$d.URL}}" placeholder="https://..."
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
 
       {{else if eq .Type "gig"}}
         {{$d := unmarshalGig .Data}}
         <input name="venue" value="{{$d.Venue}}" placeholder="Venue"
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
         <input name="location" value="{{$d.Location}}" placeholder="City, Country"
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
         <input name="date" value="{{$d.Date}}" placeholder="25 Jan 2025"
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
         <input name="ticket_url" type="url" value="{{$d.TicketURL}}" placeholder="Ticket link (optional)"
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
 
       {{else if eq .Type "custom_link"}}
         {{$d := unmarshalCustomLink .Data}}
         <input name="label" value="{{$d.Label}}" placeholder="Button label"
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
         <input name="url" type="url" value="{{$d.URL}}" placeholder="https://..."
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
 
       {{else if eq .Type "image"}}
         {{$d := unmarshalImage .Data}}
         <input name="url" type="url" value="{{$d.URL}}" placeholder="Image URL"
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
         <input name="caption" value="{{$d.Caption}}" placeholder="Caption (optional)"
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
 
       {{else if eq .Type "video_link"}}
         {{$d := unmarshalVideoLink .Data}}
         <input name="title" value="{{$d.Title}}" placeholder="Title"
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
         <input name="url" type="url" value="{{$d.URL}}" placeholder="https://..."
-          class="w-full px-3 py-2 bg-gray-800 text-white rounded text-sm focus:outline-none">
+          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
       {{end}}
 
-      <div class="flex gap-2">
-        <button type="submit" class="flex-1 py-1.5 bg-white text-black text-sm font-medium rounded">Save</button>
-        <button type="button" onclick="document.getElementById('edit-form-{{.ID}}').classList.add('hidden')"
-          class="px-3 py-1.5 bg-gray-700 text-white text-sm rounded">Cancel</button>
+      <div class="flex gap-2 pt-1">
+        <button type="submit" class="flex-1 py-1.5 bg-white text-black text-sm font-medium rounded-lg hover:bg-gray-200 transition">Save</button>
+        <button type="button" onclick="toggleEdit('{{.ID}}')"
+          class="px-4 py-1.5 bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-600 transition">Cancel</button>
       </div>
     </form>
   </div>
@@ -299,21 +318,21 @@
 {{define "editable_block_preview"}}
 {{if eq .Type "bio"}}
   {{$d := unmarshalBio .Data}}
-  <p class="text-sm text-center opacity-80">{{if $d.Text}}{{$d.Text}}{{else}}<span class="opacity-40 italic">Bio text...</span>{{end}}</p>
+  <p class="text-sm text-center py-3 px-4 opacity-80">{{if $d.Text}}{{$d.Text}}{{else}}<span class="opacity-40 italic">Bio text...</span>{{end}}</p>
 {{else if eq .Type "social"}}
   {{$d := unmarshalSocial .Data}}
-  <div class="flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl border border-current/20 opacity-90 font-medium capitalize">
+  <a href="{{if $d.URL}}/r/{{$.ID}}{{else}}#{{end}}" class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl border border-current/20 font-medium capitalize hover:opacity-80 transition">
     {{$d.Platform}}
-  </div>
+  </a>
 {{else if eq .Type "music_link"}}
   {{$d := unmarshalMusicLink .Data}}
-  <div class="flex items-center justify-between w-full py-3 px-4 rounded-xl border border-current/20 opacity-90">
+  <a href="{{if $d.URL}}/r/{{$.ID}}{{else}}#{{end}}" class="flex items-center justify-between w-full py-3 px-4 rounded-xl border border-current/20 hover:opacity-80 transition">
     <span class="font-medium">{{if $d.Title}}{{$d.Title}}{{else}}<span class="opacity-40 italic">Track title...</span>{{end}}</span>
     <span class="text-xs opacity-50 capitalize">{{$d.Platform}}</span>
-  </div>
+  </a>
 {{else if eq .Type "gig"}}
   {{$d := unmarshalGig .Data}}
-  <div class="w-full py-3 px-4 rounded-xl border border-current/20 opacity-90">
+  <div class="w-full py-3 px-4 rounded-xl border border-current/20">
     <div class="flex justify-between items-start">
       <div>
         <p class="font-medium">{{if $d.Venue}}{{$d.Venue}}{{else}}<span class="opacity-40 italic">Venue...</span>{{end}}</p>
@@ -324,13 +343,13 @@
   </div>
 {{else if eq .Type "custom_link"}}
   {{$d := unmarshalCustomLink .Data}}
-  <div class="flex items-center justify-center w-full py-3 px-4 rounded-xl border border-current/20 opacity-90 font-medium">
+  <a href="{{if $d.URL}}/r/{{$.ID}}{{else}}#{{end}}" class="flex items-center justify-center w-full py-3 px-4 rounded-xl border border-current/20 font-medium hover:opacity-80 transition">
     {{if $d.Label}}{{$d.Label}}{{else}}<span class="opacity-40 italic">Link label...</span>{{end}}
-  </div>
+  </a>
 {{else if eq .Type "image"}}
   {{$d := unmarshalImage .Data}}
   {{if $d.URL}}
-  <div class="rounded-xl overflow-hidden opacity-90">
+  <div class="rounded-xl overflow-hidden">
     <img src="{{$d.URL}}" alt="{{$d.Caption}}" class="w-full object-cover">
   </div>
   {{else}}
@@ -338,8 +357,8 @@
   {{end}}
 {{else if eq .Type "video_link"}}
   {{$d := unmarshalVideoLink .Data}}
-  <div class="flex items-center w-full py-3 px-4 rounded-xl border border-current/20 opacity-90">
+  <a href="{{if $d.URL}}/r/{{$.ID}}{{else}}#{{end}}" class="flex items-center w-full py-3 px-4 rounded-xl border border-current/20 hover:opacity-80 transition">
     <span class="font-medium">▶ {{if $d.Title}}{{$d.Title}}{{else}}<span class="opacity-40 italic">Video title...</span>{{end}}</span>
-  </div>
+  </a>
 {{end}}
 {{end}}
