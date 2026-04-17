@@ -1,97 +1,99 @@
-{{template "base" .}}
-{{define "title"}}Admin — fader.bio{{end}}
-{{define "content"}}
-<div class="min-h-screen bg-gray-950 text-white">
-  <nav class="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
-    <span class="font-bold">fader.bio admin</span>
-    <a href="/auth/logout" class="text-sm text-gray-400 hover:text-white">Log out</a>
-  </nav>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — fader.bio</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="bg-gray-950 text-white">
+<nav class="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
+  <span class="font-bold">fader.bio admin</span>
+  <a href="/auth/logout" class="text-sm text-gray-400 hover:text-white">Log out</a>
+</nav>
 
-  <main class="max-w-5xl mx-auto py-8 px-4 space-y-10">
-    <!-- Summary -->
-    <div class="grid grid-cols-2 gap-4">
-      <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
-        <p class="text-gray-400 text-sm">Total users</p>
-        <p class="text-3xl font-bold mt-1">{{len .Users}}</p>
-      </div>
-      <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
-        <p class="text-gray-400 text-sm">Total profiles</p>
-        <p class="text-3xl font-bold mt-1">{{len .Profiles}}</p>
-      </div>
+<main class="max-w-5xl mx-auto py-8 px-4 space-y-10">
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+      <p class="text-gray-400 text-sm">Total users</p>
+      <p class="text-3xl font-bold mt-1">{{len .Users}}</p>
     </div>
+    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+      <p class="text-gray-400 text-sm">Total profiles</p>
+      <p class="text-3xl font-bold mt-1">{{len .Profiles}}</p>
+    </div>
+  </div>
 
-    <!-- Users -->
-    <div>
-      <h2 class="font-semibold text-lg mb-4">Users</h2>
-      <div class="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-        <table class="w-full text-sm">
-          <thead class="border-b border-gray-800 text-gray-400">
-            <tr>
-              <th class="text-left px-4 py-3">Email</th>
-              <th class="text-left px-4 py-3">Tier</th>
-              <th class="text-left px-4 py-3">Joined</th>
-              <th class="text-left px-4 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{range .Users}}
-            <tr class="border-b border-gray-800 last:border-0 hover:bg-gray-800/50">
-              <td class="px-4 py-3">{{.Email}}</td>
-              <td class="px-4 py-3">
-                <span class="px-2 py-0.5 rounded-full text-xs {{if eq .Tier "pro"}}bg-purple-900 text-purple-300{{else}}bg-gray-800 text-gray-400{{end}}">{{.Tier}}</span>
-              </td>
-              <td class="px-4 py-3 text-gray-500">{{.CreatedAt.Format "2 Jan 2006"}}</td>
-              <td class="px-4 py-3">
-                <form method="POST" action="/admin/users/tier" class="flex items-center gap-2">
-                  <input type="hidden" name="user_id" value="{{.ID}}">
-                  <select name="tier" class="bg-gray-800 text-xs rounded px-2 py-1 border border-gray-700">
-                    <option value="free" {{if eq .Tier "free"}}selected{{end}}>free</option>
-                    <option value="pro" {{if eq .Tier "pro"}}selected{{end}}>pro</option>
-                  </select>
-                  <button type="submit" class="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded">Set</button>
-                </form>
-              </td>
-            </tr>
-            {{end}}
-          </tbody>
-        </table>
-      </div>
+  <div>
+    <h2 class="font-semibold text-lg mb-4">Users</h2>
+    <div class="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="border-b border-gray-800 text-gray-400">
+          <tr>
+            <th class="text-left px-4 py-3">Email</th>
+            <th class="text-left px-4 py-3">Tier</th>
+            <th class="text-left px-4 py-3">Joined</th>
+            <th class="text-left px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .Users}}
+          <tr class="border-b border-gray-800 last:border-0 hover:bg-gray-800/50">
+            <td class="px-4 py-3">{{.Email}}</td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-0.5 rounded-full text-xs {{if eq .Tier "pro"}}bg-purple-900 text-purple-300{{else}}bg-gray-800 text-gray-400{{end}}">{{.Tier}}</span>
+            </td>
+            <td class="px-4 py-3 text-gray-500">{{.CreatedAt.Format "2 Jan 2006"}}</td>
+            <td class="px-4 py-3">
+              <form method="POST" action="/admin/users/tier" class="flex items-center gap-2">
+                <input type="hidden" name="user_id" value="{{.ID}}">
+                <select name="tier" class="bg-gray-800 text-xs rounded px-2 py-1 border border-gray-700">
+                  <option value="free" {{if eq .Tier "free"}}selected{{end}}>free</option>
+                  <option value="pro" {{if eq .Tier "pro"}}selected{{end}}>pro</option>
+                </select>
+                <button type="submit" class="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded">Set</button>
+              </form>
+            </td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <!-- Profiles -->
-    <div>
-      <h2 class="font-semibold text-lg mb-4">Profiles</h2>
-      <div class="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-        <table class="w-full text-sm">
-          <thead class="border-b border-gray-800 text-gray-400">
-            <tr>
-              <th class="text-left px-4 py-3">Handle</th>
-              <th class="text-left px-4 py-3">Display name</th>
-              <th class="text-left px-4 py-3">Template</th>
-              <th class="text-left px-4 py-3">Created</th>
-              <th class="text-left px-4 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {{range .Profiles}}
-            <tr class="border-b border-gray-800 last:border-0 hover:bg-gray-800/50">
-              <td class="px-4 py-3"><a href="https://{{.Handle}}.fader.bio" target="_blank" class="hover:underline text-blue-400">{{.Handle}}</a></td>
-              <td class="px-4 py-3">{{.DisplayName}}</td>
-              <td class="px-4 py-3 text-gray-500 capitalize">{{.Template}}</td>
-              <td class="px-4 py-3 text-gray-500">{{.CreatedAt.Format "2 Jan 2006"}}</td>
-              <td class="px-4 py-3 flex gap-2">
-                <a href="/admin/profiles/{{.ID}}/edit" class="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded">Edit</a>
-                <form method="POST" action="/admin/profiles/{{.ID}}" onsubmit="return confirm('Delete this profile?')">
-                  <input type="hidden" name="_method" value="DELETE">
-                  <button type="submit" class="text-xs px-2 py-1 bg-red-900 hover:bg-red-800 rounded">Delete</button>
-                </form>
-              </td>
-            </tr>
-            {{end}}
-          </tbody>
-        </table>
-      </div>
+  <div>
+    <h2 class="font-semibold text-lg mb-4">Profiles</h2>
+    <div class="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="border-b border-gray-800 text-gray-400">
+          <tr>
+            <th class="text-left px-4 py-3">Handle</th>
+            <th class="text-left px-4 py-3">Display name</th>
+            <th class="text-left px-4 py-3">Template</th>
+            <th class="text-left px-4 py-3">Created</th>
+            <th class="text-left px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{range .Profiles}}
+          <tr class="border-b border-gray-800 last:border-0 hover:bg-gray-800/50">
+            <td class="px-4 py-3"><a href="https://{{.Handle}}.fader.bio" target="_blank" class="hover:underline text-blue-400">{{.Handle}}</a></td>
+            <td class="px-4 py-3">{{.DisplayName}}</td>
+            <td class="px-4 py-3 text-gray-500 capitalize">{{.Template}}</td>
+            <td class="px-4 py-3 text-gray-500">{{.CreatedAt.Format "2 Jan 2006"}}</td>
+            <td class="px-4 py-3 flex gap-2">
+              <a href="/admin/profiles/{{.ID}}/edit" class="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded">Edit</a>
+              <form method="POST" action="/admin/profiles/{{.ID}}" onsubmit="return confirm('Delete this profile?')">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="text-xs px-2 py-1 bg-red-900 hover:bg-red-800 rounded">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {{end}}
+        </tbody>
+      </table>
     </div>
-  </main>
-</div>
-{{end}}
+  </div>
+</main>
+</body>
+</html>

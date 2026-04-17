@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/adammcgrogan/fader/internal/db"
@@ -43,7 +44,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	exists, err := h.db.HandleExists(r.Context(), handle)
-	if err != nil || exists {
+	if err != nil {
+		renderTemplate(w, "auth_register.html", map[string]any{"Error": "database error — have you run migrations?", "Handle": handle})
+		return
+	}
+	if exists {
 		renderTemplate(w, "auth_register.html", map[string]any{"Error": "that handle is already taken", "Handle": handle})
 		return
 	}
@@ -80,10 +85,18 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.auth.SignInWithEmailPassword(r.FormValue("email"), r.FormValue("password"))
 	if err != nil {
-		renderTemplate(w, "auth_login.html", map[string]any{"Error": "invalid credentials"})
+		log.Printf("login error for %s: %v", r.FormValue("email"), err)
+		renderTemplate(w, "auth_login.html", map[string]any{"Error": "invalid credentials: " + err.Error()})
 		return
 	}
 
+	if resp.Session.AccessToken == "" {
+		log.Printf("login: empty access token for %s", r.FormValue("email"))
+		renderTemplate(w, "auth_login.html", map[string]any{"Error": "login succeeded but no session returned — check email confirmation is disabled in Supabase"})
+		return
+	}
+
+	log.Printf("login ok for %s, userID=%s", r.FormValue("email"), resp.User.ID)
 	setAuthCookie(w, resp.Session.AccessToken)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }

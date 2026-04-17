@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 	supabase "github.com/supabase-community/supabase-go"
-
 
 	"github.com/adammcgrogan/fader/internal/config"
 	"github.com/adammcgrogan/fader/internal/db"
@@ -17,6 +17,8 @@ import (
 )
 
 func main() {
+	godotenv.Load()
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatal(err)
@@ -27,6 +29,10 @@ func main() {
 		log.Fatalf("db connect: %v", err)
 	}
 	defer pool.Close()
+
+	if err := db.Migrate(context.Background(), pool, "migrations"); err != nil {
+		log.Fatalf("migrations: %v", err)
+	}
 
 	queries := db.New(pool)
 
@@ -45,8 +51,12 @@ func main() {
 	stripeH := handlers.NewStripeHandler(queries, cfg)
 	admin := handlers.NewAdminHandler(queries, cfg.AdminUserID)
 
-	requireAuth := middleware.RequireAuth(cfg.SupabaseJWTSecret)
-	optionalAuth := middleware.OptionalAuth(cfg.SupabaseJWTSecret)
+	authMW, err := middleware.NewAuthMiddleware(cfg.SupabaseURL)
+	if err != nil {
+		log.Fatalf("auth middleware: %v", err)
+	}
+	requireAuth := authMW.RequireAuth
+	optionalAuth := authMW.OptionalAuth
 
 	mux := http.NewServeMux()
 
@@ -63,8 +73,8 @@ func main() {
 	// Outbound click tracking (public)
 	mux.HandleFunc("/r/", profile.Redirect)
 
-	// Landing page (fader.bio root, no subdomain)
-	mux.Handle("GET /", optionalAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// Catch-all: landing page or DJ profile based on subdomain
+	mux.Handle("/", optionalAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sub := middleware.GetSubdomain(r)
 		switch sub {
 		case "", "www":
