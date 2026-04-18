@@ -30,6 +30,15 @@ var funcMap = template.FuncMap{
 	"unmarshalImage":      unmarshalFn[models.ImageData],
 	"unmarshalVideoLink":  unmarshalFn[models.VideoLinkData],
 	"list": func(items ...string) []string { return items },
+	"blockLabel": func(t string) string {
+		labels := map[string]string{
+			"social": "Social Media", "music_link": "Music", "custom_link": "Custom",
+		}
+		if l, ok := labels[t]; ok {
+			return l
+		}
+		return t
+	},
 	"percent": func(val, max int) int {
 		if max == 0 {
 			return 0
