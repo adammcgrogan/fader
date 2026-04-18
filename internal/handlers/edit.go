@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+	"math/rand"
 	"net/http"
 	"strings"
 
@@ -307,21 +309,13 @@ func (h *EditHandler) NewProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "bad request", http.StatusBadRequest)
-		return
-	}
-
-	handle := strings.ToLower(strings.TrimSpace(r.FormValue("handle")))
-	if err := validate.Handle(handle); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	exists, _ := h.db.HandleExists(r.Context(), handle)
-	if exists {
-		http.Error(w, "handle already taken", http.StatusConflict)
-		return
+	handle := generateHandle()
+	for {
+		exists, _ := h.db.HandleExists(r.Context(), handle)
+		if !exists {
+			break
+		}
+		handle = generateHandle()
 	}
 
 	profile, err := h.db.CreateProfile(r.Context(), userID, handle, handle)
@@ -373,3 +367,31 @@ func formToBlockData(blockType string, r *http.Request) json.RawMessage {
 	return b
 }
 
+func (h *EditHandler) DeleteProfile(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.GetUserID(r)
+
+	profileID, err := uuid.Parse(r.PathValue("id"))
+	if err != nil {
+		http.Error(w, "invalid profile id", http.StatusBadRequest)
+		return
+	}
+
+	profile, err := h.db.GetProfileByID(r.Context(), profileID)
+	if err != nil || profile.UserID != userID {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+
+	profiles, _ := h.db.GetProfilesByUserID(r.Context(), userID)
+	if len(profiles) <= 1 {
+		http.Error(w, "cannot delete your only page", http.StatusBadRequest)
+		return
+	}
+
+	h.db.DeleteProfile(r.Context(), profileID)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+}
+
+func generateHandle() string {
+	return fmt.Sprintf("page%04d", rand.Intn(10000))
+}

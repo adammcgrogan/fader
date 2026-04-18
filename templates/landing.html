@@ -4,63 +4,86 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>fader.bio — Your DJ page, one link</title>
-  <link rel="stylesheet" href="/static/css/app.css?v=2">
+  <link rel="stylesheet" href="/static/css/app.css?v=3">
 </head>
-<body class="bg-zinc-950 text-white min-h-screen flex flex-col">
+<body class="bg-zinc-950 text-white min-h-screen flex flex-col overflow-x-hidden">
 
-<header class="px-6 py-5 flex items-center justify-between border-b border-zinc-900">
-  <span class="font-bold text-lg tracking-tight">fader.bio</span>
-  <a href="/auth/login" class="text-sm text-zinc-400 hover:text-white transition">Log in →</a>
+<header class="px-6 py-5 flex items-center justify-between relative z-10">
+  <span class="font-bold text-base tracking-tight">fader.bio</span>
+  <a href="/auth/login" class="text-sm text-zinc-400 hover:text-white transition">Log in</a>
 </header>
 
-<main class="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center">
-  <div class="max-w-2xl space-y-6">
-    <div class="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-xs text-zinc-400 mb-2">
-      <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+<main class="flex-1 flex flex-col items-center justify-center px-6 pt-12 pb-24 text-center relative">
+  <!-- Glow -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="relative max-w-xl space-y-8">
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-zinc-400">
+      <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
       Free to start · No credit card needed
     </div>
 
-    <h1 class="text-5xl sm:text-6xl font-bold tracking-tight leading-tight">
-      Your DJ identity,<br><span class="text-zinc-400">one link.</span>
-    </h1>
+    <div class="space-y-4">
+      <h1 class="text-5xl sm:text-6xl font-black tracking-tight leading-[1.08]">
+        Your DJ identity,<br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-pink-400">one link.</span>
+      </h1>
+      <p class="text-lg text-zinc-400 max-w-sm mx-auto leading-relaxed">
+        Share your music, gigs &amp; socials at <span class="text-white font-medium">yourname.fader.bio</span>
+      </p>
+    </div>
 
-    <p class="text-lg text-zinc-400 max-w-md mx-auto leading-relaxed">
-      Share your music, gigs, and socials — all on your own <span class="text-white font-medium">handle.fader.bio</span> page.
-    </p>
-
-    <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-      <a href="/auth/register" class="px-7 py-3 bg-white text-black font-semibold rounded-xl hover:bg-zinc-100 transition text-sm">
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <a href="/auth/register"
+        class="px-7 py-3.5 bg-white text-black font-bold rounded-xl hover:bg-zinc-100 transition text-sm shadow-lg shadow-white/10">
         Get started free
       </a>
-      <a href="/auth/login" class="px-7 py-3 bg-zinc-900 border border-zinc-800 text-zinc-300 font-medium rounded-xl hover:bg-zinc-800 hover:text-white transition text-sm">
+      <a href="/auth/login"
+        class="px-7 py-3.5 border border-zinc-800 text-zinc-300 font-medium rounded-xl hover:border-zinc-600 hover:text-white transition text-sm">
         Log in
       </a>
+    </div>
+
+    <!-- Mock profile preview -->
+    <div class="mx-auto max-w-[280px] bg-zinc-900 border border-zinc-800 rounded-2xl p-5 text-left shadow-2xl">
+      <div class="flex flex-col items-center text-center space-y-3 pb-4 border-b border-zinc-800">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center font-black text-lg">S</div>
+        <div>
+          <p class="font-bold text-sm">DJ Synq</p>
+          <p class="text-xs text-zinc-500">synq.fader.bio</p>
+        </div>
+      </div>
+      <div class="pt-4 space-y-2">
+        <div class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-800 text-sm font-medium text-zinc-200">SoundCloud</div>
+        <div class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-800 text-sm font-medium text-zinc-200">Summer Mix 2025</div>
+        <div class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-800 text-sm font-medium text-zinc-200">Instagram</div>
+      </div>
     </div>
   </div>
 </main>
 
 <section class="border-t border-zinc-900 px-6 py-14">
-  <div class="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8">
-    <div class="space-y-2">
-      <div class="w-8 h-8 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center text-sm">✦</div>
-      <h3 class="font-semibold text-sm">Your own subdomain</h3>
-      <p class="text-sm text-zinc-500 leading-relaxed">Every DJ gets a clean, shareable link at yourname.fader.bio.</p>
+  <div class="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
+    <div class="space-y-2.5">
+      <p class="text-2xl">⚡</p>
+      <h3 class="font-semibold text-sm">Live in seconds</h3>
+      <p class="text-sm text-zinc-500 leading-relaxed">Sign up and your page is live at yourname.fader.bio immediately.</p>
     </div>
-    <div class="space-y-2">
-      <div class="w-8 h-8 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center text-sm">↗</div>
-      <h3 class="font-semibold text-sm">Music, gigs &amp; socials</h3>
-      <p class="text-sm text-zinc-500 leading-relaxed">Add links to your mixes, upcoming gigs, booking contacts, and more.</p>
+    <div class="space-y-2.5">
+      <p class="text-2xl">🎵</p>
+      <h3 class="font-semibold text-sm">Built for DJs</h3>
+      <p class="text-sm text-zinc-500 leading-relaxed">Music links, gig listings, social profiles — everything a DJ needs.</p>
     </div>
-    <div class="space-y-2">
-      <div class="w-8 h-8 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center text-sm">◎</div>
+    <div class="space-y-2.5">
+      <p class="text-2xl">📊</p>
       <h3 class="font-semibold text-sm">Analytics on Pro</h3>
-      <p class="text-sm text-zinc-500 leading-relaxed">See who's viewing your page, where they're from, and what they click.</p>
+      <p class="text-sm text-zinc-500 leading-relaxed">See views, clicks, countries and referrers across all your pages.</p>
     </div>
   </div>
 </section>
 
-<footer class="border-t border-zinc-900 px-6 py-6 text-center text-xs text-zinc-600">
-  fader.bio
+<footer class="border-t border-zinc-900 px-6 py-6 text-center text-xs text-zinc-700">
+  © 2025 fader.bio
 </footer>
 
 </body>

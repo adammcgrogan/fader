@@ -4,34 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{.Profile.DisplayName}}</title>
-  <link rel="stylesheet" href="/static/css/app.css?v=2">
+  <link rel="stylesheet" href="/static/css/app.css?v=3">
   <style>
-    .neon-border { border: 1px solid rgba(139,92,246,0.4); }
-    .neon-border:hover { border-color: rgba(139,92,246,0.8); box-shadow: 0 0 12px rgba(139,92,246,0.3); }
+    .neon-card { border: 1px solid rgba(139,92,246,0.3); }
+    .neon-card:hover { border-color: rgba(139,92,246,0.7); box-shadow: 0 0 16px rgba(139,92,246,0.2); }
   </style>
 </head>
 <body class="bg-black text-white min-h-screen">
-  <main class="max-w-lg mx-auto py-12 px-4 space-y-6">
+  <main class="max-w-lg mx-auto py-14 px-4 space-y-5">
     <div class="flex flex-col items-center text-center space-y-3">
       {{if .Profile.AvatarURL}}
-      <img src="{{.Profile.AvatarURL}}" alt="{{.Profile.DisplayName}}" class="w-24 h-24 rounded-full object-cover ring-2 ring-purple-500">
+      <img src="{{.Profile.AvatarURL}}" alt="{{.Profile.DisplayName}}" class="w-20 h-20 rounded-full object-cover ring-2 ring-purple-700">
       {{else}}
-      <div class="w-24 h-24 rounded-full bg-purple-900 flex items-center justify-center text-3xl font-bold text-purple-300">
+      <div class="w-20 h-20 rounded-full bg-gradient-to-br from-violet-700 to-pink-600 flex items-center justify-center text-2xl font-black">
         {{slice .Profile.DisplayName 0 1}}
       </div>
       {{end}}
-      <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">{{.Profile.DisplayName}}</h1>
-      {{if .Profile.Bio}}<p class="text-gray-400 text-sm max-w-xs">{{.Profile.Bio}}</p>{{end}}
+      <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">{{.Profile.DisplayName}}</h1>
+      {{if .Profile.Bio}}<p class="text-zinc-500 text-sm max-w-xs leading-relaxed">{{.Profile.Bio}}</p>{{end}}
     </div>
 
-    <div class="space-y-3">
+    <div class="space-y-2.5">
       {{range .Blocks}}
         {{template "block_neon" .}}
       {{end}}
     </div>
 
-    <footer class="text-center text-xs text-gray-700 pt-4">
-      <a href="https://fader.bio" class="hover:text-gray-500 transition">powered by fader.bio</a>
+    <footer class="text-center text-xs text-zinc-800 pt-4">
+      <a href="https://fader.bio" class="hover:text-zinc-600 transition">powered by fader.bio</a>
     </footer>
   </main>
 </body>
@@ -40,46 +40,61 @@
 {{define "block_neon"}}
 {{if eq .Type "bio"}}
   {{$d := unmarshalBio .Data}}
-  <p class="text-gray-400 text-sm text-center">{{$d.Text}}</p>
+  <p class="text-zinc-500 text-sm text-center leading-relaxed">{{$d.Text}}</p>
 {{else if eq .Type "social"}}
   {{$d := unmarshalSocial .Data}}
-  <a href="/r/{{.ID}}" class="neon-border flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition font-medium">
-    <span class="capitalize text-purple-300">{{$d.Platform}}</span>
+  <a href="/r/{{.ID}}" class="neon-card flex items-center w-full py-3.5 px-5 rounded-2xl bg-violet-950/20 hover:bg-violet-950/40 transition font-semibold text-sm relative">
+    <span class="absolute left-4 text-violet-600">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+    </span>
+    <span class="flex-1 text-center capitalize text-violet-200">{{$d.Platform}}</span>
   </a>
 {{else if eq .Type "music_link"}}
   {{$d := unmarshalMusicLink .Data}}
-  <a href="/r/{{.ID}}" class="neon-border flex items-center justify-center w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition font-medium text-purple-200">
-    {{$d.Title}}
+  <a href="/r/{{.ID}}" class="neon-card flex items-center w-full py-3.5 px-5 rounded-2xl bg-violet-950/20 hover:bg-violet-950/40 transition font-semibold text-sm relative">
+    <span class="absolute left-4 text-violet-600">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/></svg>
+    </span>
+    <span class="flex-1 text-center text-violet-200">{{$d.Title}}</span>
   </a>
 {{else if eq .Type "gig"}}
   {{$d := unmarshalGig .Data}}
-  <div class="neon-border w-full py-3 px-4 rounded-xl bg-purple-950/20">
-    <div class="flex justify-between items-start">
-      <div>
-        <p class="font-medium text-purple-200">{{$d.Venue}}</p>
-        <p class="text-xs text-purple-600">{{$d.Location}}</p>
+  <div class="neon-card w-full py-3.5 px-5 rounded-2xl bg-violet-950/20">
+    <div class="flex items-center gap-3">
+      <span class="text-violet-600 shrink-0">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+      </span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm text-violet-200">{{$d.Venue}}</p>
+        <p class="text-xs text-violet-700">{{$d.Location}}</p>
       </div>
-      <div class="text-right">
-        <p class="text-sm text-purple-400">{{$d.Date}}</p>
+      <div class="text-right shrink-0">
+        <p class="text-sm text-violet-400 font-medium">{{$d.Date}}</p>
         {{if $d.TicketURL}}<a href="/r/{{$.ID}}" class="text-xs text-pink-400 hover:underline">Tickets →</a>{{end}}
       </div>
     </div>
   </div>
 {{else if eq .Type "custom_link"}}
   {{$d := unmarshalCustomLink .Data}}
-  <a href="/r/{{.ID}}" class="neon-border flex items-center justify-center w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition font-medium text-purple-200">
-    {{$d.Label}}
+  <a href="/r/{{.ID}}" class="neon-card flex items-center w-full py-3.5 px-5 rounded-2xl bg-violet-950/20 hover:bg-violet-950/40 transition font-semibold text-sm relative">
+    <span class="absolute left-4 text-violet-600">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+    </span>
+    <span class="flex-1 text-center text-violet-200">{{$d.Label}}</span>
   </a>
 {{else if eq .Type "image"}}
   {{$d := unmarshalImage .Data}}
-  <div class="rounded-xl overflow-hidden ring-1 ring-purple-800">
+  <div class="rounded-2xl overflow-hidden ring-1 ring-purple-900">
     <img src="{{$d.URL}}" alt="{{$d.Caption}}" class="w-full object-cover">
-    {{if $d.Caption}}<p class="text-xs text-purple-600 text-center py-1">{{$d.Caption}}</p>{{end}}
+    {{if $d.Caption}}<p class="text-xs text-violet-700 text-center py-2">{{$d.Caption}}</p>{{end}}
   </div>
 {{else if eq .Type "video_link"}}
   {{$d := unmarshalVideoLink .Data}}
-  <a href="/r/{{.ID}}" class="neon-border flex items-center w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition">
-    <span class="font-medium text-purple-200">▶ {{$d.Title}}</span>
+  <a href="/r/{{.ID}}" class="neon-card flex items-center w-full py-3.5 px-5 rounded-2xl bg-violet-950/20 hover:bg-violet-950/40 transition font-semibold text-sm relative">
+    <span class="absolute left-4 text-violet-600">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
+    </span>
+    <span class="flex-1 text-center text-violet-200">{{$d.Title}}</span>
   </a>
 {{end}}
 {{end}}

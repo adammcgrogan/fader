@@ -4,49 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard — fader.bio</title>
-  <link rel="stylesheet" href="/static/css/app.css?v=2">
+  <link rel="stylesheet" href="/static/css/app.css?v=3">
 </head>
 <body class="bg-zinc-950 text-white min-h-screen">
 
 <header class="border-b border-zinc-900 px-6 py-4 flex items-center justify-between">
-  <span class="font-bold tracking-tight">fader.bio</span>
+  <span class="font-black text-base tracking-tight">fader.bio</span>
   <div class="flex items-center gap-4">
     {{if .User.IsPro}}
-    <span class="text-xs bg-violet-950 text-violet-300 border border-violet-800 px-2.5 py-0.5 rounded-full font-medium">Pro</span>
+    <span class="text-xs bg-violet-950 text-violet-300 border border-violet-800/60 px-2.5 py-1 rounded-full font-semibold">Pro</span>
     {{end}}
-    <a href="/analytics" class="text-sm text-zinc-400 hover:text-white transition">Analytics</a>
     <form method="POST" action="/auth/logout">
-      <button type="submit" class="text-sm text-zinc-400 hover:text-white transition">Log out</button>
+      <button type="submit" class="text-sm text-zinc-500 hover:text-white transition">Log out</button>
     </form>
   </div>
 </header>
 
-<main class="max-w-2xl mx-auto py-12 px-6 space-y-8">
+<main class="max-w-xl mx-auto py-12 px-6 space-y-6">
 
-  <div class="flex items-center justify-between">
-    <h1 class="text-xl font-semibold">Your pages</h1>
-  </div>
+  <h1 class="text-lg font-bold">Your pages</h1>
 
   <div class="space-y-3">
     {{range .Profiles}}
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 flex items-center justify-between hover:border-zinc-700 transition">
-      <div class="space-y-0.5">
-        <p class="font-semibold text-sm">{{.Handle}}<span class="text-zinc-500">.fader.bio</span></p>
-        <p class="text-xs text-zinc-500">{{.DisplayName}}</p>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-zinc-700 transition">
+      <div class="flex items-center gap-4">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-violet-700 to-pink-600 flex items-center justify-center font-black text-sm shrink-0">
+          {{slice .DisplayName 0 1}}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm">{{.DisplayName}}</p>
+          <p class="text-xs text-zinc-500 mt-0.5">{{.Handle}}.fader.bio</p>
+        </div>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 mt-4 pt-4 border-t border-zinc-800">
         <a href="{{profileURL .Handle}}" target="_blank"
-          class="text-xs text-zinc-500 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-zinc-800">
+          class="flex-1 text-center text-xs text-zinc-400 hover:text-white transition py-2 px-3 rounded-lg hover:bg-zinc-800">
           View ↗
         </a>
         {{if $.User.IsPro}}
         <a href="/analytics?profile={{.ID}}"
-          class="text-xs text-zinc-500 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-zinc-800">
+          class="flex-1 text-center text-xs text-zinc-400 hover:text-white transition py-2 px-3 rounded-lg hover:bg-zinc-800">
           Analytics
         </a>
         {{end}}
         <a href="/edit?profile={{.ID}}"
-          class="text-xs bg-white text-black font-semibold px-3 py-1.5 rounded-lg hover:bg-zinc-100 transition">
+          class="flex-1 text-center text-xs bg-white text-black font-bold py-2 px-3 rounded-lg hover:bg-zinc-100 transition">
           Edit
         </a>
       </div>
@@ -54,28 +56,39 @@
     {{end}}
   </div>
 
+  {{if .User.IsPro}}
+  <form method="POST" action="/profiles/new">
+    <button type="submit"
+      class="w-full py-3.5 border border-dashed border-zinc-800 rounded-2xl text-sm text-zinc-600 hover:border-zinc-600 hover:text-zinc-400 transition">
+      + New page
+    </button>
+  </form>
+  {{end}}
+
   {{if not (.User.IsPro)}}
-  <div class="bg-gradient-to-br from-violet-950/40 to-zinc-900 border border-violet-900/50 rounded-xl p-6 space-y-4">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
     <div class="space-y-1">
-      <h2 class="font-semibold text-violet-200">Upgrade to Pro</h2>
+      <h2 class="font-bold text-sm">Upgrade to Pro</h2>
       <p class="text-xs text-zinc-500">Unlock the full fader.bio experience</p>
     </div>
-    <ul class="space-y-2">
-      <li class="flex items-center gap-2 text-sm text-zinc-400">
-        <span class="text-violet-400">✦</span> Full analytics — views, clicks, countries, referrers
+    <ul class="space-y-2.5">
+      <li class="flex items-start gap-2.5 text-sm text-zinc-400">
+        <span class="text-violet-400 mt-0.5 shrink-0">✦</span>
+        Full analytics — views, clicks, countries, referrers
       </li>
-      <li class="flex items-center gap-2 text-sm text-zinc-400">
-        <span class="text-violet-400">✦</span> Multiple DJ personas under one account
+      <li class="flex items-start gap-2.5 text-sm text-zinc-400">
+        <span class="text-violet-400 mt-0.5 shrink-0">✦</span>
+        Multiple pages — different DJ personas under one account
       </li>
     </ul>
     <a href="/billing/checkout"
-      class="inline-flex px-4 py-2 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-500 transition">
-      Upgrade →
+      class="inline-flex px-5 py-2.5 bg-violet-600 text-white text-sm font-bold rounded-xl hover:bg-violet-500 transition">
+      Upgrade to Pro →
     </a>
   </div>
   {{else}}
   <div class="text-center">
-    <a href="/billing/portal" class="text-xs text-zinc-600 hover:text-zinc-400 transition">Manage subscription</a>
+    <a href="/billing/portal" class="text-xs text-zinc-700 hover:text-zinc-400 transition">Manage subscription</a>
   </div>
   {{end}}
 

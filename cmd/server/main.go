@@ -104,6 +104,7 @@ func main() {
 	mux.Handle("PATCH /profile/template", requireAuth(http.HandlerFunc(edit.UpdateTemplate)))
 	mux.Handle("PATCH /profile/info", requireAuth(http.HandlerFunc(edit.UpdateProfileInfo)))
 	mux.Handle("PATCH /profile/handle", requireAuth(http.HandlerFunc(edit.UpdateHandle)))
+	mux.Handle("DELETE /profiles/{id}", requireAuth(http.HandlerFunc(edit.DeleteProfile)))
 
 	// Analytics
 	mux.Handle("GET /analytics", requireAuth(http.HandlerFunc(analytics.Show)))
