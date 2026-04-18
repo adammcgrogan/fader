@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/adammcgrogan/fader/internal/db"
@@ -56,6 +57,7 @@ func (h *AnalyticsHandler) Show(w http.ResponseWriter, r *http.Request) {
 
 	summary, err := h.db.GetAnalyticsSummary(r.Context(), profileID)
 	if err != nil {
+		log.Printf("analytics summary error: %v", err)
 		http.Error(w, "could not load analytics", http.StatusInternalServerError)
 		return
 	}

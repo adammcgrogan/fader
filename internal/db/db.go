@@ -284,7 +284,7 @@ func (q *Queries) GetAnalyticsSummary(ctx context.Context, profileID uuid.UUID) 
 
 	// Views by day (last 30 days)
 	rows, err := q.pool.Query(ctx,
-		`SELECT DATE(created_at) AS day, COUNT(*) AS views
+		`SELECT DATE(created_at)::text AS day, COUNT(*) AS views
 		 FROM analytics_events
 		 WHERE profile_id = $1 AND event_type = 'view' AND created_at > NOW() - INTERVAL '30 days'
 		 GROUP BY day ORDER BY day ASC`,
@@ -304,11 +304,13 @@ func (q *Queries) GetAnalyticsSummary(ctx context.Context, profileID uuid.UUID) 
 
 	// Clicks by block
 	blockRows, err := q.pool.Query(ctx,
-		`SELECT ae.block_id, b.type, COUNT(*) AS clicks
+		`SELECT ae.block_id, b.type,
+		  COALESCE(b.data->>'title', b.data->>'label', b.data->>'platform', b.data->>'url', b.type) AS label,
+		  COUNT(*) AS clicks
 		 FROM analytics_events ae
 		 JOIN blocks b ON b.id = ae.block_id
 		 WHERE ae.profile_id = $1 AND ae.event_type = 'click' AND ae.block_id IS NOT NULL
-		 GROUP BY ae.block_id, b.type ORDER BY clicks DESC LIMIT 20`,
+		 GROUP BY ae.block_id, b.type, b.data ORDER BY clicks DESC LIMIT 20`,
 		profileID,
 	)
 	if err != nil {
@@ -317,7 +319,7 @@ func (q *Queries) GetAnalyticsSummary(ctx context.Context, profileID uuid.UUID) 
 	defer blockRows.Close()
 	for blockRows.Next() {
 		var s models.BlockStat
-		if err := blockRows.Scan(&s.BlockID, &s.Type, &s.Clicks); err != nil {
+		if err := blockRows.Scan(&s.BlockID, &s.Type, &s.Label, &s.Clicks); err != nil {
 			return nil, err
 		}
 		summary.ClicksByBlock = append(summary.ClicksByBlock, s)

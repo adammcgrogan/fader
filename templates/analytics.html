@@ -11,7 +11,8 @@
 <header class="border-b border-zinc-900 px-6 py-4 flex items-center gap-3">
   <a href="/dashboard" class="text-sm text-zinc-400 hover:text-white transition">← Dashboard</a>
   <span class="text-zinc-700">/</span>
-  <span class="text-sm font-medium">{{.Profile.Handle}}</span>
+  <span class="text-sm text-zinc-500">Analytics for</span>
+  <span class="text-sm font-semibold">{{.Profile.Handle}}<span class="text-zinc-600">.fader.bio</span></span>
   {{if gt (len .AllProfiles) 1}}
   <div class="ml-auto">
     <select onchange="window.location='/analytics?profile='+this.value"
@@ -90,9 +91,12 @@
     <h2 class="text-sm font-semibold">Clicks by block</h2>
     <div class="divide-y divide-zinc-800">
       {{range .Summary.ClicksByBlock}}
-      <div class="flex items-center justify-between py-2">
-        <span class="text-sm text-zinc-300 capitalize">{{.Type}}</span>
-        <span class="text-sm text-zinc-500 tabular-nums">{{.Clicks}} clicks</span>
+      <div class="flex items-center justify-between py-2 gap-4">
+        <div class="min-w-0">
+          <p class="text-sm text-zinc-300 truncate">{{.Label}}</p>
+          <p class="text-xs text-zinc-600 capitalize">{{.Type}}</p>
+        </div>
+        <span class="text-sm text-zinc-500 tabular-nums shrink-0">{{.Clicks}} clicks</span>
       </div>
       {{end}}
     </div>

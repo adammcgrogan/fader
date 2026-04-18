@@ -36,12 +36,13 @@ func (h *ProfileHandler) ServeProfile(w http.ResponseWriter, r *http.Request) {
 
 	blocks, _ := h.db.GetBlocksByProfileID(r.Context(), profile.ID)
 
-	// Record view — skip if the viewer is the owner
-	viewerID, _ := middleware.GetUserID(r)
-	if viewerID != profile.UserID {
+	if r.URL.Path == "/" {
 		profileID := profile.ID
 		ip := hashIP(r.RemoteAddr)
 		country := r.Header.Get("CF-IPCountry")
+		if country == "" {
+			country = "Unknown"
+		}
 		referrer := r.Referer()
 		ua := r.UserAgent()
 		go h.db.RecordEvent(

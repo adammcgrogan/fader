@@ -149,9 +149,9 @@
         <form hx-patch="/profile/handle" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
           <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
           <div class="flex items-stretch border border-zinc-700 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-zinc-600 transition">
-            <span class="px-3 flex items-center bg-zinc-800 text-zinc-500 text-sm border-r border-zinc-700 shrink-0 text-xs">fader.bio/</span>
             <input name="handle" value="{{.Profile.Handle}}"
               class="flex-1 px-3 py-2.5 bg-zinc-800 text-sm text-white focus:outline-none lowercase placeholder-zinc-500">
+            <span class="px-3 flex items-center bg-zinc-800 text-zinc-500 text-sm border-l border-zinc-700 shrink-0 text-xs">.{{baseDomain}}</span>
           </div>
           <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-100 transition">Update handle</button>
         </form>
@@ -177,28 +177,6 @@
           <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-100 transition">Save theme</button>
         </form>
       </div>
-
-      {{if .User.IsPro}}
-      <!-- Personas -->
-      <div class="space-y-3">
-        <h3 class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Personas</h3>
-        <div class="space-y-1">
-          {{range .AllProfiles}}
-          <a href="/edit?profile={{.ID}}"
-            class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition
-            {{if eq .ID $.Profile.ID}}bg-zinc-800 text-white font-medium{{else}}text-zinc-400 hover:bg-zinc-800 hover:text-white{{end}}">
-            <span>{{.Handle}}</span>
-            {{if eq .ID $.Profile.ID}}<span class="text-xs text-zinc-500">current</span>{{end}}
-          </a>
-          {{end}}
-        </div>
-        <form method="POST" action="/profiles/new" class="flex gap-2">
-          <input name="handle" placeholder="new-handle"
-            class="flex-1 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
-          <button type="submit" class="px-4 py-2 bg-zinc-700 text-white text-sm rounded-lg hover:bg-zinc-600 transition font-medium">Add</button>
-        </form>
-      </div>
-      {{end}}
 
       <div id="settings-status" class="text-xs text-green-400 text-center min-h-4"></div>
     </div>

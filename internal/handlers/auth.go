@@ -3,6 +3,7 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/adammcgrogan/fader/internal/db"
 	"github.com/adammcgrogan/fader/internal/validate"
@@ -102,26 +103,28 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	secure := !strings.Contains(BaseDomain, "localhost")
 	http.SetCookie(w, &http.Cookie{
 		Name:     "sb-token",
 		Value:    "",
 		Path:     "/",
 		MaxAge:   -1,
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   secure,
 		SameSite: http.SameSiteLaxMode,
 	})
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func setAuthCookie(w http.ResponseWriter, token string) {
+	secure := !strings.Contains(BaseDomain, "localhost")
 	http.SetCookie(w, &http.Cookie{
 		Name:     "sb-token",
 		Value:    token,
 		Path:     "/",
 		MaxAge:   60 * 60 * 24 * 7,
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   secure,
 		SameSite: http.SameSiteLaxMode,
 	})
 }
