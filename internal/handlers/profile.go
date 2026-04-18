@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
@@ -38,15 +39,20 @@ func (h *ProfileHandler) ServeProfile(w http.ResponseWriter, r *http.Request) {
 	// Record view — skip if the viewer is the owner
 	viewerID, _ := middleware.GetUserID(r)
 	if viewerID != profile.UserID {
+		profileID := profile.ID
+		ip := hashIP(r.RemoteAddr)
+		country := r.Header.Get("CF-IPCountry")
+		referrer := r.Referer()
+		ua := r.UserAgent()
 		go h.db.RecordEvent(
-			r.Context(),
-			profile.ID,
+			context.Background(),
+			profileID,
 			nil,
 			"view",
-			hashIP(r.RemoteAddr),
-			r.Header.Get("CF-IPCountry"),
-			r.Referer(),
-			r.UserAgent(),
+			ip,
+			country,
+			referrer,
+			ua,
 		)
 	}
 
@@ -77,15 +83,21 @@ func (h *ProfileHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pid := block.ProfileID
+	bid := blockID
+	ip := hashIP(r.RemoteAddr)
+	country := r.Header.Get("CF-IPCountry")
+	referrer := r.Referer()
+	ua := r.UserAgent()
 	go h.db.RecordEvent(
-		r.Context(),
-		block.ProfileID,
-		&blockID,
+		context.Background(),
+		pid,
+		&bid,
 		"click",
-		hashIP(r.RemoteAddr),
-		r.Header.Get("CF-IPCountry"),
-		r.Referer(),
-		r.UserAgent(),
+		ip,
+		country,
+		referrer,
+		ua,
 	)
 
 	http.Redirect(w, r, url, http.StatusFound)

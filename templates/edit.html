@@ -26,6 +26,12 @@
       class="text-sm text-zinc-400 hover:text-white transition">
       View live ↗
     </a>
+    {{if .User.IsPro}}
+    <a href="/analytics?profile={{.Profile.ID}}"
+      class="text-sm text-zinc-400 hover:text-white transition">
+      Analytics
+    </a>
+    {{end}}
     <button @click="settingsOpen = true"
       class="text-sm bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg hover:bg-zinc-700 transition">
       Settings
