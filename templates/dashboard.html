@@ -6,50 +6,73 @@
   <title>Dashboard — fader.bio</title>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
-<body class="bg-gray-950 text-white">
-<nav class="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
-  <a href="/" class="font-bold text-lg">fader.bio</a>
+<body class="bg-zinc-950 text-white min-h-screen">
+
+<header class="border-b border-zinc-900 px-6 py-4 flex items-center justify-between">
+  <span class="font-bold tracking-tight">fader.bio</span>
   <div class="flex items-center gap-4">
-    {{if .User.IsPro}}<span class="text-xs bg-purple-900 text-purple-300 px-2 py-0.5 rounded-full">Pro</span>{{end}}
-    <a href="/analytics" class="text-sm text-gray-400 hover:text-white">Analytics</a>
+    {{if .User.IsPro}}
+    <span class="text-xs bg-violet-950 text-violet-300 border border-violet-800 px-2.5 py-0.5 rounded-full font-medium">Pro</span>
+    {{end}}
+    <a href="/analytics" class="text-sm text-zinc-400 hover:text-white transition">Analytics</a>
     <form method="POST" action="/auth/logout">
-      <button type="submit" class="text-sm text-gray-400 hover:text-white">Log out</button>
+      <button type="submit" class="text-sm text-zinc-400 hover:text-white transition">Log out</button>
     </form>
   </div>
-</nav>
+</header>
 
-<main class="max-w-3xl mx-auto py-10 px-4 space-y-6">
-  <h1 class="text-2xl font-bold">Your pages</h1>
+<main class="max-w-2xl mx-auto py-12 px-6 space-y-8">
 
-  <div class="grid gap-4">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold">Your pages</h1>
+  </div>
+
+  <div class="space-y-3">
     {{range .Profiles}}
-    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5 flex items-center justify-between">
-      <div>
-        <p class="font-semibold">{{.Handle}}.fader.bio</p>
-        <p class="text-sm text-gray-400">{{.DisplayName}}</p>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 flex items-center justify-between hover:border-zinc-700 transition">
+      <div class="space-y-0.5">
+        <p class="font-semibold text-sm">{{.Handle}}<span class="text-zinc-500">.fader.bio</span></p>
+        <p class="text-xs text-zinc-500">{{.DisplayName}}</p>
       </div>
-      <div class="flex gap-3">
-        <a href="{{profileURL .Handle}}" target="_blank" class="text-sm text-gray-400 hover:text-white">View ↗</a>
-        <a href="/edit?profile={{.ID}}" class="px-3 py-1.5 bg-white text-black text-sm rounded font-medium hover:bg-gray-200 transition">Edit</a>
+      <div class="flex items-center gap-2">
+        <a href="{{profileURL .Handle}}" target="_blank"
+          class="text-xs text-zinc-500 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-zinc-800">
+          View ↗
+        </a>
+        <a href="/edit?profile={{.ID}}"
+          class="text-xs bg-white text-black font-semibold px-3 py-1.5 rounded-lg hover:bg-zinc-100 transition">
+          Edit
+        </a>
       </div>
     </div>
     {{end}}
   </div>
 
   {{if not (.User.IsPro)}}
-  <div class="bg-purple-950/30 border border-purple-800 rounded-xl p-5 space-y-3">
-    <h2 class="font-semibold text-purple-200">Upgrade to Pro</h2>
-    <ul class="text-sm text-gray-400 space-y-1">
-      <li>✦ Full analytics — views, clicks, countries, referrers</li>
-      <li>✦ Multiple DJ personas under one account</li>
+  <div class="bg-gradient-to-br from-violet-950/40 to-zinc-900 border border-violet-900/50 rounded-xl p-6 space-y-4">
+    <div class="space-y-1">
+      <h2 class="font-semibold text-violet-200">Upgrade to Pro</h2>
+      <p class="text-xs text-zinc-500">Unlock the full fader.bio experience</p>
+    </div>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2 text-sm text-zinc-400">
+        <span class="text-violet-400">✦</span> Full analytics — views, clicks, countries, referrers
+      </li>
+      <li class="flex items-center gap-2 text-sm text-zinc-400">
+        <span class="text-violet-400">✦</span> Multiple DJ personas under one account
+      </li>
     </ul>
-    <a href="/billing/checkout" class="inline-block px-4 py-2 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-500 transition font-medium">Upgrade →</a>
+    <a href="/billing/checkout"
+      class="inline-flex px-4 py-2 bg-violet-600 text-white text-sm font-semibold rounded-lg hover:bg-violet-500 transition">
+      Upgrade →
+    </a>
   </div>
   {{else}}
-  <div class="text-sm text-gray-600 text-center">
-    <a href="/billing/portal" class="hover:text-gray-400">Manage subscription</a>
+  <div class="text-center">
+    <a href="/billing/portal" class="text-xs text-zinc-600 hover:text-zinc-400 transition">Manage subscription</a>
   </div>
   {{end}}
+
 </main>
 </body>
 </html>

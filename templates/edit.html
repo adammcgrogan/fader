@@ -1,208 +1,228 @@
-{{/* Theme-aware body/block classes */}}
-{{$bg := "bg-white text-gray-900"}}
-{{$card := "border border-gray-200 bg-white"}}
-{{$muted := "text-gray-500"}}
-{{$drawerBg := "bg-white border-gray-200 text-gray-900"}}
-{{$inputCls := "bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400"}}
-{{if eq .Profile.Template "dark"}}
-  {{$bg = "bg-gray-950 text-white"}}
-  {{$card = "bg-gray-800 border-gray-700"}}
-  {{$muted = "text-gray-400"}}
-  {{$drawerBg = "bg-gray-900 border-gray-700 text-white"}}
-  {{$inputCls = "bg-gray-800 border-gray-700 text-white placeholder-gray-500"}}
-{{else if eq .Profile.Template "neon"}}
-  {{$bg = "bg-black text-white"}}
-  {{$card = "bg-purple-950/30 border border-purple-800/40"}}
-  {{$muted = "text-purple-400"}}
-  {{$drawerBg = "bg-gray-900 border-purple-800 text-white"}}
-  {{$inputCls = "bg-gray-900 border-purple-800 text-white placeholder-gray-500"}}
-{{end}}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editing — {{.Profile.Handle}}</title>
+  <title>Edit — {{.Profile.Handle}}.fader.bio</title>
   <link rel="stylesheet" href="/static/css/app.css">
   <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
   <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <style>
-    [x-cloak] { display: none !important; }
-  </style>
+  <style>[x-cloak]{display:none!important}</style>
 </head>
-<body class="{{$bg}} min-h-screen" style="padding-bottom: 80px;" x-data="{ settingsOpen: false, addOpen: false }">
+<body class="bg-zinc-950 text-white min-h-screen" x-data="{ settingsOpen: false }">
 
-<!-- Top bar -->
-<div style="position:fixed;top:0;left:0;right:0;z-index:50;" class="flex items-center justify-between px-4 py-3 bg-black/80 backdrop-blur border-b border-white/10 text-white text-sm">
-  <a href="/dashboard" class="text-gray-400 hover:text-white transition">← Dashboard</a>
-  <span class="font-medium text-gray-300">{{.Profile.Handle}}.{{baseDomain}}</span>
-  <a href="{{profileURL .Profile.Handle}}" target="_blank" class="text-gray-400 hover:text-white transition">View live ↗</a>
-</div>
+<!-- Top nav -->
+<header class="border-b border-zinc-900 px-6 py-4 flex items-center justify-between sticky top-0 bg-zinc-950/95 backdrop-blur z-30">
+  <a href="/dashboard" class="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition">
+    ← Dashboard
+  </a>
+  <div class="flex items-center gap-1.5">
+    <span class="text-sm font-medium text-white">{{.Profile.Handle}}</span>
+    <span class="text-zinc-600 text-sm">.{{baseDomain}}</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <a href="{{profileURL .Profile.Handle}}" target="_blank"
+      class="text-sm text-zinc-400 hover:text-white transition">
+      View live ↗
+    </a>
+    <button @click="settingsOpen = true"
+      class="text-sm bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg hover:bg-zinc-700 transition">
+      Settings
+    </button>
+  </div>
+</header>
 
-<!-- Profile header -->
-<main class="max-w-lg mx-auto px-4 pb-6" style="padding-top: 72px;">
+<!-- Main editor -->
+<main class="max-w-xl mx-auto px-4 py-8 space-y-6">
 
-  <!-- Avatar + name (non-editable preview, edit via Settings) -->
-  <div class="flex flex-col items-center text-center space-y-3 py-6">
+  <!-- Profile summary card -->
+  <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 flex items-center gap-4">
     {{if .Profile.AvatarURL}}
-    <img src="{{.Profile.AvatarURL}}" alt="{{.Profile.DisplayName}}" class="w-24 h-24 rounded-full object-cover">
+    <img src="{{.Profile.AvatarURL}}" alt="" class="w-12 h-12 rounded-full object-cover shrink-0">
     {{else}}
-    <div class="w-24 h-24 rounded-full bg-gray-600 flex items-center justify-center text-3xl font-bold opacity-70">
+    <div class="w-12 h-12 rounded-full bg-zinc-700 flex items-center justify-center text-lg font-bold shrink-0 text-zinc-300">
       {{slice .Profile.DisplayName 0 1}}
     </div>
     {{end}}
-    <div>
-      <h1 class="text-2xl font-bold">{{.Profile.DisplayName}}</h1>
-      {{if .Profile.Bio}}<p class="{{$muted}} text-sm max-w-xs mt-1">{{.Profile.Bio}}</p>{{end}}
+    <div class="flex-1 min-w-0">
+      <p class="font-semibold text-sm truncate">{{.Profile.DisplayName}}</p>
+      <p class="text-xs text-zinc-500 truncate">{{.Profile.Handle}}.{{baseDomain}}</p>
     </div>
     <button @click="settingsOpen = true"
-      class="text-xs px-3 py-1.5 rounded-full border border-current/30 opacity-60 hover:opacity-100 transition">
-      Edit profile info
+      class="text-xs text-zinc-400 hover:text-white transition shrink-0">
+      Edit info
     </button>
   </div>
 
-  <!-- Block list -->
-  <div id="block-list" class="space-y-3">
-    {{range .Blocks}}
-    {{template "editable_block" .}}
-    {{end}}
-  </div>
-</main>
+  <!-- Blocks -->
+  <div class="space-y-1">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Blocks</h2>
+      <span class="text-xs text-zinc-600">Drag to reorder</span>
+    </div>
 
-<!-- Bottom toolbar (full-width, no centering math) -->
-<div style="position:fixed;bottom:0;left:0;right:0;z-index:50;" class="flex items-center justify-center gap-3 px-4 py-3 bg-black/90 backdrop-blur border-t border-white/10">
-  <!-- Add block -->
-  <div style="position:relative;" x-data="{ addOpen: false }">
-    <button @click="addOpen = !addOpen"
-      class="flex items-center gap-2 px-5 py-2 bg-white text-black font-semibold rounded-full shadow-lg hover:bg-gray-100 transition text-sm">
-      + Add block
-    </button>
-    <div x-show="addOpen" x-cloak @click.outside="addOpen = false"
-      style="position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);width:176px;"
-      class="bg-gray-900 rounded-xl shadow-2xl border border-gray-700 overflow-hidden">
-      {{range (list "social" "music_link" "gig" "bio" "custom_link" "image" "video_link")}}
-      <button
-        hx-post="/blocks"
-        hx-vals='{"type": "{{.}}", "profile_id": "{{$.Profile.ID}}"}'
-        hx-target="#block-list"
-        hx-swap="beforeend"
-        @click="addOpen = false"
-        class="w-full text-left px-4 py-2.5 text-sm text-white hover:bg-gray-700 capitalize border-b border-gray-800 last:border-0">
-        {{.}}
-      </button>
+    <div id="block-list" class="space-y-2">
+      {{if .Blocks}}
+        {{range .Blocks}}
+        {{template "editable_block" .}}
+        {{end}}
+      {{else}}
+      <div class="border-2 border-dashed border-zinc-800 rounded-xl p-10 text-center text-zinc-600 text-sm">
+        No blocks yet — add your first one below
+      </div>
       {{end}}
     </div>
   </div>
 
-  <button @click="settingsOpen = true"
-    class="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white font-medium rounded-full shadow-lg hover:bg-gray-600 transition text-sm border border-gray-600">
-    ⚙ Settings
-  </button>
-</div>
+  <!-- Add block -->
+  <div x-data="{ addOpen: false }" class="relative">
+    <button @click="addOpen = !addOpen"
+      class="w-full py-3 border border-dashed border-zinc-700 rounded-xl text-sm text-zinc-400 hover:border-zinc-500 hover:text-white transition flex items-center justify-center gap-2">
+      <span class="text-lg leading-none">+</span> Add block
+    </button>
+    <div x-show="addOpen" x-cloak @click.outside="addOpen = false"
+      class="absolute bottom-full mb-2 left-0 right-0 bg-zinc-900 border border-zinc-700 rounded-xl overflow-hidden shadow-2xl z-20">
+      <div class="grid grid-cols-2 gap-px bg-zinc-800">
+        {{range (list "social" "music_link" "gig" "bio" "custom_link" "image" "video_link")}}
+        <button
+          hx-post="/blocks"
+          hx-vals='{"type": "{{.}}", "profile_id": "{{$.Profile.ID}}"}'
+          hx-target="#block-list"
+          hx-swap="beforeend"
+          @click="addOpen = false"
+          class="bg-zinc-900 px-4 py-3 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition text-left capitalize">
+          {{.}}
+        </button>
+        {{end}}
+      </div>
+    </div>
+  </div>
+
+</main>
 
 <!-- Settings drawer -->
 <div x-show="settingsOpen" x-cloak
-  style="position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;justify-content:flex-end;"
+  class="fixed inset-0 z-50 flex"
   @keydown.escape.window="settingsOpen = false">
-  <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);" @click="settingsOpen = false"></div>
-  <div style="position:relative;max-height:85vh;" class="{{$drawerBg}} border-t rounded-t-2xl p-6 space-y-5 overflow-y-auto">
-    <div class="flex items-center justify-between">
-      <h2 class="font-bold text-lg">Profile settings</h2>
-      <button @click="settingsOpen = false" class="text-2xl leading-none opacity-50 hover:opacity-100 transition">✕</button>
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="settingsOpen = false"></div>
+
+  <div class="absolute right-0 top-0 bottom-0 w-full max-w-sm bg-zinc-900 border-l border-zinc-800 flex flex-col overflow-hidden">
+    <!-- Drawer header -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-zinc-800 shrink-0">
+      <h2 class="font-semibold">Profile settings</h2>
+      <button @click="settingsOpen = false" class="text-zinc-500 hover:text-white transition text-xl leading-none">✕</button>
     </div>
 
-    <!-- Profile info -->
-    <form hx-patch="/profile/info" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
-      <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
-      <div>
-        <label class="block text-xs {{$muted}} uppercase tracking-wider mb-1">Display name</label>
-        <input name="display_name" value="{{.Profile.DisplayName}}"
-          class="w-full px-3 py-2 rounded-lg text-sm border focus:outline-none focus:ring-1 focus:ring-gray-400 {{$inputCls}}">
-      </div>
-      <div>
-        <label class="block text-xs {{$muted}} uppercase tracking-wider mb-1">Bio</label>
-        <textarea name="bio" rows="2"
-          class="w-full px-3 py-2 rounded-lg text-sm border focus:outline-none resize-none {{$inputCls}}">{{if .Profile.Bio}}{{.Profile.Bio}}{{end}}</textarea>
-      </div>
-      <button type="submit" class="w-full py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Save info</button>
-    </form>
+    <!-- Drawer body -->
+    <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6">
 
-    <!-- Handle -->
-    <div>
-      <label class="block text-xs {{$muted}} uppercase tracking-wider mb-1">Handle</label>
-      <form hx-patch="/profile/handle" hx-target="#settings-status" hx-swap="innerHTML" class="flex gap-2">
-        <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
-        <input name="handle" value="{{.Profile.Handle}}"
-          class="flex-1 px-3 py-2 rounded-lg text-sm border focus:outline-none lowercase {{$inputCls}}">
-        <button type="submit" class="px-4 py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Update</button>
-      </form>
-    </div>
+      <!-- Profile info -->
+      <div class="space-y-3">
+        <h3 class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Profile info</h3>
+        <form hx-patch="/profile/info" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
+          <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+          <div class="space-y-1.5">
+            <label class="block text-xs text-zinc-400">Display name</label>
+            <input name="display_name" value="{{.Profile.DisplayName}}"
+              class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 transition placeholder-zinc-500">
+          </div>
+          <div class="space-y-1.5">
+            <label class="block text-xs text-zinc-400">Bio</label>
+            <textarea name="bio" rows="3"
+              class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 transition resize-none placeholder-zinc-500">{{if .Profile.Bio}}{{.Profile.Bio}}{{end}}</textarea>
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-100 transition">Save info</button>
+        </form>
+      </div>
 
-    <!-- Theme -->
-    <div>
-      <label class="block text-xs {{$muted}} uppercase tracking-wider mb-2">Theme</label>
-      <form hx-patch="/profile/template" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-2">
-        <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
-        <div class="flex gap-2">
-        {{range (list "minimal" "dark" "neon")}}
-        <label class="flex-1 text-center cursor-pointer">
-          <input type="radio" name="template" value="{{.}}" {{if eq . $.Profile.Template}}checked{{end}} class="sr-only">
-          <span class="block py-2 rounded-lg text-sm border capitalize transition
-            {{if eq . $.Profile.Template}}border-white bg-white/10 font-semibold{{else}}border-gray-600 hover:border-gray-400{{end}}">
-            {{.}}
-          </span>
-        </label>
-        {{end}}
+      <!-- Handle -->
+      <div class="space-y-3">
+        <h3 class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Handle</h3>
+        <form hx-patch="/profile/handle" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
+          <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+          <div class="flex items-stretch border border-zinc-700 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-zinc-600 transition">
+            <span class="px-3 flex items-center bg-zinc-800 text-zinc-500 text-sm border-r border-zinc-700 shrink-0 text-xs">fader.bio/</span>
+            <input name="handle" value="{{.Profile.Handle}}"
+              class="flex-1 px-3 py-2.5 bg-zinc-800 text-sm text-white focus:outline-none lowercase placeholder-zinc-500">
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-100 transition">Update handle</button>
+        </form>
+      </div>
+
+      <!-- Theme -->
+      <div class="space-y-3">
+        <h3 class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Theme</h3>
+        <form hx-patch="/profile/template" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
+          <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+          <div class="grid grid-cols-3 gap-2">
+            {{range (list "minimal" "dark" "neon")}}
+            <label class="cursor-pointer">
+              <input type="radio" name="template" value="{{.}}" {{if eq . $.Profile.Template}}checked{{end}} class="sr-only peer">
+              <span class="block text-center py-2.5 px-2 rounded-lg text-sm border border-zinc-700 text-zinc-400 capitalize transition
+                peer-checked:border-white peer-checked:text-white peer-checked:bg-white/5
+                hover:border-zinc-500 hover:text-zinc-200">
+                {{.}}
+              </span>
+            </label>
+            {{end}}
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-100 transition">Save theme</button>
+        </form>
+      </div>
+
+      {{if .User.IsPro}}
+      <!-- Personas -->
+      <div class="space-y-3">
+        <h3 class="text-xs font-medium text-zinc-500 uppercase tracking-wider">Personas</h3>
+        <div class="space-y-1">
+          {{range .AllProfiles}}
+          <a href="/edit?profile={{.ID}}"
+            class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition
+            {{if eq .ID $.Profile.ID}}bg-zinc-800 text-white font-medium{{else}}text-zinc-400 hover:bg-zinc-800 hover:text-white{{end}}">
+            <span>{{.Handle}}</span>
+            {{if eq .ID $.Profile.ID}}<span class="text-xs text-zinc-500">current</span>{{end}}
+          </a>
+          {{end}}
         </div>
-        <button type="submit" class="w-full py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Save theme</button>
-      </form>
-    </div>
-
-    {{if .User.IsPro}}
-    <div>
-      <label class="block text-xs {{$muted}} uppercase tracking-wider mb-2">Your personas</label>
-      {{range .AllProfiles}}
-      <a href="/edit?profile={{.ID}}"
-        class="block py-2 px-3 rounded-lg text-sm mb-1 transition {{if eq .ID $.Profile.ID}}bg-white/10 font-semibold{{else}}hover:bg-white/5{{end}}">
-        {{.Handle}}
-      </a>
+        <form method="POST" action="/profiles/new" class="flex gap-2">
+          <input name="handle" placeholder="new-handle"
+            class="flex-1 px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
+          <button type="submit" class="px-4 py-2 bg-zinc-700 text-white text-sm rounded-lg hover:bg-zinc-600 transition font-medium">Add</button>
+        </form>
+      </div>
       {{end}}
-      <form method="POST" action="/profiles/new" class="flex gap-2 mt-2">
-        <input name="handle" placeholder="new-handle"
-          class="flex-1 px-3 py-2 rounded-lg text-sm border focus:outline-none {{$inputCls}}">
-        <button type="submit" class="px-3 py-2 bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-600 transition">Add</button>
-      </form>
-    </div>
-    {{end}}
 
-    <div id="settings-status" class="text-xs text-green-400 text-center min-h-[1rem]"></div>
+      <div id="settings-status" class="text-xs text-green-400 text-center min-h-4"></div>
+    </div>
   </div>
 </div>
 
 <script>
   function toggleEdit(id) {
-    var el = document.getElementById('edit-form-' + id);
-    if (el) el.classList.toggle('hidden');
+    var form = document.getElementById('edit-form-' + id);
+    if (!form) return;
+    var isHidden = form.classList.contains('hidden');
+    form.classList.toggle('hidden');
+    if (isHidden) {
+      form.querySelector('input, textarea, select')?.focus();
+    }
   }
 
-  // Auto-open edit form when a new block is added
-  document.getElementById('block-list').addEventListener('htmx:afterSwap', function() {
+  document.getElementById('block-list').addEventListener('htmx:afterSwap', function(e) {
     var blocks = document.querySelectorAll('[data-block-id]');
-    if (blocks.length) {
-      var lastId = blocks[blocks.length - 1].dataset.blockId;
-      var form = document.getElementById('edit-form-' + lastId);
-      if (form) form.classList.remove('hidden');
-    }
+    if (!blocks.length) return;
+    var lastId = blocks[blocks.length - 1].dataset.blockId;
+    var form = document.getElementById('edit-form-' + lastId);
+    if (form) form.classList.remove('hidden');
   });
 
   new Sortable(document.getElementById('block-list'), {
     animation: 150,
     handle: '.drag-handle',
     onEnd: function() {
-      const ids = [...document.querySelectorAll('[data-block-id]')].map(el => el.dataset.blockId);
-      const params = new URLSearchParams();
+      var ids = [...document.querySelectorAll('[data-block-id]')].map(el => el.dataset.blockId);
+      var params = new URLSearchParams();
       ids.forEach(id => params.append('block_order[]', id));
       fetch('/blocks/order', { method: 'PATCH', body: params });
     }
@@ -212,103 +232,109 @@
 </html>
 
 {{define "editable_block"}}
-<div data-block-id="{{.ID}}" class="relative">
+<div data-block-id="{{.ID}}" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
 
-  <!-- Block preview -->
-  <div id="preview-{{.ID}}">
+  <!-- Preview -->
+  <div class="px-4 py-3">
     {{template "editable_block_preview" .}}
   </div>
 
-  <!-- Controls row (always visible) -->
-  <div class="flex items-center gap-2 mt-1.5 px-1">
-    <span class="drag-handle cursor-grab text-gray-400 hover:text-gray-200 select-none text-lg leading-none">⠿</span>
-    <button
-      onclick="toggleEdit('{{.ID}}')"
-      class="flex-1 text-xs text-left text-gray-500 hover:text-gray-300 transition capitalize">
-      Edit {{.Type}}
+  <!-- Control strip -->
+  <div class="border-t border-zinc-800 px-4 py-2.5 flex items-center gap-3 bg-zinc-900/50">
+    <span class="drag-handle cursor-grab text-zinc-600 hover:text-zinc-400 select-none text-base leading-none">⠿</span>
+    <span class="text-xs text-zinc-600 uppercase tracking-wider flex-1 capitalize">{{.Type}}</span>
+    <button onclick="toggleEdit('{{.ID}}')"
+      class="text-xs text-zinc-400 hover:text-white transition font-medium">
+      Edit
     </button>
+    <span class="text-zinc-800">·</span>
     <button
       hx-delete="/blocks/{{.ID}}"
       hx-target="[data-block-id='{{.ID}}']"
       hx-swap="outerHTML"
       hx-confirm="Delete this block?"
-      class="text-xs text-red-500 hover:text-red-400 transition px-1">
+      class="text-xs text-red-500 hover:text-red-400 transition">
       Delete
     </button>
   </div>
 
-  <!-- Inline edit form -->
-  <div id="edit-form-{{.ID}}" class="hidden mt-2 p-3 bg-gray-900 rounded-xl border border-gray-700">
+  <!-- Edit form -->
+  <div id="edit-form-{{.ID}}" class="hidden border-t border-zinc-800 bg-zinc-950/40 p-4">
     <form
       hx-put="/blocks/{{.ID}}"
       hx-target="[data-block-id='{{.ID}}']"
       hx-swap="outerHTML"
-      class="space-y-2">
+      class="space-y-3">
 
       {{if eq .Type "bio"}}
         {{$d := unmarshalBio .Data}}
-        <textarea name="text" rows="3" placeholder="Write something..."
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none resize-none">{{$d.Text}}</textarea>
+        <textarea name="text" rows="4" placeholder="Write something about yourself..."
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition resize-none">{{$d.Text}}</textarea>
 
       {{else if eq .Type "social"}}
         {{$d := unmarshalSocial .Data}}
-        <select name="platform" class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm">
+        <select name="platform" class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
           {{range (list "instagram" "twitter" "tiktok" "youtube" "facebook" "soundcloud" "spotify" "mixcloud" "twitch" "other")}}
           <option value="{{.}}" {{if eq . $d.Platform}}selected{{end}}>{{.}}</option>
           {{end}}
         </select>
         <input name="url" type="url" value="{{$d.URL}}" placeholder="https://..."
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
 
       {{else if eq .Type "music_link"}}
         {{$d := unmarshalMusicLink .Data}}
-        <input name="title" value="{{$d.Title}}" placeholder="Title"
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
-        <select name="platform" class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm">
+        <input name="title" value="{{$d.Title}}" placeholder="Track or mix title"
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
+        <select name="platform" class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
           {{range (list "soundcloud" "spotify" "mixcloud" "bandcamp" "apple music" "other")}}
           <option value="{{.}}" {{if eq . $d.Platform}}selected{{end}}>{{.}}</option>
           {{end}}
         </select>
         <input name="url" type="url" value="{{$d.URL}}" placeholder="https://..."
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
 
       {{else if eq .Type "gig"}}
         {{$d := unmarshalGig .Data}}
         <input name="venue" value="{{$d.Venue}}" placeholder="Venue"
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
         <input name="location" value="{{$d.Location}}" placeholder="City, Country"
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
         <input name="date" value="{{$d.Date}}" placeholder="25 Jan 2025"
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
         <input name="ticket_url" type="url" value="{{$d.TicketURL}}" placeholder="Ticket link (optional)"
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
 
       {{else if eq .Type "custom_link"}}
         {{$d := unmarshalCustomLink .Data}}
         <input name="label" value="{{$d.Label}}" placeholder="Button label"
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
         <input name="url" type="url" value="{{$d.URL}}" placeholder="https://..."
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
 
       {{else if eq .Type "image"}}
         {{$d := unmarshalImage .Data}}
         <input name="url" type="url" value="{{$d.URL}}" placeholder="Image URL"
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
         <input name="caption" value="{{$d.Caption}}" placeholder="Caption (optional)"
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
 
       {{else if eq .Type "video_link"}}
         {{$d := unmarshalVideoLink .Data}}
-        <input name="title" value="{{$d.Title}}" placeholder="Title"
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+        <input name="title" value="{{$d.Title}}" placeholder="Video title"
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
         <input name="url" type="url" value="{{$d.URL}}" placeholder="https://..."
-          class="w-full px-3 py-2 bg-gray-800 text-white border border-gray-700 rounded-lg text-sm focus:outline-none">
+          class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
       {{end}}
 
       <div class="flex gap-2 pt-1">
-        <button type="submit" class="flex-1 py-1.5 bg-white text-black text-sm font-medium rounded-lg hover:bg-gray-200 transition">Save</button>
+        <button type="submit"
+          class="flex-1 py-2 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-100 transition">
+          Save
+        </button>
         <button type="button" onclick="toggleEdit('{{.ID}}')"
-          class="px-4 py-1.5 bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-600 transition">Cancel</button>
+          class="px-4 py-2 bg-zinc-800 text-zinc-300 text-sm rounded-lg hover:bg-zinc-700 transition">
+          Cancel
+        </button>
       </div>
     </form>
   </div>
@@ -318,47 +344,51 @@
 {{define "editable_block_preview"}}
 {{if eq .Type "bio"}}
   {{$d := unmarshalBio .Data}}
-  <p class="text-sm text-center py-3 px-4 opacity-80">{{if $d.Text}}{{$d.Text}}{{else}}<span class="opacity-40 italic">Bio text...</span>{{end}}</p>
+  <p class="text-sm text-zinc-300 leading-relaxed">
+    {{if $d.Text}}{{$d.Text}}{{else}}<span class="text-zinc-600 italic">No bio text yet</span>{{end}}
+  </p>
 {{else if eq .Type "social"}}
   {{$d := unmarshalSocial .Data}}
-  <a href="{{if $d.URL}}/r/{{$.ID}}{{else}}#{{end}}" class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl border border-current/20 font-medium capitalize hover:opacity-80 transition">
-    {{$d.Platform}}
-  </a>
+  <div class="flex items-center gap-3">
+    <span class="text-xs text-zinc-500 uppercase tracking-wider w-20 shrink-0">Social</span>
+    <span class="text-sm font-medium capitalize text-zinc-200">{{if $d.Platform}}{{$d.Platform}}{{else}}<span class="text-zinc-600">Not set</span>{{end}}</span>
+    {{if $d.URL}}<span class="text-xs text-zinc-600 truncate">{{$d.URL}}</span>{{end}}
+  </div>
 {{else if eq .Type "music_link"}}
   {{$d := unmarshalMusicLink .Data}}
-  <a href="{{if $d.URL}}/r/{{$.ID}}{{else}}#{{end}}" class="flex items-center justify-between w-full py-3 px-4 rounded-xl border border-current/20 hover:opacity-80 transition">
-    <span class="font-medium">{{if $d.Title}}{{$d.Title}}{{else}}<span class="opacity-40 italic">Track title...</span>{{end}}</span>
-    <span class="text-xs opacity-50 capitalize">{{$d.Platform}}</span>
-  </a>
+  <div class="flex items-center gap-3">
+    <span class="text-xs text-zinc-500 uppercase tracking-wider w-20 shrink-0">Music</span>
+    <span class="text-sm font-medium text-zinc-200">{{if $d.Title}}{{$d.Title}}{{else}}<span class="text-zinc-600 italic">No title</span>{{end}}</span>
+    {{if $d.Platform}}<span class="text-xs text-zinc-600 capitalize shrink-0">{{$d.Platform}}</span>{{end}}
+  </div>
 {{else if eq .Type "gig"}}
   {{$d := unmarshalGig .Data}}
-  <div class="w-full py-3 px-4 rounded-xl border border-current/20">
-    <div class="flex justify-between items-start">
-      <div>
-        <p class="font-medium">{{if $d.Venue}}{{$d.Venue}}{{else}}<span class="opacity-40 italic">Venue...</span>{{end}}</p>
-        <p class="text-xs opacity-50">{{$d.Location}}</p>
-      </div>
-      <p class="text-sm opacity-60">{{$d.Date}}</p>
-    </div>
+  <div class="flex items-center gap-3">
+    <span class="text-xs text-zinc-500 uppercase tracking-wider w-20 shrink-0">Gig</span>
+    <span class="text-sm font-medium text-zinc-200">{{if $d.Venue}}{{$d.Venue}}{{else}}<span class="text-zinc-600 italic">No venue</span>{{end}}</span>
+    {{if $d.Date}}<span class="text-xs text-zinc-600 shrink-0">{{$d.Date}}</span>{{end}}
   </div>
 {{else if eq .Type "custom_link"}}
   {{$d := unmarshalCustomLink .Data}}
-  <a href="{{if $d.URL}}/r/{{$.ID}}{{else}}#{{end}}" class="flex items-center justify-center w-full py-3 px-4 rounded-xl border border-current/20 font-medium hover:opacity-80 transition">
-    {{if $d.Label}}{{$d.Label}}{{else}}<span class="opacity-40 italic">Link label...</span>{{end}}
-  </a>
+  <div class="flex items-center gap-3">
+    <span class="text-xs text-zinc-500 uppercase tracking-wider w-20 shrink-0">Link</span>
+    <span class="text-sm font-medium text-zinc-200">{{if $d.Label}}{{$d.Label}}{{else}}<span class="text-zinc-600 italic">No label</span>{{end}}</span>
+  </div>
 {{else if eq .Type "image"}}
   {{$d := unmarshalImage .Data}}
   {{if $d.URL}}
-  <div class="rounded-xl overflow-hidden">
-    <img src="{{$d.URL}}" alt="{{$d.Caption}}" class="w-full object-cover">
-  </div>
+  <img src="{{$d.URL}}" alt="{{$d.Caption}}" class="w-full max-h-32 object-cover rounded-lg">
   {{else}}
-  <div class="w-full py-6 rounded-xl border border-dashed border-current/20 text-center text-sm opacity-40 italic">Image URL...</div>
+  <div class="flex items-center gap-3">
+    <span class="text-xs text-zinc-500 uppercase tracking-wider w-20 shrink-0">Image</span>
+    <span class="text-sm text-zinc-600 italic">No image URL</span>
+  </div>
   {{end}}
 {{else if eq .Type "video_link"}}
   {{$d := unmarshalVideoLink .Data}}
-  <a href="{{if $d.URL}}/r/{{$.ID}}{{else}}#{{end}}" class="flex items-center w-full py-3 px-4 rounded-xl border border-current/20 hover:opacity-80 transition">
-    <span class="font-medium">▶ {{if $d.Title}}{{$d.Title}}{{else}}<span class="opacity-40 italic">Video title...</span>{{end}}</span>
-  </a>
+  <div class="flex items-center gap-3">
+    <span class="text-xs text-zinc-500 uppercase tracking-wider w-20 shrink-0">Video</span>
+    <span class="text-sm font-medium text-zinc-200">{{if $d.Title}}{{$d.Title}}{{else}}<span class="text-zinc-600 italic">No title</span>{{end}}</span>
+  </div>
 {{end}}
 {{end}}

@@ -6,43 +6,49 @@
   <title>Analytics — {{.Profile.Handle}}.fader.bio</title>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
-<body class="bg-gray-950 text-white">
-<nav class="border-b border-gray-800 px-6 py-4 flex items-center gap-4">
-  <a href="/dashboard" class="text-sm text-gray-400 hover:text-white">← Dashboard</a>
-  <span class="text-gray-600">/</span>
-  <span class="text-sm">{{.Profile.Handle}}</span>
-  {{if gt (len .AllProfiles) 1}}
-  <select onchange="window.location='/analytics?profile='+this.value" class="ml-auto bg-gray-800 text-sm rounded px-2 py-1 border border-gray-700">
-    {{range .AllProfiles}}
-    <option value="{{.ID}}" {{if eq .ID $.Profile.ID}}selected{{end}}>{{.Handle}}</option>
-    {{end}}
-  </select>
-  {{end}}
-</nav>
+<body class="bg-zinc-950 text-white min-h-screen">
 
-<main class="max-w-4xl mx-auto py-8 px-4 space-y-8">
+<header class="border-b border-zinc-900 px-6 py-4 flex items-center gap-3">
+  <a href="/dashboard" class="text-sm text-zinc-400 hover:text-white transition">← Dashboard</a>
+  <span class="text-zinc-700">/</span>
+  <span class="text-sm font-medium">{{.Profile.Handle}}</span>
+  {{if gt (len .AllProfiles) 1}}
+  <div class="ml-auto">
+    <select onchange="window.location='/analytics?profile='+this.value"
+      class="bg-zinc-800 border border-zinc-700 text-sm text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none">
+      {{range .AllProfiles}}
+      <option value="{{.ID}}" {{if eq .ID $.Profile.ID}}selected{{end}}>{{.Handle}}</option>
+      {{end}}
+    </select>
+  </div>
+  {{end}}
+</header>
+
+<main class="max-w-3xl mx-auto py-10 px-6 space-y-6">
+
+  <!-- Stat cards -->
   <div class="grid grid-cols-2 gap-4">
-    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
-      <p class="text-sm text-gray-400">Total views</p>
-      <p class="text-4xl font-bold mt-1">{{.Summary.TotalViews}}</p>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-1">
+      <p class="text-xs text-zinc-500 uppercase tracking-wider">Total views</p>
+      <p class="text-4xl font-bold tracking-tight">{{.Summary.TotalViews}}</p>
     </div>
-    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
-      <p class="text-sm text-gray-400">Total clicks</p>
-      <p class="text-4xl font-bold mt-1">{{.Summary.TotalClicks}}</p>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-1">
+      <p class="text-xs text-zinc-500 uppercase tracking-wider">Total clicks</p>
+      <p class="text-4xl font-bold tracking-tight">{{.Summary.TotalClicks}}</p>
     </div>
   </div>
 
   {{if .Summary.ViewsByDay}}
-  <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
-    <h2 class="font-semibold mb-4">Views — last 30 days</h2>
-    <div class="space-y-1">
+  <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4">
+    <h2 class="text-sm font-semibold">Views — last 30 days</h2>
+    <div class="space-y-2">
       {{range .Summary.ViewsByDay}}
       <div class="flex items-center gap-3 text-sm">
-        <span class="text-gray-500 w-24 shrink-0">{{.Date}}</span>
-        <div class="flex-1 bg-gray-800 rounded-full h-2">
-          <div class="bg-white rounded-full h-2" style="width: {{percent .Views $.Summary.TotalViews}}%"></div>
+        <span class="text-zinc-600 w-24 shrink-0 text-xs font-mono">{{.Date}}</span>
+        <div class="flex-1 bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+          <div class="bg-white rounded-full h-1.5 transition-all" style="width: {{percent .Views $.Summary.TotalViews}}%"></div>
         </div>
-        <span class="text-gray-400 w-8 text-right">{{.Views}}</span>
+        <span class="text-zinc-400 w-6 text-right text-xs tabular-nums">{{.Views}}</span>
       </div>
       {{end}}
     </div>
@@ -51,41 +57,48 @@
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     {{if .Summary.TopCountries}}
-    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
-      <h2 class="font-semibold mb-3">Top countries</h2>
-      {{range .Summary.TopCountries}}
-      <div class="flex justify-between text-sm py-1 border-b border-gray-800 last:border-0">
-        <span>{{.Country}}</span>
-        <span class="text-gray-400">{{.Count}}</span>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-3">
+      <h2 class="text-sm font-semibold">Top countries</h2>
+      <div class="divide-y divide-zinc-800">
+        {{range .Summary.TopCountries}}
+        <div class="flex items-center justify-between py-2">
+          <span class="text-sm text-zinc-300">{{.Country}}</span>
+          <span class="text-sm text-zinc-500 tabular-nums">{{.Count}}</span>
+        </div>
+        {{end}}
       </div>
-      {{end}}
     </div>
     {{end}}
 
     {{if .Summary.TopReferrers}}
-    <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
-      <h2 class="font-semibold mb-3">Top referrers</h2>
-      {{range .Summary.TopReferrers}}
-      <div class="flex justify-between text-sm py-1 border-b border-gray-800 last:border-0">
-        <span class="truncate max-w-48">{{.Referrer}}</span>
-        <span class="text-gray-400 shrink-0">{{.Count}}</span>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-3">
+      <h2 class="text-sm font-semibold">Top referrers</h2>
+      <div class="divide-y divide-zinc-800">
+        {{range .Summary.TopReferrers}}
+        <div class="flex items-center justify-between py-2 gap-4">
+          <span class="text-sm text-zinc-300 truncate">{{.Referrer}}</span>
+          <span class="text-sm text-zinc-500 shrink-0 tabular-nums">{{.Count}}</span>
+        </div>
+        {{end}}
       </div>
-      {{end}}
     </div>
     {{end}}
   </div>
 
   {{if .Summary.ClicksByBlock}}
-  <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
-    <h2 class="font-semibold mb-3">Clicks by block</h2>
-    {{range .Summary.ClicksByBlock}}
-    <div class="flex justify-between text-sm py-2 border-b border-gray-800 last:border-0">
-      <span class="text-gray-300 capitalize">{{.Type}}</span>
-      <span class="text-gray-400">{{.Clicks}} clicks</span>
+  <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-3">
+    <h2 class="text-sm font-semibold">Clicks by block</h2>
+    <div class="divide-y divide-zinc-800">
+      {{range .Summary.ClicksByBlock}}
+      <div class="flex items-center justify-between py-2">
+        <span class="text-sm text-zinc-300 capitalize">{{.Type}}</span>
+        <span class="text-sm text-zinc-500 tabular-nums">{{.Clicks}} clicks</span>
+      </div>
+      {{end}}
     </div>
-    {{end}}
   </div>
   {{end}}
+
 </main>
 </body>
 </html>

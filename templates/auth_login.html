@@ -6,24 +6,43 @@
   <title>Log in — fader.bio</title>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
-<body>
-<main class="min-h-screen bg-black text-white flex items-center justify-center px-4">
-  <div class="w-full max-w-md space-y-6">
-    <h1 class="text-3xl font-bold text-center">Log in</h1>
-    {{if .Error}}<p class="text-red-400 text-sm text-center">{{.Error}}</p>{{end}}
-    <form method="POST" action="/auth/login" class="space-y-4">
-      <div>
-        <label class="block text-sm text-gray-400 mb-1">Email</label>
-        <input name="email" type="email" required class="w-full px-3 py-2 bg-black border border-gray-700 rounded-lg text-white focus:outline-none focus:border-gray-400">
+<body class="bg-zinc-950 text-white min-h-screen flex flex-col items-center justify-center px-4">
+
+  <div class="w-full max-w-sm space-y-8">
+    <div class="text-center space-y-1">
+      <a href="/" class="font-bold text-lg tracking-tight hover:text-zinc-300 transition">fader.bio</a>
+      <p class="text-zinc-500 text-sm">Welcome back</p>
+    </div>
+
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-7 space-y-5">
+      {{if .Error}}
+      <div class="bg-red-950/50 border border-red-900 rounded-lg px-4 py-3 text-sm text-red-400">
+        {{.Error}}
       </div>
-      <div>
-        <label class="block text-sm text-gray-400 mb-1">Password</label>
-        <input name="password" type="password" required class="w-full px-3 py-2 bg-black border border-gray-700 rounded-lg text-white focus:outline-none focus:border-gray-400">
-      </div>
-      <button type="submit" class="w-full py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition">Log in</button>
-    </form>
-    <p class="text-center text-sm text-gray-500">No account? <a href="/auth/register" class="text-white hover:underline">Sign up</a></p>
+      {{end}}
+
+      <form method="POST" action="/auth/login" class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="block text-xs font-medium text-zinc-400 uppercase tracking-wider">Email</label>
+          <input name="email" type="email" required
+            class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
+        </div>
+        <div class="space-y-1.5">
+          <label class="block text-xs font-medium text-zinc-400 uppercase tracking-wider">Password</label>
+          <input name="password" type="password" required
+            class="w-full px-3 py-2.5 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-600 transition">
+        </div>
+        <button type="submit"
+          class="w-full py-2.5 bg-white text-black text-sm font-semibold rounded-lg hover:bg-zinc-100 transition mt-1">
+          Log in
+        </button>
+      </form>
+    </div>
+
+    <p class="text-center text-sm text-zinc-500">
+      No account? <a href="/auth/register" class="text-white hover:underline">Create one →</a>
+    </p>
   </div>
-</main>
+
 </body>
 </html>
