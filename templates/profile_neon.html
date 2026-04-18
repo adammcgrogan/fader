@@ -48,9 +48,8 @@
   </a>
 {{else if eq .Type "music_link"}}
   {{$d := unmarshalMusicLink .Data}}
-  <a href="/r/{{.ID}}" class="neon-border flex items-center justify-between w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition">
-    <span class="font-medium text-purple-200">{{$d.Title}}</span>
-    <span class="text-xs text-purple-500 capitalize">{{$d.Platform}}</span>
+  <a href="/r/{{.ID}}" class="neon-border flex items-center justify-center w-full py-3 px-4 rounded-xl bg-purple-950/30 hover:bg-purple-950/50 transition font-medium text-purple-200">
+    {{$d.Title}}
   </a>
 {{else if eq .Type "gig"}}
   {{$d := unmarshalGig .Data}}

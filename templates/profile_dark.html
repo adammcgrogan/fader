@@ -44,9 +44,8 @@
   </a>
 {{else if eq .Type "music_link"}}
   {{$d := unmarshalMusicLink .Data}}
-  <a href="/r/{{.ID}}" class="flex items-center justify-between w-full py-3 px-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition">
-    <span class="font-medium">{{$d.Title}}</span>
-    <span class="text-xs text-gray-500 capitalize">{{$d.Platform}}</span>
+  <a href="/r/{{.ID}}" class="flex items-center justify-center w-full py-3 px-4 rounded-xl bg-gray-800 hover:bg-gray-700 transition font-medium">
+    {{$d.Title}}
   </a>
 {{else if eq .Type "gig"}}
   {{$d := unmarshalGig .Data}}
