@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "go build -o server ./cmd/server"
+buildCommand = "npm install && npm run css && go build -o server ./cmd/server"
 
 [deploy]
 startCommand = "./server"
