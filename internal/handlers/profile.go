@@ -78,7 +78,7 @@ func (h *ProfileHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := extractURL(block.Data)
+	url := extractURL(block.Type, block.Data)
 	if url == "" {
 		http.NotFound(w, r)
 		return
@@ -113,9 +113,15 @@ func hashIP(remote string) string {
 	return fmt.Sprintf("%x", h)
 }
 
-func extractURL(data []byte) string {
+func extractURL(blockType string, data []byte) string {
 	var m map[string]string
 	if err := json.Unmarshal(data, &m); err != nil {
+		return ""
+	}
+	if blockType == "ra_link" {
+		if u := m["username"]; u != "" {
+			return "https://ra.co/dj/" + u
+		}
 		return ""
 	}
 	return m["url"]

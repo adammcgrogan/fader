@@ -46,7 +46,7 @@ func main() {
 
 	auth := handlers.NewAuthHandler(queries, supa.Auth)
 	profile := handlers.NewProfileHandler(queries)
-	edit := handlers.NewEditHandler(queries)
+	edit := handlers.NewEditHandler(queries, cfg.SupabaseURL)
 	dashboard := handlers.NewDashboardHandler(queries)
 	analytics := handlers.NewAnalyticsHandler(queries)
 	stripeH := handlers.NewStripeHandler(queries, cfg)
@@ -70,6 +70,10 @@ func main() {
 	mux.HandleFunc("GET /auth/register", auth.ShowRegister)
 	mux.HandleFunc("POST /auth/register", auth.Register)
 	mux.HandleFunc("POST /auth/logout", auth.Logout)
+	mux.HandleFunc("GET /auth/forgot-password", auth.ShowForgotPassword)
+	mux.HandleFunc("POST /auth/forgot-password", auth.ForgotPassword)
+	mux.HandleFunc("GET /auth/reset-password", auth.ShowResetPassword)
+	mux.HandleFunc("POST /auth/set-password", auth.SetPassword)
 
 	// Outbound click tracking (public)
 	mux.HandleFunc("/r/", profile.Redirect)
@@ -104,6 +108,8 @@ func main() {
 	mux.Handle("PATCH /profile/template", requireAuth(http.HandlerFunc(edit.UpdateTemplate)))
 	mux.Handle("PATCH /profile/info", requireAuth(http.HandlerFunc(edit.UpdateProfileInfo)))
 	mux.Handle("PATCH /profile/handle", requireAuth(http.HandlerFunc(edit.UpdateHandle)))
+	mux.Handle("POST /profile/avatar", requireAuth(http.HandlerFunc(edit.UploadAvatar)))
+	mux.Handle("PATCH /profile/genres", requireAuth(http.HandlerFunc(edit.UpdateGenres)))
 	mux.Handle("DELETE /profiles/{id}", requireAuth(http.HandlerFunc(edit.DeleteProfile)))
 
 	// Analytics

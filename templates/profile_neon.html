@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{.Profile.DisplayName}}</title>
+  <meta name="description" content="{{if .Profile.Bio}}{{.Profile.Bio}}{{else}}{{.Profile.DisplayName}} on fader.bio{{end}}">
+  <meta property="og:title" content="{{.Profile.DisplayName}}">
+  <meta property="og:description" content="{{if .Profile.Bio}}{{.Profile.Bio}}{{else}}{{.Profile.DisplayName}} on fader.bio{{end}}">
+  <meta property="og:url" content="{{profileURL .Profile.Handle}}">
+  <meta property="og:type" content="profile">
+  {{if .Profile.AvatarURL}}<meta property="og:image" content="{{.Profile.AvatarURL}}">{{end}}
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{.Profile.DisplayName}}">
+  {{if .Profile.AvatarURL}}<meta name="twitter:image" content="{{.Profile.AvatarURL}}">{{end}}
   <link rel="stylesheet" href="/static/css/app.css?v=3">
   <style>
     .neon-card { border: 1px solid rgba(139,92,246,0.3); }
@@ -22,6 +31,11 @@
       {{end}}
       <h1 class="text-xl font-black tracking-tight bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">{{.Profile.DisplayName}}</h1>
       {{if .Profile.Bio}}<p class="text-zinc-500 text-sm max-w-xs leading-relaxed">{{.Profile.Bio}}</p>{{end}}
+      {{if .Profile.Genres}}
+      <div class="flex flex-wrap justify-center gap-1.5">
+        {{range .Profile.Genres}}<span class="px-2.5 py-1 text-xs font-medium rounded-full bg-violet-950/50 text-violet-400 border border-violet-900/40">{{.}}</span>{{end}}
+      </div>
+      {{end}}
     </div>
 
     <div class="space-y-2.5">
@@ -30,11 +44,71 @@
       {{end}}
     </div>
 
-    <footer class="text-center text-xs text-zinc-800 pt-4">
-      <a href="https://fader.bio" class="hover:text-zinc-600 transition">powered by fader.bio</a>
+    <footer class="pt-4 space-y-3">
+      <div class="flex justify-center">
+        <button onclick="handleShare()" class="flex items-center gap-1.5 text-xs text-violet-800 hover:text-violet-600 transition px-3 py-2 rounded-xl hover:bg-violet-950/30">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+          Share
+        </button>
+      </div>
+      <p class="text-center text-xs text-zinc-800">
+        <a href="https://fader.bio" class="hover:text-zinc-600 transition">powered by fader.bio</a>
+      </p>
     </footer>
   </main>
 </body>
+
+<!-- Share modal -->
+<div id="share-modal" data-url="{{profileURL .Profile.Handle}}" class="hidden fixed inset-0 bg-black/80 z-50 flex items-end sm:items-center justify-center p-4"
+  onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="bg-zinc-950 border border-violet-900/50 rounded-3xl p-6 w-full max-w-xs space-y-4 shadow-2xl" style="box-shadow:0 0 40px rgba(139,92,246,0.15)">
+    <div class="flex items-center justify-between">
+      <h3 class="font-bold text-white text-sm">Share profile</h3>
+      <button onclick="document.getElementById('share-modal').classList.add('hidden')"
+        class="text-violet-700 hover:text-violet-400 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-violet-950/50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="flex justify-center bg-white rounded-2xl p-2">
+      <div id="qr-code"></div>
+    </div>
+    <div class="flex gap-2">
+      <input type="text" id="profile-url-display" readonly
+        class="flex-1 px-3 py-2 bg-zinc-900 border border-violet-900/40 rounded-xl text-xs text-violet-400 focus:outline-none truncate">
+      <button onclick="copyProfileURL()" id="copy-btn"
+        class="px-4 py-2 bg-violet-600 text-white text-xs font-semibold rounded-xl hover:bg-violet-500 transition shrink-0">
+        Copy
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+<script>
+  var _profileURL = document.getElementById('share-modal').dataset.url;
+  document.getElementById('profile-url-display').value = _profileURL;
+  var _qr = new QRCode(document.getElementById('qr-code'), {
+    text: _profileURL, width: 176, height: 176,
+    colorDark: '#000000', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  function handleShare() {
+    if (navigator.share) {
+      navigator.share({ title: document.title, url: _profileURL });
+    } else {
+      document.getElementById('share-modal').classList.remove('hidden');
+    }
+  }
+
+  function copyProfileURL() {
+    navigator.clipboard.writeText(_profileURL).then(function() {
+      var btn = document.getElementById('copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+    });
+  }
+</script>
 </html>
 
 {{define "block_neon"}}
@@ -96,5 +170,44 @@
     </span>
     <span class="flex-1 text-center text-violet-200">{{$d.Title}}</span>
   </a>
+{{else if eq .Type "audio_embed"}}
+  {{$d := unmarshalAudioEmbed .Data}}
+  {{$embed := audioEmbedURL $d.URL}}
+  {{if $embed}}
+  <div class="neon-card rounded-2xl overflow-hidden bg-violet-950/20">
+    <div class="flex items-center py-3.5 px-5 relative">
+      <span class="absolute left-4 text-violet-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.328l5.603 3.113z"/></svg>
+      </span>
+      <span class="flex-1 text-center font-semibold text-sm text-violet-200">{{if $d.Title}}{{$d.Title}}{{else}}Listen{{end}}</span>
+    </div>
+    <div class="overflow-hidden" style="height:140px">
+      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="{{$embed}}"></iframe>
+    </div>
+  </div>
+  {{end}}
+{{else if eq .Type "ra_link"}}
+  {{$d := unmarshalRALink .Data}}
+  <a href="/r/{{.ID}}" class="neon-card flex items-center w-full py-3.5 px-5 rounded-2xl bg-violet-950/20 hover:bg-violet-950/40 transition font-semibold text-sm relative">
+    <span class="absolute left-4 font-black text-sm text-orange-500">RA</span>
+    <span class="flex-1 text-center text-violet-200">Resident Advisor</span>
+  </a>
+{{else if eq .Type "residency"}}
+  {{$d := unmarshalResidency .Data}}
+  <div class="neon-card w-full py-3.5 px-5 rounded-2xl bg-violet-950/20">
+    <div class="flex items-start gap-3">
+      <span class="text-violet-600 shrink-0 mt-0.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+      </span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm text-violet-200">{{$d.Venue}}</p>
+        <p class="text-xs text-violet-700 mt-0.5">{{$d.Location}}</p>
+      </div>
+      <div class="text-right shrink-0">
+        <p class="text-xs font-semibold text-violet-400">{{$d.Frequency}}</p>
+        {{if $d.Since}}<p class="text-xs text-violet-800">since {{$d.Since}}</p>{{end}}
+      </div>
+    </div>
+  </div>
 {{end}}
 {{end}}

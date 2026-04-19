@@ -28,6 +28,7 @@ type Profile struct {
 	AvatarURL   *string    `db:"avatar_url"`
 	Template    string     `db:"template"`
 	Bio         *string    `db:"bio"`
+	Genres      []string   `db:"genres"`
 	CreatedAt   time.Time  `db:"created_at"`
 }
 
@@ -98,6 +99,22 @@ type ImageData struct {
 type VideoLinkData struct {
 	Title string `json:"title"`
 	URL   string `json:"url"`
+}
+
+type AudioEmbedData struct {
+	URL   string `json:"url"`
+	Title string `json:"title,omitempty"`
+}
+
+type RALinkData struct {
+	Username string `json:"username"`
+}
+
+type ResidencyData struct {
+	Venue     string `json:"venue"`
+	Location  string `json:"location"`
+	Frequency string `json:"frequency"`
+	Since     string `json:"since,omitempty"`
 }
 
 // AnalyticsSummary is used for the analytics dashboard

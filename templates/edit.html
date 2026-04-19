@@ -13,29 +13,30 @@
 <body class="bg-zinc-950 text-white min-h-screen" x-data="{ settingsOpen: false }">
 
 <!-- Top nav -->
-<header class="border-b border-zinc-900 px-5 py-3.5 flex items-center justify-between sticky top-0 bg-zinc-950/95 backdrop-blur z-30">
-  <a href="/dashboard" class="text-sm text-zinc-500 hover:text-white transition flex items-center gap-1.5">
+<header class="border-b border-zinc-900 px-4 py-3 flex items-center justify-between sticky top-0 bg-zinc-950/95 backdrop-blur z-30 gap-2">
+  <a href="/dashboard" class="text-sm text-zinc-500 hover:text-white transition flex items-center gap-1.5 shrink-0">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
-    Dashboard
+    <span class="hidden sm:inline">Dashboard</span>
   </a>
-  <span class="text-sm font-semibold">
+  <span class="text-sm font-semibold hidden sm:block truncate text-center flex-1 min-w-0">
     {{.Profile.Handle}}<span class="text-zinc-600">.{{baseDomain}}</span>
   </span>
-  <div class="flex items-center gap-1.5">
+  <div class="flex items-center gap-1 shrink-0">
     <a href="{{profileURL .Profile.Handle}}" target="_blank"
-      class="text-xs text-zinc-500 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-zinc-800">
-      View ↗
+      class="flex items-center justify-center w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 text-zinc-500 hover:text-white transition rounded-lg hover:bg-zinc-800">
+      <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+      <span class="hidden sm:inline text-xs">View ↗</span>
     </a>
     {{if .User.IsPro}}
     <a href="/analytics?profile={{.Profile.ID}}"
-      class="text-xs text-zinc-500 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-zinc-800">
+      class="hidden sm:flex text-xs text-zinc-500 hover:text-white transition px-3 py-1.5 rounded-lg hover:bg-zinc-800">
       Analytics
     </a>
     {{end}}
     <button @click="settingsOpen = true"
-      class="text-xs bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg hover:bg-zinc-700 transition font-medium flex items-center gap-1.5">
+      class="flex items-center gap-1.5 text-xs bg-zinc-800 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg hover:bg-zinc-700 transition font-medium">
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      Settings
+      <span class="hidden sm:inline">Settings</span>
     </button>
   </div>
 </header>
@@ -113,13 +114,43 @@
         </div>
       </button>
       <button hx-post="/blocks" hx-vals='{"type":"custom_link","profile_id":"{{$pid}}"}' hx-target="#block-list" hx-swap="beforeend" @click="addOpen=false"
-        class="w-full flex items-center gap-4 px-5 py-4 hover:bg-zinc-800/60 transition text-left">
+        class="w-full flex items-center gap-4 px-5 py-4 hover:bg-zinc-800/60 transition border-b border-zinc-800 text-left">
         <div class="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
         </div>
         <div>
           <p class="text-sm font-semibold text-white">Custom Link</p>
           <p class="text-xs text-zinc-500 mt-0.5">Any URL with a label</p>
+        </div>
+      </button>
+      <button hx-post="/blocks" hx-vals='{"type":"audio_embed","profile_id":"{{$pid}}"}' hx-target="#block-list" hx-swap="beforeend" @click="addOpen=false"
+        class="w-full flex items-center gap-4 px-5 py-4 hover:bg-zinc-800/60 transition border-b border-zinc-800 text-left">
+        <div class="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/><circle cx="18" cy="6" r="3" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-white">Audio Player</p>
+          <p class="text-xs text-zinc-500 mt-0.5">Embed SoundCloud or Mixcloud</p>
+        </div>
+      </button>
+      <button hx-post="/blocks" hx-vals='{"type":"ra_link","profile_id":"{{$pid}}"}' hx-target="#block-list" hx-swap="beforeend" @click="addOpen=false"
+        class="w-full flex items-center gap-4 px-5 py-4 hover:bg-zinc-800/60 transition border-b border-zinc-800 text-left">
+        <div class="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center shrink-0">
+          <span class="text-xs font-black text-orange-500">RA</span>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-white">RA Profile</p>
+          <p class="text-xs text-zinc-500 mt-0.5">Resident Advisor artist page</p>
+        </div>
+      </button>
+      <button hx-post="/blocks" hx-vals='{"type":"residency","profile_id":"{{$pid}}"}' hx-target="#block-list" hx-swap="beforeend" @click="addOpen=false"
+        class="w-full flex items-center gap-4 px-5 py-4 hover:bg-zinc-800/60 transition text-left">
+        <div class="w-9 h-9 rounded-xl bg-zinc-800 flex items-center justify-center text-zinc-400 shrink-0">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-white">Residency</p>
+          <p class="text-xs text-zinc-500 mt-0.5">Regular gig or club night</p>
         </div>
       </button>
     </div>
@@ -148,6 +179,31 @@
       <!-- Profile info -->
       <div class="px-6 py-5 border-b border-zinc-900">
         <p class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4">Profile info</p>
+
+        <!-- Avatar upload -->
+        <div class="flex items-center gap-4 mb-4">
+          {{if .Profile.AvatarURL}}
+          <img src="{{.Profile.AvatarURL}}" alt="" class="w-14 h-14 rounded-full object-cover ring-1 ring-zinc-700 shrink-0">
+          {{else}}
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-violet-700 to-pink-600 flex items-center justify-center font-black text-lg shrink-0">
+            {{slice .Profile.DisplayName 0 1}}
+          </div>
+          {{end}}
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-semibold text-zinc-400 mb-1.5">Photo</p>
+            <form hx-post="/profile/avatar" hx-encoding="multipart/form-data" hx-target="#settings-status" hx-swap="innerHTML">
+              <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+              <label class="cursor-pointer inline-flex items-center gap-2 text-xs bg-zinc-800 border border-zinc-700 text-zinc-300 px-3 py-1.5 rounded-lg hover:bg-zinc-700 transition font-medium">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                Upload image
+                <input type="file" name="avatar" accept="image/*" class="sr-only"
+                  onchange="this.closest('form').dispatchEvent(new Event('submit', {bubbles:true}))">
+              </label>
+            </form>
+            <p class="text-xs text-zinc-700 mt-1">JPEG, PNG, WebP or GIF · max 5 MB</p>
+          </div>
+        </div>
+
         <form hx-patch="/profile/info" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
           <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
           <div class="space-y-1.5">
@@ -159,6 +215,21 @@
             <label class="block text-xs font-semibold text-zinc-400">Bio</label>
             <textarea name="bio" rows="3" placeholder="A short bio…"
               class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600 transition resize-none">{{if .Profile.Bio}}{{.Profile.Bio}}{{end}}</textarea>
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-100 transition">Save</button>
+        </form>
+      </div>
+
+      <!-- Genres -->
+      <div class="px-6 py-5 border-b border-zinc-900">
+        <p class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4">Genres</p>
+        <form hx-patch="/profile/genres" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
+          <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-zinc-400">Your genres</label>
+            <input name="genres" value="{{join .Profile.Genres ", "}}" placeholder="e.g. Techno, House, Drum & Bass"
+              class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600 transition">
+            <p class="text-xs text-zinc-700">Comma-separated</p>
           </div>
           <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-100 transition">Save</button>
         </form>
@@ -272,7 +343,7 @@
 
   <!-- Preview row -->
   <div class="flex items-center gap-3 px-4 py-3.5">
-    <button class="drag-handle cursor-grab text-zinc-600 hover:text-zinc-400 select-none shrink-0 p-0.5">
+    <button class="drag-handle touch-manipulation cursor-grab text-zinc-600 hover:text-zinc-400 select-none shrink-0 p-2.5 -m-1">
       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
         <circle cx="5.5" cy="4" r="1.25"/><circle cx="5.5" cy="8" r="1.25"/><circle cx="5.5" cy="12" r="1.25"/>
         <circle cx="10.5" cy="4" r="1.25"/><circle cx="10.5" cy="8" r="1.25"/><circle cx="10.5" cy="12" r="1.25"/>
@@ -395,6 +466,49 @@
           <label class="{{$label}}">URL</label>
           <input name="url" type="url" value="{{$d.URL}}" placeholder="https://youtube.com/..." class="{{$input}}">
         </div>
+
+      {{else if eq .Type "audio_embed"}}
+        {{$d := unmarshalAudioEmbed .Data}}
+        <div>
+          <label class="{{$label}}">Title <span class="text-zinc-700 font-normal">(optional)</span></label>
+          <input name="title" value="{{$d.Title}}" placeholder="e.g. Summer Mix 2025" class="{{$input}}">
+        </div>
+        <div>
+          <label class="{{$label}}">SoundCloud or Mixcloud URL</label>
+          <input name="url" type="url" value="{{$d.URL}}" placeholder="https://soundcloud.com/artist/track" class="{{$input}}">
+        </div>
+
+      {{else if eq .Type "ra_link"}}
+        {{$d := unmarshalRALink .Data}}
+        <div>
+          <label class="{{$label}}">RA username</label>
+          <div class="flex items-stretch bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-zinc-600 transition">
+            <span class="px-3 flex items-center text-zinc-600 text-xs border-r border-zinc-800 shrink-0 font-mono">ra.co/dj/</span>
+            <input name="username" value="{{$d.Username}}" placeholder="yourname" autocapitalize="none"
+              class="flex-1 px-3 py-2.5 bg-transparent text-sm text-white focus:outline-none min-w-0">
+          </div>
+        </div>
+
+      {{else if eq .Type "residency"}}
+        {{$d := unmarshalResidency .Data}}
+        <div>
+          <label class="{{$label}}">Venue</label>
+          <input name="venue" value="{{$d.Venue}}" placeholder="e.g. Fabric, London" class="{{$input}}">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="{{$label}}">Location</label>
+            <input name="location" value="{{$d.Location}}" placeholder="City, Country" class="{{$input}}">
+          </div>
+          <div>
+            <label class="{{$label}}">Frequency</label>
+            <input name="frequency" value="{{$d.Frequency}}" placeholder="e.g. Every Friday" class="{{$input}}">
+          </div>
+        </div>
+        <div>
+          <label class="{{$label}}">Since <span class="text-zinc-700 font-normal">(optional)</span></label>
+          <input name="since" value="{{$d.Since}}" placeholder="e.g. 2022" class="{{$input}}">
+        </div>
       {{end}}
 
       <div class="flex gap-2 pt-1">
@@ -483,6 +597,36 @@
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
     </div>
     <p class="text-sm font-medium text-zinc-200">{{if $d.Title}}{{$d.Title}}{{else}}<span class="text-zinc-600 italic font-normal">No title</span>{{end}}</p>
+  </div>
+{{else if eq .Type "audio_embed"}}
+  {{$d := unmarshalAudioEmbed .Data}}
+  <div class="flex items-center gap-3">
+    <div class="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-500 shrink-0">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/></svg>
+    </div>
+    <div class="min-w-0">
+      <p class="text-sm font-medium text-zinc-200">{{if $d.Title}}{{$d.Title}}{{else}}<span class="text-zinc-600 italic font-normal">Audio Player</span>{{end}}</p>
+      {{if $d.URL}}<p class="text-xs text-zinc-600 truncate">{{$d.URL}}</p>{{end}}
+    </div>
+  </div>
+{{else if eq .Type "ra_link"}}
+  {{$d := unmarshalRALink .Data}}
+  <div class="flex items-center gap-3">
+    <div class="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center shrink-0">
+      <span class="text-xs font-black text-orange-500">RA</span>
+    </div>
+    <p class="text-sm font-medium text-zinc-200">{{if $d.Username}}ra.co/dj/{{$d.Username}}{{else}}<span class="text-zinc-600 italic font-normal">No username</span>{{end}}</p>
+  </div>
+{{else if eq .Type "residency"}}
+  {{$d := unmarshalResidency .Data}}
+  <div class="flex items-center gap-3">
+    <div class="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-500 shrink-0">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+    </div>
+    <div class="min-w-0">
+      <p class="text-sm font-medium text-zinc-200">{{if $d.Venue}}{{$d.Venue}}{{else}}<span class="text-zinc-600 italic font-normal">No venue</span>{{end}}</p>
+      {{if $d.Frequency}}<p class="text-xs text-zinc-600">{{$d.Frequency}}</p>{{end}}
+    </div>
   </div>
 {{end}}
 {{end}}

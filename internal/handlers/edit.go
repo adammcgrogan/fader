@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
 	"strings"
@@ -14,11 +15,12 @@ import (
 )
 
 type EditHandler struct {
-	db *db.Queries
+	db          *db.Queries
+	supabaseURL string
 }
 
-func NewEditHandler(q *db.Queries) *EditHandler {
-	return &EditHandler{db: q}
+func NewEditHandler(q *db.Queries, supabaseURL string) *EditHandler {
+	return &EditHandler{db: q, supabaseURL: supabaseURL}
 }
 
 func (h *EditHandler) ShowEdit(w http.ResponseWriter, r *http.Request) {
@@ -331,13 +333,16 @@ func (h *EditHandler) NewProfile(w http.ResponseWriter, r *http.Request) {
 
 func defaultBlockData(blockType string) json.RawMessage {
 	defaults := map[string]any{
-		"social":      map[string]any{"platform": "instagram", "url": ""},
-		"music_link":  map[string]any{"title": "", "url": "", "platform": "soundcloud"},
-		"gig":         map[string]any{"date": "", "venue": "", "location": "", "ticket_url": ""},
-		"bio":         map[string]any{"text": ""},
-		"custom_link": map[string]any{"label": "", "url": ""},
-		"image":       map[string]any{"url": "", "caption": ""},
-		"video_link":  map[string]any{"title": "", "url": ""},
+		"social":       map[string]any{"platform": "instagram", "url": ""},
+		"music_link":   map[string]any{"title": "", "url": "", "platform": "soundcloud"},
+		"gig":          map[string]any{"date": "", "venue": "", "location": "", "ticket_url": ""},
+		"bio":          map[string]any{"text": ""},
+		"custom_link":  map[string]any{"label": "", "url": ""},
+		"image":        map[string]any{"url": "", "caption": ""},
+		"video_link":   map[string]any{"title": "", "url": ""},
+		"audio_embed":  map[string]any{"url": "", "title": ""},
+		"ra_link":      map[string]any{"username": ""},
+		"residency":    map[string]any{"venue": "", "location": "", "frequency": "", "since": ""},
 	}
 	d, _ := json.Marshal(defaults[blockType])
 	return d
@@ -360,6 +365,12 @@ func formToBlockData(blockType string, r *http.Request) json.RawMessage {
 		data = map[string]any{"url": r.FormValue("url"), "caption": r.FormValue("caption")}
 	case "video_link":
 		data = map[string]any{"title": r.FormValue("title"), "url": r.FormValue("url")}
+	case "audio_embed":
+		data = map[string]any{"url": r.FormValue("url"), "title": r.FormValue("title")}
+	case "ra_link":
+		data = map[string]any{"username": strings.TrimSpace(r.FormValue("username"))}
+	case "residency":
+		data = map[string]any{"venue": r.FormValue("venue"), "location": r.FormValue("location"), "frequency": r.FormValue("frequency"), "since": r.FormValue("since")}
 	default:
 		data = map[string]any{}
 	}
@@ -390,6 +401,129 @@ func (h *EditHandler) DeleteProfile(w http.ResponseWriter, r *http.Request) {
 
 	h.db.DeleteProfile(r.Context(), profileID)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+}
+
+func (h *EditHandler) UploadAvatar(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.GetUserID(r)
+
+	if err := r.ParseMultipartForm(5 << 20); err != nil {
+		http.Error(w, "file too large (max 5MB)", http.StatusBadRequest)
+		return
+	}
+
+	profileID, err := uuid.Parse(r.FormValue("profile_id"))
+	if err != nil {
+		http.Error(w, "invalid profile", http.StatusBadRequest)
+		return
+	}
+
+	profile, err := h.db.GetProfileByID(r.Context(), profileID)
+	if err != nil || profile.UserID != userID {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	file, header, err := r.FormFile("avatar")
+	if err != nil {
+		http.Error(w, "no file uploaded", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Detect actual content type from file bytes
+	buf := make([]byte, 512)
+	n, _ := file.Read(buf)
+	detectedType := http.DetectContentType(buf[:n])
+	if _, err := (file.(io.ReadSeeker)).Seek(0, io.SeekStart); err != nil {
+		http.Error(w, "upload error", http.StatusInternalServerError)
+		return
+	}
+
+	// Prefer client-declared type for webp (DetectContentType can't identify it)
+	contentType := detectedType
+	if ct := header.Header.Get("Content-Type"); ct == "image/webp" {
+		contentType = ct
+	}
+
+	allowed := map[string]bool{
+		"image/jpeg": true,
+		"image/png":  true,
+		"image/webp": true,
+		"image/gif":  true,
+	}
+	if !allowed[contentType] {
+		http.Error(w, "unsupported image type — use JPEG, PNG, WebP or GIF", http.StatusBadRequest)
+		return
+	}
+
+	cookie, err := r.Cookie("sb-token")
+	if err != nil {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	storagePath := fmt.Sprintf("avatars/%s-avatar", profileID.String())
+	uploadURL := strings.TrimRight(h.supabaseURL, "/") + "/storage/v1/object/" + storagePath
+
+	req, err := http.NewRequestWithContext(r.Context(), http.MethodPost, uploadURL, file)
+	if err != nil {
+		http.Error(w, "upload error", http.StatusInternalServerError)
+		return
+	}
+	req.Header.Set("Authorization", "Bearer "+cookie.Value)
+	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("x-upsert", "true")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		http.Error(w, "storage upload failed", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		body, _ := io.ReadAll(resp.Body)
+		http.Error(w, "storage error: "+string(body), http.StatusInternalServerError)
+		return
+	}
+
+	publicURL := strings.TrimRight(h.supabaseURL, "/") + "/storage/v1/object/public/" + storagePath
+	h.db.UpdateProfile(r.Context(), profileID, profile.DisplayName, profile.Bio, &publicURL)
+
+	w.Header().Set("HX-Refresh", "true")
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *EditHandler) UpdateGenres(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.GetUserID(r)
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	profileID, err := uuid.Parse(r.FormValue("profile_id"))
+	if err != nil {
+		http.Error(w, "invalid profile", http.StatusBadRequest)
+		return
+	}
+
+	profile, err := h.db.GetProfileByID(r.Context(), profileID)
+	if err != nil || profile.UserID != userID {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	var genres []string
+	for _, g := range strings.Split(r.FormValue("genres"), ",") {
+		g = strings.TrimSpace(g)
+		if g != "" {
+			genres = append(genres, g)
+		}
+	}
+
+	h.db.UpdateProfileGenres(r.Context(), profileID, genres)
+	w.Header().Set("HX-Refresh", "true")
+	w.WriteHeader(http.StatusOK)
 }
 
 func generateHandle() string {

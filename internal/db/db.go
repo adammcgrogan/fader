@@ -76,35 +76,35 @@ func (q *Queries) CreateProfile(ctx context.Context, userID uuid.UUID, handle, d
 	p := &models.Profile{}
 	err := q.pool.QueryRow(ctx,
 		`INSERT INTO profiles (user_id, handle, display_name) VALUES ($1, $2, $3)
-		 RETURNING id, user_id, handle, display_name, avatar_url, template, bio, created_at`,
+		 RETURNING id, user_id, handle, display_name, avatar_url, template, bio, genres, created_at`,
 		userID, handle, displayName,
-	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.CreatedAt)
+	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.CreatedAt)
 	return p, err
 }
 
 func (q *Queries) GetProfileByHandle(ctx context.Context, handle string) (*models.Profile, error) {
 	p := &models.Profile{}
 	err := q.pool.QueryRow(ctx,
-		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, created_at
+		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, created_at
 		 FROM profiles WHERE handle = $1`,
 		handle,
-	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.CreatedAt)
+	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.CreatedAt)
 	return p, err
 }
 
 func (q *Queries) GetProfileByID(ctx context.Context, id uuid.UUID) (*models.Profile, error) {
 	p := &models.Profile{}
 	err := q.pool.QueryRow(ctx,
-		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, created_at
+		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, created_at
 		 FROM profiles WHERE id = $1`,
 		id,
-	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.CreatedAt)
+	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.CreatedAt)
 	return p, err
 }
 
 func (q *Queries) GetProfilesByUserID(ctx context.Context, userID uuid.UUID) ([]*models.Profile, error) {
 	rows, err := q.pool.Query(ctx,
-		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, created_at
+		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, created_at
 		 FROM profiles WHERE user_id = $1 ORDER BY created_at ASC`,
 		userID,
 	)
@@ -116,7 +116,7 @@ func (q *Queries) GetProfilesByUserID(ctx context.Context, userID uuid.UUID) ([]
 	var profiles []*models.Profile
 	for rows.Next() {
 		p := &models.Profile{}
-		if err := rows.Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.CreatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.CreatedAt); err != nil {
 			return nil, err
 		}
 		profiles = append(profiles, p)
@@ -161,7 +161,7 @@ func (q *Queries) HandleExists(ctx context.Context, handle string) (bool, error)
 
 func (q *Queries) ListAllProfiles(ctx context.Context) ([]*models.Profile, error) {
 	rows, err := q.pool.Query(ctx,
-		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, created_at
+		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, created_at
 		 FROM profiles ORDER BY created_at DESC`,
 	)
 	if err != nil {
@@ -172,12 +172,20 @@ func (q *Queries) ListAllProfiles(ctx context.Context) ([]*models.Profile, error
 	var profiles []*models.Profile
 	for rows.Next() {
 		p := &models.Profile{}
-		if err := rows.Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.CreatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.CreatedAt); err != nil {
 			return nil, err
 		}
 		profiles = append(profiles, p)
 	}
 	return profiles, rows.Err()
+}
+
+func (q *Queries) UpdateProfileGenres(ctx context.Context, id uuid.UUID, genres []string) error {
+	if genres == nil {
+		genres = []string{}
+	}
+	_, err := q.pool.Exec(ctx, `UPDATE profiles SET genres = $1 WHERE id = $2`, genres, id)
+	return err
 }
 
 // ── Blocks ─────────────────────────────────────────────────────────────────

@@ -1,7 +1,14 @@
 package handlers
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/adammcgrogan/fader/internal/middleware"
+)
 
 func ServeLanding(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "landing.html", nil)
+	_, loggedIn := middleware.GetUserID(r)
+	renderTemplate(w, "landing.html", map[string]any{
+		"LoggedIn": loggedIn,
+	})
 }
