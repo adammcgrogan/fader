@@ -16,6 +16,51 @@ type AuthHandler struct {
 	auth gotrue.Client
 }
 
+func (h *AuthHandler) ShowForgotPassword(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "auth_forgot_password.html", nil)
+}
+
+func (h *AuthHandler) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+	email := strings.TrimSpace(r.FormValue("email"))
+	if email == "" {
+		renderTemplate(w, "auth_forgot_password.html", map[string]any{"Error": "email is required"})
+		return
+	}
+	if err := h.auth.Recover(types.RecoverRequest{Email: email}); err != nil {
+		log.Printf("recover error for %s: %v", email, err)
+	}
+	// Always show success to prevent email enumeration
+	renderTemplate(w, "auth_forgot_password.html", map[string]any{"Success": true})
+}
+
+func (h *AuthHandler) ShowResetPassword(w http.ResponseWriter, r *http.Request) {
+	renderTemplate(w, "auth_reset_password.html", nil)
+}
+
+func (h *AuthHandler) SetPassword(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+	token := r.FormValue("access_token")
+	password := r.FormValue("password")
+	if token == "" || len(password) < 8 {
+		renderTemplate(w, "auth_reset_password.html", map[string]any{"Error": "password must be at least 8 characters"})
+		return
+	}
+	if _, err := h.auth.WithToken(token).UpdateUser(types.UpdateUserRequest{Password: &password}); err != nil {
+		log.Printf("set password error: %v", err)
+		renderTemplate(w, "auth_reset_password.html", map[string]any{"Error": "could not update password — the link may have expired"})
+		return
+	}
+	setAuthCookie(w, token)
+	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+}
+
 func NewAuthHandler(q *db.Queries, auth gotrue.Client) *AuthHandler {
 	return &AuthHandler{db: q, auth: auth}
 }
