@@ -3,87 +3,411 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>fader.bio — Your DJ page, one link</title>
-  <link rel="stylesheet" href="/static/css/app.css?v=3">
+  <title>fader.bio — The link-in-bio built for DJs</title>
+  <meta name="description" content="Share your mixes, gigs, residencies and socials at yourname.fader.bio. The link-in-bio built exclusively for DJs.">
+  <link rel="stylesheet" href="/static/css/app.css?v=4">
 </head>
 <body class="bg-zinc-950 text-white min-h-screen flex flex-col overflow-x-hidden">
 
-<header class="px-6 py-5 flex items-center justify-between relative z-10">
-  <span class="font-bold text-base tracking-tight">fader.bio</span>
-  <a href="/auth/login" class="text-sm text-zinc-400 hover:text-white transition">Log in</a>
+<!-- Nav -->
+<header class="w-full px-6 py-5 flex items-center justify-between">
+  <span class="font-black text-base tracking-tight">fader.bio</span>
+  <div class="flex items-center gap-4">
+    {{if .LoggedIn}}
+    <a href="/dashboard" class="text-sm px-4 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-100 transition">My account</a>
+    {{else}}
+    <a href="/auth/login" class="text-sm text-zinc-400 hover:text-white transition">Log in</a>
+    <a href="/auth/register" class="text-sm px-4 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-100 transition">Get started free</a>
+    {{end}}
+  </div>
 </header>
 
-<main class="flex-1 flex flex-col items-center justify-center px-6 pt-12 pb-24 text-center relative">
-  <!-- Glow -->
-  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Hero -->
+<section class="relative flex flex-col items-center text-center px-6 pt-16 pb-28">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-violet-600 opacity-10 rounded-full blur-3xl pointer-events-none"></div>
 
-  <div class="relative max-w-xl space-y-8">
+  <div class="relative max-w-2xl mx-auto space-y-8">
+
     <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-zinc-400">
       <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
       Free to start · No credit card needed
     </div>
 
     <div class="space-y-4">
-      <h1 class="text-5xl sm:text-6xl font-black tracking-tight leading-[1.08]">
-        Your DJ identity,<br>
-        <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-pink-400">one link.</span>
+      <h1 class="text-5xl sm:text-6xl font-black tracking-tight leading-tight">
+        One link.<br>
+        <span class="inline-block pb-2 text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-pink-400 to-orange-400">Your entire DJ world.</span>
       </h1>
-      <p class="text-lg text-zinc-400 max-w-sm mx-auto leading-relaxed">
-        Share your music, gigs &amp; socials at <span class="text-white font-medium">yourname.fader.bio</span>
+      <p class="text-base sm:text-lg text-zinc-400 max-w-md mx-auto leading-relaxed">
+        Mixes, gigs, residencies, socials — everything a promoter or fan needs, at
+        <span class="text-white font-semibold whitespace-nowrap">yourname.fader.bio</span>.
       </p>
     </div>
 
     <div class="flex flex-col sm:flex-row gap-3 justify-center">
       <a href="/auth/register"
-        class="px-7 py-3.5 bg-white text-black font-bold rounded-xl hover:bg-zinc-100 transition text-sm shadow-lg shadow-white/10">
-        Get started free
+        class="px-8 py-3.5 bg-white text-black font-bold rounded-xl hover:bg-zinc-100 transition text-sm">
+        Claim your page — it's free
       </a>
       <a href="/auth/login"
-        class="px-7 py-3.5 border border-zinc-800 text-zinc-300 font-medium rounded-xl hover:border-zinc-600 hover:text-white transition text-sm">
+        class="px-8 py-3.5 border border-zinc-700 text-zinc-300 font-medium rounded-xl hover:border-zinc-500 hover:text-white transition text-sm">
         Log in
       </a>
     </div>
 
-    <!-- Mock profile preview -->
-    <div class="mx-auto max-w-[280px] bg-zinc-900 border border-zinc-800 rounded-2xl p-5 text-left shadow-2xl">
-      <div class="flex flex-col items-center text-center space-y-3 pb-4 border-b border-zinc-800">
-        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center font-black text-lg">S</div>
-        <div>
-          <p class="font-bold text-sm">DJ Synq</p>
-          <p class="text-xs text-zinc-500">synq.fader.bio</p>
-        </div>
+    <!-- URL pill -->
+    <div class="flex justify-center">
+      <div class="flex items-center gap-0 px-5 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm font-mono">
+        <span class="text-zinc-600">https://</span><span class="text-violet-400 font-bold">yourname</span><span class="text-zinc-500">.fader.bio</span>
       </div>
-      <div class="pt-4 space-y-2">
-        <div class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-800 text-sm font-medium text-zinc-200">SoundCloud</div>
-        <div class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-800 text-sm font-medium text-zinc-200">Summer Mix 2025</div>
-        <div class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-800 text-sm font-medium text-zinc-200">Instagram</div>
-      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Feature strip -->
+<div class="border-t border-b border-zinc-800 bg-zinc-900/50 py-4 px-6">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex flex-wrap justify-center gap-3">
+      <span class="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 rounded-full text-xs text-zinc-400 font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>Embedded audio player
+      </span>
+      <span class="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 rounded-full text-xs text-zinc-400 font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>Gig listings
+      </span>
+      <span class="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 rounded-full text-xs text-zinc-400 font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>Residency display
+      </span>
+      <span class="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 rounded-full text-xs text-zinc-400 font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>Socials &amp; links
+      </span>
+      <span class="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 rounded-full text-xs text-zinc-400 font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>Resident Advisor
+      </span>
+      <span class="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 rounded-full text-xs text-zinc-400 font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>Analytics
+      </span>
+      <span class="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 rounded-full text-xs text-zinc-400 font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>Custom themes
+      </span>
+      <span class="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 rounded-full text-xs text-zinc-400 font-medium">
+        <span class="w-1.5 h-1.5 rounded-full bg-violet-500"></span>Share &amp; QR code
+      </span>
     </div>
   </div>
-</main>
+</div>
 
-<section class="border-t border-zinc-900 px-6 py-14">
-  <div class="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6">
-    <div class="space-y-2.5">
-      <p class="text-2xl">⚡</p>
-      <h3 class="font-semibold text-sm">Live in seconds</h3>
-      <p class="text-sm text-zinc-500 leading-relaxed">Sign up and your page is live at yourname.fader.bio immediately.</p>
+<!-- Why fader.bio -->
+<section class="px-6 py-20">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="text-center mb-12 space-y-3">
+      <p class="text-xs font-bold text-violet-500 uppercase tracking-widest">Built different</p>
+      <h2 class="text-3xl sm:text-4xl font-black tracking-tight">Linktree is for everyone.<br>fader.bio is for DJs.</h2>
+      <p class="text-zinc-400 max-w-md mx-auto text-sm leading-relaxed">Generic link tools don't understand the DJ workflow. We built every feature around how you actually promote yourself.</p>
     </div>
-    <div class="space-y-2.5">
-      <p class="text-2xl">🎵</p>
-      <h3 class="font-semibold text-sm">Built for DJs</h3>
-      <p class="text-sm text-zinc-500 leading-relaxed">Music links, gig listings, social profiles — everything a DJ needs.</p>
-    </div>
-    <div class="space-y-2.5">
-      <p class="text-2xl">📊</p>
-      <h3 class="font-semibold text-sm">Analytics on Pro</h3>
-      <p class="text-sm text-zinc-500 leading-relaxed">See views, clicks, countries and referrers across all your pages.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center">
+          <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.328l5.603 3.113z"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-sm">Embedded audio player</h3>
+        <p class="text-sm text-zinc-500 leading-relaxed">Paste a SoundCloud or Mixcloud URL and your mixes play right on your page. Visitors hear you without leaving.</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center">
+          <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-sm">Gig listings with ticket links</h3>
+        <p class="text-sm text-zinc-500 leading-relaxed">Add upcoming shows with venue, date and a direct ticket link. Fans and promoters always know where to find you next.</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center">
+          <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-sm">Residency display</h3>
+        <p class="text-sm text-zinc-500 leading-relaxed">Show your regular spots separately from one-off gigs. "Every Friday @ Fabric" displayed the way promoters actually talk about it.</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center">
+          <span class="font-black text-orange-500 text-sm">RA</span>
+        </div>
+        <h3 class="font-bold text-sm">Resident Advisor integration</h3>
+        <p class="text-sm text-zinc-500 leading-relaxed">One-click link to your RA artist page. The DJ community's platform, front and centre where it belongs.</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center">
+          <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-sm">Genre tags</h3>
+        <p class="text-sm text-zinc-500 leading-relaxed">Techno. House. Drum &amp; Bass. Show your sound instantly — displayed as pill badges on your profile header.</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center">
+          <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-sm">Real analytics</h3>
+        <p class="text-sm text-zinc-500 leading-relaxed">Track profile views, link clicks, top countries and referrers. Know which promoters are checking you out and where your traffic comes from.</p>
+      </div>
+
     </div>
   </div>
 </section>
 
-<footer class="border-t border-zinc-900 px-6 py-6 text-center text-xs text-zinc-700">
-  © 2025 fader.bio
+<!-- How it works -->
+<section class="border-t border-zinc-800 px-6 py-20 bg-zinc-900/40">
+  <div class="max-w-3xl mx-auto">
+
+    <div class="text-center mb-12 space-y-3">
+      <p class="text-xs font-bold text-violet-500 uppercase tracking-widest">Simple by design</p>
+      <h2 class="text-3xl sm:text-4xl font-black tracking-tight">Up and running in minutes</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+      <div class="text-center space-y-3">
+        <div class="w-11 h-11 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-black text-lg mx-auto text-violet-400">1</div>
+        <h3 class="font-bold text-sm">Claim your handle</h3>
+        <p class="text-sm text-zinc-500 leading-relaxed">Sign up and pick your URL — <span class="text-zinc-300 font-medium">yourname.fader.bio</span> is live instantly.</p>
+      </div>
+      <div class="text-center space-y-3">
+        <div class="w-11 h-11 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-black text-lg mx-auto text-violet-400">2</div>
+        <h3 class="font-bold text-sm">Build your page</h3>
+        <p class="text-sm text-zinc-500 leading-relaxed">Add blocks — mixes, gigs, socials, residencies — drag to reorder, done.</p>
+      </div>
+      <div class="text-center space-y-3">
+        <div class="w-11 h-11 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center font-black text-lg mx-auto text-violet-400">3</div>
+        <h3 class="font-bold text-sm">Put it everywhere</h3>
+        <p class="text-sm text-zinc-500 leading-relaxed">One link in your Instagram bio, RA profile, email signature and booking requests.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Block library -->
+<section class="border-t border-zinc-800 px-6 py-20">
+  <div class="max-w-5xl mx-auto">
+
+    <div class="text-center mb-12 space-y-3">
+      <p class="text-xs font-bold text-violet-500 uppercase tracking-widest">Block library</p>
+      <h2 class="text-3xl sm:text-4xl font-black tracking-tight">Everything on one page</h2>
+      <p class="text-zinc-400 text-sm max-w-xs mx-auto">Add, remove and reorder blocks in seconds.</p>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2">
+        <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.328l5.603 3.113z"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold text-zinc-300">Audio Player</p>
+        <p class="text-xs text-zinc-600">SoundCloud · Mixcloud</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2">
+        <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold text-zinc-300">Gig Listing</p>
+        <p class="text-xs text-zinc-600">Venue · Date · Tickets</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2">
+        <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold text-zinc-300">Residency</p>
+        <p class="text-xs text-zinc-600">Regular club nights</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2">
+        <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold text-zinc-300">Music Link</p>
+        <p class="text-xs text-zinc-600">Tracks · Mixes · Releases</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2">
+        <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold text-zinc-300">Social Media</p>
+        <p class="text-xs text-zinc-600">All platforms</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2">
+        <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <span class="font-black text-orange-500 text-xs">RA</span>
+        </div>
+        <p class="text-xs font-semibold text-zinc-300">RA Profile</p>
+        <p class="text-xs text-zinc-600">Resident Advisor</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2">
+        <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold text-zinc-300">Video Link</p>
+        <p class="text-xs text-zinc-600">YouTube · Vimeo</p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-2">
+        <div class="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+          <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/>
+          </svg>
+        </div>
+        <p class="text-xs font-semibold text-zinc-300">Custom Link</p>
+        <p class="text-xs text-zinc-600">Any URL, any label</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="border-t border-zinc-800 px-6 py-20 bg-zinc-900/40">
+  <div class="max-w-3xl mx-auto">
+
+    <div class="text-center mb-12 space-y-3">
+      <p class="text-xs font-bold text-violet-500 uppercase tracking-widest">Pricing</p>
+      <h2 class="text-3xl sm:text-4xl font-black tracking-tight">Start free, upgrade when ready</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+      <!-- Free -->
+      <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-7 flex flex-col gap-6">
+        <div>
+          <p class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Free</p>
+          <p class="text-4xl font-black">£0</p>
+          <p class="text-sm text-zinc-500 mt-1">Forever free, no card needed</p>
+        </div>
+        <ul class="space-y-3 text-sm text-zinc-400 flex-1">
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            1 DJ page at yourname.fader.bio
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            All block types
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            3 themes (Minimal, Dark, Neon)
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            Share &amp; QR code
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            Custom photo, bio &amp; genres
+          </li>
+        </ul>
+        <a href="/auth/register" class="block w-full py-3 text-center border border-zinc-700 text-zinc-300 font-bold text-sm rounded-xl hover:border-zinc-500 hover:text-white transition">
+          Get started free
+        </a>
+      </div>
+
+      <!-- Pro -->
+      <div class="bg-zinc-900 border border-violet-700/60 rounded-2xl p-7 flex flex-col gap-6 relative">
+        <div class="absolute top-5 right-5 px-2.5 py-1 bg-violet-600 rounded-full text-xs font-bold">Pro</div>
+        <div>
+          <p class="text-xs font-bold text-violet-400 uppercase tracking-widest mb-3">Pro</p>
+          <p class="text-4xl font-black">£5<span class="text-xl text-zinc-500 font-medium">/mo</span></p>
+          <p class="text-sm text-zinc-500 mt-1">Everything in Free, plus:</p>
+        </div>
+        <ul class="space-y-3 text-sm text-zinc-400 flex-1">
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-violet-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            Multiple pages &amp; aliases
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-violet-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            Full analytics dashboard
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-violet-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            Views, clicks, countries &amp; referrers
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-violet-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            Per-link click tracking
+          </li>
+          <li class="flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-violet-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+            Priority new features
+          </li>
+        </ul>
+        <a href="/auth/register" class="block w-full py-3 text-center bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm rounded-xl transition">
+          Start with Pro
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<section class="border-t border-zinc-800 px-6 py-24 text-center">
+  <div class="max-w-lg mx-auto space-y-6">
+    <h2 class="text-4xl sm:text-5xl font-black tracking-tight leading-tight">
+      Your page is<br>waiting for you.
+    </h2>
+    <p class="text-zinc-400 text-sm leading-relaxed">
+      Claim your handle before someone else does.<br>Two minutes. Completely free.
+    </p>
+    <a href="/auth/register"
+      class="inline-block px-10 py-4 bg-white text-black font-black rounded-xl hover:bg-zinc-100 transition text-sm">
+      Claim yourname.fader.bio
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="border-t border-zinc-800 px-6 py-8">
+  <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+    <span class="font-black text-sm tracking-tight">fader.bio</span>
+    <p class="text-xs text-zinc-700">© 2025 fader.bio · Built for DJs</p>
+    <div class="flex items-center gap-5 text-xs text-zinc-600">
+      <a href="/auth/login" class="hover:text-zinc-400 transition">Log in</a>
+      <a href="/auth/register" class="hover:text-zinc-400 transition">Sign up</a>
+    </div>
+  </div>
 </footer>
 
 </body>
