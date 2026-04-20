@@ -100,8 +100,10 @@ func (h *AuthHandler) ShowLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) ShowRegister(w http.ResponseWriter, r *http.Request) {
-	handle := r.URL.Query().Get("handle")
-	renderTemplate(w, "auth_register.html", map[string]any{"Handle": handle})
+	renderTemplate(w, "auth_register.html", map[string]any{
+		"Handle":      r.URL.Query().Get("handle"),
+		"DisplayName": r.URL.Query().Get("display_name"),
+	})
 }
 
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
@@ -112,20 +114,32 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-	handle := r.FormValue("handle")
+	handle := strings.ToLower(strings.TrimSpace(r.FormValue("handle")))
+	displayName := strings.TrimSpace(r.FormValue("display_name"))
+	if displayName == "" {
+		displayName = handle
+	}
+	if len(displayName) > 60 {
+		displayName = displayName[:60]
+	}
+
+	formData := map[string]any{"Handle": handle, "DisplayName": displayName}
 
 	if err := validate.Handle(handle); err != nil {
-		renderTemplate(w, "auth_register.html", map[string]any{"Error": err.Error(), "Handle": handle})
+		formData["Error"] = err.Error()
+		renderTemplate(w, "auth_register.html", formData)
 		return
 	}
 
 	exists, err := h.db.HandleExists(r.Context(), handle)
 	if err != nil {
-		renderTemplate(w, "auth_register.html", map[string]any{"Error": "database error — have you run migrations?", "Handle": handle})
+		formData["Error"] = "database error — have you run migrations?"
+		renderTemplate(w, "auth_register.html", formData)
 		return
 	}
 	if exists {
-		renderTemplate(w, "auth_register.html", map[string]any{"Error": "that handle is already taken", "Handle": handle})
+		formData["Error"] = "that handle is already taken"
+		renderTemplate(w, "auth_register.html", formData)
 		return
 	}
 
@@ -134,18 +148,21 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		Password: password,
 	})
 	if err != nil {
-		renderTemplate(w, "auth_register.html", map[string]any{"Error": "registration failed: " + err.Error()})
+		formData["Error"] = "registration failed: " + err.Error()
+		renderTemplate(w, "auth_register.html", formData)
 		return
 	}
 
 	userID := resp.User.ID
 	if _, err := h.db.CreateUser(r.Context(), userID, email); err != nil {
-		renderTemplate(w, "auth_register.html", map[string]any{"Error": "could not create account"})
+		formData["Error"] = "could not create account"
+		renderTemplate(w, "auth_register.html", formData)
 		return
 	}
 
-	if _, err := h.db.CreateProfile(r.Context(), userID, handle, handle); err != nil {
-		renderTemplate(w, "auth_register.html", map[string]any{"Error": "could not create profile"})
+	if _, err := h.db.CreateProfile(r.Context(), userID, handle, displayName); err != nil {
+		formData["Error"] = "could not create profile"
+		renderTemplate(w, "auth_register.html", formData)
 		return
 	}
 
