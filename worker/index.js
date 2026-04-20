@@ -1,19 +1,19 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    const host = url.hostname; // e.g. spinmaster.fader.bio
+    const host = url.hostname;
 
     const parts = host.split(".");
-    // *.fader.bio → 3 parts; fader.bio → 2 parts
     const subdomain = parts.length === 3 ? parts[0] : "";
 
-    const origin = env.RAILWAY_ORIGIN; // set in Cloudflare Worker env vars
+    const origin = env.RAILWAY_ORIGIN; // e.g. o0dsrd0d.up.railway.app
+
+    // Keep Host as fader.bio so Railway routes correctly, but resolve via Railway's origin IP
     const targetUrl = new URL(request.url);
-    targetUrl.hostname = origin;
+    targetUrl.hostname = "fader.bio";
 
     const headers = new Headers(request.headers);
     headers.set("X-Fader-Subdomain", subdomain);
-    // Pass real IP to Go app for analytics hashing
     headers.set("X-Real-IP", request.headers.get("CF-Connecting-IP") || "");
 
     const newRequest = new Request(targetUrl.toString(), {
@@ -21,6 +21,7 @@ export default {
       headers,
       body: request.body,
       redirect: "follow",
+      cf: { resolveOverride: origin },
     });
 
     return fetch(newRequest);
