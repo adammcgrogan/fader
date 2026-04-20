@@ -18,7 +18,7 @@ export default {
       method: request.method,
       headers,
       body: request.body,
-      redirect: "follow",
+      redirect: "manual",
     });
 
     return fetch(newRequest);
