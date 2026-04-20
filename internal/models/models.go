@@ -123,12 +123,15 @@ type ResidencyData struct {
 
 // AnalyticsSummary is used for the analytics dashboard
 type AnalyticsSummary struct {
-	TotalViews  int
-	TotalClicks int
-	ViewsByDay  []DailyStat
-	ClicksByBlock []BlockStat
-	TopCountries []CountryStat
-	TopReferrers []ReferrerStat
+	TotalViews     int
+	TotalClicks    int
+	UniqueVisitors int
+	Days           int
+	ViewsByDay     []DailyStat
+	ClicksByDay    []DailyStat
+	ClicksByBlock  []BlockStat
+	TopCountries   []CountryStat
+	TopReferrers   []ReferrerStat
 }
 
 type DailyStat struct {

@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Analytics - {{.Profile.Handle}}.fader.bio</title>
+  <title>Analytics – {{.Profile.Handle}}.fader.bio</title>
   <link rel="stylesheet" href="/static/css/app.css?v=3">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-zinc-950 text-white min-h-screen">
 
-<header class="border-b border-zinc-900 px-6 py-4 flex items-center gap-3">
+<header class="border-b border-zinc-900 px-6 py-4 flex items-center gap-3 flex-wrap">
   <a href="/dashboard" class="text-sm text-zinc-400 hover:text-white transition">← Dashboard</a>
   <span class="text-zinc-700">/</span>
-  <span class="text-sm text-zinc-500">Analytics for</span>
+  <span class="text-sm text-zinc-500">Analytics</span>
   <span class="text-sm font-semibold">{{.Profile.Handle}}<span class="text-zinc-600">.fader.bio</span></span>
   {{if gt (len .AllProfiles) 1}}
   <div class="ml-auto">
-    <select onchange="window.location='/analytics?profile='+this.value"
+    <select onchange="window.location='/analytics?profile='+this.value+'&days={{.Days}}'"
       class="bg-zinc-800 border border-zinc-700 text-sm text-zinc-300 rounded-lg px-3 py-1.5 focus:outline-none">
       {{range .AllProfiles}}
       <option value="{{.ID}}" {{if eq .ID $.Profile.ID}}selected{{end}}>{{.Handle}}</option>
@@ -25,78 +26,119 @@
   {{end}}
 </header>
 
-<main class="max-w-3xl mx-auto py-10 px-6 space-y-6">
+<main class="max-w-4xl mx-auto py-10 px-6 space-y-6">
 
   <!-- Stat cards -->
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
     <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-1">
       <p class="text-xs text-zinc-500 uppercase tracking-wider">Total views</p>
-      <p class="text-4xl font-bold tracking-tight">{{.Summary.TotalViews}}</p>
+      <p class="text-3xl font-bold tracking-tight">{{.Summary.TotalViews}}</p>
     </div>
     <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-1">
       <p class="text-xs text-zinc-500 uppercase tracking-wider">Total clicks</p>
-      <p class="text-4xl font-bold tracking-tight">{{.Summary.TotalClicks}}</p>
+      <p class="text-3xl font-bold tracking-tight">{{.Summary.TotalClicks}}</p>
+    </div>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-1">
+      <p class="text-xs text-zinc-500 uppercase tracking-wider">Unique visitors</p>
+      <p class="text-3xl font-bold tracking-tight">{{.Summary.UniqueVisitors}}</p>
+    </div>
+    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-1">
+      <p class="text-xs text-zinc-500 uppercase tracking-wider">Click-through rate</p>
+      <p class="text-3xl font-bold tracking-tight">{{ctr .Summary.TotalClicks .Summary.TotalViews}}</p>
     </div>
   </div>
 
-  {{if .Summary.ViewsByDay}}
+  <!-- Day range tabs -->
+  <div class="flex gap-2">
+    {{range (list "7" "30" "90")}}
+    <a href="/analytics?profile={{$.Profile.ID}}&days={{.}}"
+      class="px-4 py-1.5 rounded-lg text-sm font-medium transition
+        {{if eq . (printf "%d" $.Days)}}bg-white text-black{{else}}bg-zinc-800 text-zinc-400 hover:text-white{{end}}">
+      {{.}}d
+    </a>
+    {{end}}
+  </div>
+
+  <!-- Chart -->
+  {{if or .Summary.ViewsByDay .Summary.ClicksByDay}}
   <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4">
-    <h2 class="text-sm font-semibold">Views - last 30 days</h2>
-    <div class="space-y-2">
-      {{range .Summary.ViewsByDay}}
-      <div class="flex items-center gap-3 text-sm">
-        <span class="text-zinc-600 w-24 shrink-0 text-xs font-mono">{{.Date}}</span>
-        <div class="flex-1 bg-zinc-800 rounded-full h-1.5 overflow-hidden">
-          <div class="bg-white rounded-full h-1.5 transition-all" style="width: {{percent .Views $.Summary.TotalViews}}%"></div>
-        </div>
-        <span class="text-zinc-400 w-6 text-right text-xs tabular-nums">{{.Views}}</span>
-      </div>
-      {{end}}
+    <h2 class="text-sm font-semibold">Views &amp; clicks – last {{.Days}} days</h2>
+    <div class="relative h-52">
+      <canvas id="activityChart"></canvas>
     </div>
   </div>
   {{end}}
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    <!-- Top countries -->
     {{if .Summary.TopCountries}}
     <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-3">
       <h2 class="text-sm font-semibold">Top countries</h2>
-      <div class="divide-y divide-zinc-800">
+      <div class="space-y-2">
+        {{$maxC := 0}}
+        {{range .Summary.TopCountries}}{{if gt .Count $maxC}}{{$maxC = .Count}}{{end}}{{end}}
         {{range .Summary.TopCountries}}
-        <div class="flex items-center justify-between py-2">
-          <span class="text-sm text-zinc-300">{{.Country}}</span>
-          <span class="text-sm text-zinc-500 tabular-nums">{{.Count}}</span>
+        <div class="space-y-1">
+          <div class="flex items-center justify-between text-sm">
+            <span class="flex items-center gap-2">
+              <span>{{countryFlag .Country}}</span>
+              <span class="text-zinc-300">{{.Country}}</span>
+            </span>
+            <span class="text-zinc-500 tabular-nums">{{.Count}}</span>
+          </div>
+          <div class="w-full bg-zinc-800 rounded-full h-1">
+            <div class="bg-zinc-400 rounded-full h-1" style="width:{{percent .Count $maxC}}%"></div>
+          </div>
         </div>
         {{end}}
       </div>
     </div>
     {{end}}
 
+    <!-- Top referrers -->
     {{if .Summary.TopReferrers}}
     <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-3">
       <h2 class="text-sm font-semibold">Top referrers</h2>
-      <div class="divide-y divide-zinc-800">
+      <div class="space-y-2">
+        {{$maxR := 0}}
+        {{range .Summary.TopReferrers}}{{if gt .Count $maxR}}{{$maxR = .Count}}{{end}}{{end}}
         {{range .Summary.TopReferrers}}
-        <div class="flex items-center justify-between py-2 gap-4">
-          <span class="text-sm text-zinc-300 truncate">{{.Referrer}}</span>
-          <span class="text-sm text-zinc-500 shrink-0 tabular-nums">{{.Count}}</span>
+        <div class="space-y-1">
+          <div class="flex items-center justify-between text-sm gap-4">
+            <span class="text-zinc-300 truncate">{{.Referrer}}</span>
+            <span class="text-zinc-500 shrink-0 tabular-nums">{{.Count}}</span>
+          </div>
+          <div class="w-full bg-zinc-800 rounded-full h-1">
+            <div class="bg-zinc-400 rounded-full h-1" style="width:{{percent .Count $maxR}}%"></div>
+          </div>
         </div>
         {{end}}
       </div>
     </div>
     {{end}}
+
   </div>
 
+  <!-- Clicks by block -->
   {{if .Summary.ClicksByBlock}}
   <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-3">
     <h2 class="text-sm font-semibold">Clicks by block</h2>
-    <div class="divide-y divide-zinc-800">
+    <div class="space-y-3">
+      {{$maxB := 0}}
+      {{range .Summary.ClicksByBlock}}{{if gt .Clicks $maxB}}{{$maxB = .Clicks}}{{end}}{{end}}
       {{range .Summary.ClicksByBlock}}
-      <div class="flex items-center justify-between py-2 gap-4">
-        <div class="min-w-0">
-          <p class="text-sm text-zinc-300 truncate">{{.Label}}</p>
-          <p class="text-xs text-zinc-600 capitalize">{{.Type}}</p>
+      <div class="space-y-1">
+        <div class="flex items-center justify-between text-sm gap-4">
+          <div class="min-w-0">
+            <p class="text-zinc-300 truncate">{{.Label}}</p>
+            <p class="text-xs text-zinc-600 capitalize">{{.Type}}</p>
+          </div>
+          <span class="text-zinc-500 tabular-nums shrink-0">{{.Clicks}}</span>
         </div>
-        <span class="text-sm text-zinc-500 tabular-nums shrink-0">{{.Clicks}} clicks</span>
+        <div class="w-full bg-zinc-800 rounded-full h-1.5">
+          <div class="bg-white rounded-full h-1.5" style="width:{{percent .Clicks $maxB}}%"></div>
+        </div>
       </div>
       {{end}}
     </div>
@@ -104,5 +146,76 @@
   {{end}}
 
 </main>
+
+<script>
+(function() {
+  const labels = {{.ChartLabels}};
+  const viewsMap = {{.ChartViews}};
+  const clicksMap = {{.ChartClicks}};
+  const views  = labels.map(l => viewsMap[l]  || 0);
+  const clicks = labels.map(l => clicksMap[l] || 0);
+
+  const canvas = document.getElementById('activityChart');
+  if (!canvas || labels.length === 0) return;
+
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Views',
+          data: views,
+          borderColor: 'rgba(255,255,255,0.8)',
+          backgroundColor: 'rgba(255,255,255,0.05)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          borderWidth: 2,
+        },
+        {
+          label: 'Clicks',
+          data: clicks,
+          borderColor: 'rgba(161,161,170,0.7)',
+          backgroundColor: 'rgba(161,161,170,0.05)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 2,
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          labels: { color: '#a1a1aa', boxWidth: 12, font: { size: 12 } },
+        },
+        tooltip: {
+          backgroundColor: '#18181b',
+          borderColor: '#3f3f46',
+          borderWidth: 1,
+          titleColor: '#e4e4e7',
+          bodyColor: '#a1a1aa',
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: '#52525b', font: { size: 11 }, maxTicksLimit: 10 },
+          grid: { color: 'rgba(63,63,70,0.4)' },
+        },
+        y: {
+          ticks: { color: '#52525b', font: { size: 11 } },
+          grid: { color: 'rgba(63,63,70,0.4)' },
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+})();
+</script>
+
 </body>
 </html>

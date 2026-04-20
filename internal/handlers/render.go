@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/adammcgrogan/fader/internal/models"
@@ -78,6 +79,20 @@ var funcMap = template.FuncMap{
 			return 0
 		}
 		return val * 100 / max
+	},
+	"countryFlag": func(code string) string {
+		if len(code) != 2 {
+			return "🌐"
+		}
+		r1 := rune(code[0]-'A') + 0x1F1E6
+		r2 := rune(code[1]-'A') + 0x1F1E6
+		return string([]rune{r1, r2})
+	},
+	"ctr": func(clicks, views int) string {
+		if views == 0 {
+			return "0%"
+		}
+		return strconv.Itoa(clicks*100/views) + "%"
 	},
 }
 

@@ -283,28 +283,29 @@ func nullStr(s string) interface{} {
 	return s
 }
 
-func (q *Queries) GetAnalyticsSummary(ctx context.Context, profileID uuid.UUID) (*models.AnalyticsSummary, error) {
-	summary := &models.AnalyticsSummary{}
+func (q *Queries) GetAnalyticsSummary(ctx context.Context, profileID uuid.UUID, days int) (*models.AnalyticsSummary, error) {
+	summary := &models.AnalyticsSummary{Days: days}
 
-	// Total views & clicks
+	// Total views, clicks, unique visitors (all-time)
 	err := q.pool.QueryRow(ctx,
 		`SELECT
 			COUNT(*) FILTER (WHERE event_type = 'view') AS views,
-			COUNT(*) FILTER (WHERE event_type = 'click') AS clicks
+			COUNT(*) FILTER (WHERE event_type = 'click') AS clicks,
+			COUNT(DISTINCT ip_hash) FILTER (WHERE event_type = 'view') AS unique_visitors
 		 FROM analytics_events WHERE profile_id = $1`,
 		profileID,
-	).Scan(&summary.TotalViews, &summary.TotalClicks)
+	).Scan(&summary.TotalViews, &summary.TotalClicks, &summary.UniqueVisitors)
 	if err != nil {
 		return nil, fmt.Errorf("totals: %w", err)
 	}
 
-	// Views by day (last 30 days)
+	// Views by day
 	rows, err := q.pool.Query(ctx,
 		`SELECT DATE(created_at)::text AS day, COUNT(*) AS views
 		 FROM analytics_events
-		 WHERE profile_id = $1 AND event_type = 'view' AND created_at > NOW() - INTERVAL '30 days'
+		 WHERE profile_id = $1 AND event_type = 'view' AND created_at > NOW() - ($2 * INTERVAL '1 day')
 		 GROUP BY day ORDER BY day ASC`,
-		profileID,
+		profileID, days,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("views by day: %w", err)
@@ -316,6 +317,26 @@ func (q *Queries) GetAnalyticsSummary(ctx context.Context, profileID uuid.UUID) 
 			return nil, err
 		}
 		summary.ViewsByDay = append(summary.ViewsByDay, s)
+	}
+
+	// Clicks by day
+	clickDayRows, err := q.pool.Query(ctx,
+		`SELECT DATE(created_at)::text AS day, COUNT(*) AS views
+		 FROM analytics_events
+		 WHERE profile_id = $1 AND event_type = 'click' AND created_at > NOW() - ($2 * INTERVAL '1 day')
+		 GROUP BY day ORDER BY day ASC`,
+		profileID, days,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("clicks by day: %w", err)
+	}
+	defer clickDayRows.Close()
+	for clickDayRows.Next() {
+		var s models.DailyStat
+		if err := clickDayRows.Scan(&s.Date, &s.Views); err != nil {
+			return nil, err
+		}
+		summary.ClicksByDay = append(summary.ClicksByDay, s)
 	}
 
 	// Clicks by block
@@ -380,6 +401,15 @@ func (q *Queries) GetAnalyticsSummary(ctx context.Context, profileID uuid.UUID) 
 	}
 
 	return summary, nil
+}
+
+func (q *Queries) PurgeOldAnalyticsEvents(ctx context.Context) (int64, error) {
+	tag, err := q.pool.Exec(ctx,
+		`DELETE FROM analytics_events WHERE created_at < NOW() - INTERVAL '90 days'`)
+	if err != nil {
+		return 0, err
+	}
+	return tag.RowsAffected(), nil
 }
 
 // ── Subscriptions ──────────────────────────────────────────────────────────
