@@ -54,6 +54,9 @@ func main() {
 	dashboard := handlers.NewDashboardHandler(queries)
 	analytics := handlers.NewAnalyticsHandler(queries)
 	stripeH := handlers.NewStripeHandler(queries, cfg)
+	if cfg.AdminUserID == "" {
+		log.Println("warning: ADMIN_USER_ID not set — admin panel is inaccessible")
+	}
 	admin := handlers.NewAdminHandler(queries, cfg.AdminUserID)
 
 	authMW, err := middleware.NewAuthMiddleware(cfg.SupabaseURL)
@@ -165,6 +168,22 @@ func main() {
 		IdleTimeout:       120 * time.Second,
 		MaxHeaderBytes:    1 << 20,
 	}
+
+	// Purge analytics events older than 90 days, once at startup then every 24h
+	go func() {
+		purge := func() {
+			n, err := queries.PurgeOldAnalyticsEvents(context.Background())
+			if err != nil {
+				log.Printf("analytics purge error: %v", err)
+			} else if n > 0 {
+				log.Printf("analytics purge: removed %d rows older than 90 days", n)
+			}
+		}
+		purge()
+		for range time.Tick(24 * time.Hour) {
+			purge()
+		}
+	}()
 
 	serverErr := make(chan error, 1)
 	go func() {
