@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/adammcgrogan/fader/internal/db"
@@ -78,8 +79,8 @@ func (h *ProfileHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := extractURL(block.Type, block.Data)
-	if url == "" {
+	target := extractURL(block.Type, block.Data)
+	if !isSafeRedirectURL(target) {
 		http.NotFound(w, r)
 		return
 	}
@@ -101,7 +102,27 @@ func (h *ProfileHandler) Redirect(w http.ResponseWriter, r *http.Request) {
 		ua,
 	)
 
-	http.Redirect(w, r, url, http.StatusFound)
+	http.Redirect(w, r, target, http.StatusFound)
+}
+
+// isSafeRedirectURL ensures a link stored in block data is an absolute
+// http(s) URL before we 302 a visitor to it. Prevents open-redirect abuse
+// via javascript:, data:, or protocol-relative URLs.
+func isSafeRedirectURL(raw string) bool {
+	if raw == "" {
+		return false
+	}
+	u, err := url.Parse(raw)
+	if err != nil {
+		return false
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return false
+	}
+	if u.Host == "" {
+		return false
+	}
+	return true
 }
 
 func hashIP(remote string) string {
