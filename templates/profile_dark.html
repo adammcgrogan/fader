@@ -116,7 +116,7 @@
   <p class="text-zinc-500 text-sm text-center leading-relaxed">{{$d.Text}}</p>
 {{else if eq .Type "social"}}
   {{$d := unmarshalSocial .Data}}
-  <a href="/r/{{.ID}}" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
     <span class="absolute left-4 text-zinc-600">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
     </span>
@@ -124,7 +124,7 @@
   </a>
 {{else if eq .Type "music_link"}}
   {{$d := unmarshalMusicLink .Data}}
-  <a href="/r/{{.ID}}" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
     <span class="absolute left-4 text-zinc-600">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/></svg>
     </span>
@@ -149,7 +149,7 @@
   </div>
 {{else if eq .Type "custom_link"}}
   {{$d := unmarshalCustomLink .Data}}
-  <a href="/r/{{.ID}}" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
     <span class="absolute left-4 text-zinc-600">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
     </span>
@@ -163,7 +163,7 @@
   </div>
 {{else if eq .Type "video_link"}}
   {{$d := unmarshalVideoLink .Data}}
-  <a href="/r/{{.ID}}" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
     <span class="absolute left-4 text-zinc-600">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
     </span>
@@ -187,7 +187,7 @@
   {{end}}
 {{else if eq .Type "ra_link"}}
   {{$d := unmarshalRALink .Data}}
-  <a href="/r/{{.ID}}" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
     <span class="absolute left-4 font-black text-sm text-orange-500">RA</span>
     <span class="flex-1 text-center">Resident Advisor</span>
   </a>
