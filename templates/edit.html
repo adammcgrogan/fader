@@ -243,9 +243,11 @@
           <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
           <div class="flex items-stretch bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-zinc-600 transition">
             <input name="handle" value="{{.Profile.Handle}}" autocapitalize="none" style="text-transform:lowercase"
+              hx-get="/handles/check" hx-trigger="keyup changed delay:300ms" hx-target="#handle-availability" hx-swap="innerHTML"
               class="flex-1 px-4 py-2.5 bg-transparent text-sm text-white focus:outline-none min-w-0">
             <span class="px-3 flex items-center text-zinc-600 text-xs border-l border-zinc-800 shrink-0 font-mono">.{{baseDomain}}</span>
           </div>
+          <div id="handle-availability" class="min-h-4"></div>
           <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-100 transition">Update</button>
         </form>
       </div>

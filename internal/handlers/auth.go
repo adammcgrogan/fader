@@ -16,6 +16,36 @@ type AuthHandler struct {
 	auth gotrue.Client
 }
 
+// CheckHandle returns an HTMX-friendly fragment indicating whether a handle is
+// available. Called from the register/settings forms as the user types.
+func (h *AuthHandler) CheckHandle(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	raw := strings.ToLower(strings.TrimSpace(r.URL.Query().Get("handle")))
+	if raw == "" {
+		w.Write([]byte(`<span class="text-xs text-zinc-600">&nbsp;</span>`))
+		return
+	}
+	if err := validate.Handle(raw); err != nil {
+		w.Write([]byte(`<span class="text-xs text-amber-400">` + htmlEscape(err.Error()) + `</span>`))
+		return
+	}
+	exists, err := h.db.HandleExists(r.Context(), raw)
+	if err != nil {
+		w.Write([]byte(`<span class="text-xs text-zinc-600">&nbsp;</span>`))
+		return
+	}
+	if exists {
+		w.Write([]byte(`<span class="text-xs text-red-400">` + htmlEscape(raw) + ` is taken</span>`))
+		return
+	}
+	w.Write([]byte(`<span class="text-xs text-green-400">` + htmlEscape(raw) + `.fader.bio is available</span>`))
+}
+
+func htmlEscape(s string) string {
+	r := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;", "'", "&#39;")
+	return r.Replace(s)
+}
+
 func (h *AuthHandler) ShowForgotPassword(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "auth_forgot_password.html", nil)
 }

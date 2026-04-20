@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create your page - fader.bio</title>
   <link rel="stylesheet" href="/static/css/app.css?v=3">
+  <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
 </head>
 <body class="bg-zinc-950 text-white min-h-screen flex flex-col items-center justify-center px-4 py-12">
 
@@ -28,10 +29,13 @@
           <div class="flex items-stretch bg-zinc-800 border border-zinc-700 rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-zinc-500 focus-within:border-zinc-500 transition">
             <input name="handle" type="text" placeholder="yourname" value="{{.Handle}}" required
               autocomplete="off" autocapitalize="none" style="text-transform:lowercase"
+              hx-get="/handles/check" hx-trigger="keyup changed delay:300ms" hx-target="#handle-status" hx-swap="innerHTML"
               class="flex-1 px-4 py-3 bg-transparent text-sm text-white placeholder-zinc-600 focus:outline-none min-w-0">
             <span class="px-3 flex items-center text-zinc-500 text-xs border-l border-zinc-700 shrink-0 whitespace-nowrap">.fader.bio</span>
           </div>
-          <p class="text-xs text-zinc-600">Lowercase letters, numbers, hyphens · 3–30 chars</p>
+          <div id="handle-status" class="min-h-4">
+            <p class="text-xs text-zinc-600">Lowercase letters, numbers, hyphens · 3–30 chars</p>
+          </div>
         </div>
 
         <div class="space-y-1.5">
