@@ -76,16 +76,22 @@ func (h *AnalyticsHandler) Show(w http.ResponseWriter, r *http.Request) {
 
 	allProfiles, _ := h.db.GetProfilesByUserID(r.Context(), userID)
 
-	renderTemplate(w, "analytics.html", map[string]any{
-		"Profile":       profile,
-		"Summary":       summary,
-		"AllProfiles":   allProfiles,
-		"User":          user,
-		"Days":          days,
-		"ChartLabels":   template.JS(mustJSON(chartLabels(summary))),
-		"ChartViews":    template.JS(mustJSON(chartValues(summary.ViewsByDay))),
-		"ChartClicks":   template.JS(mustJSON(chartValues(summary.ClicksByDay))),
-	})
+	data := map[string]any{
+		"Profile":     profile,
+		"Summary":     summary,
+		"AllProfiles": allProfiles,
+		"User":        user,
+		"Days":        days,
+		"ChartLabels": template.JS(mustJSON(chartLabels(summary))),
+		"ChartViews":  template.JS(mustJSON(chartValues(summary.ViewsByDay))),
+		"ChartClicks": template.JS(mustJSON(chartValues(summary.ClicksByDay))),
+	}
+
+	if r.Header.Get("HX-Request") == "true" {
+		renderPartial(w, "analytics_content", data)
+		return
+	}
+	renderTemplate(w, "analytics.html", data)
 }
 
 func chartLabels(s *models.AnalyticsSummary) []string {

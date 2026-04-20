@@ -6,6 +6,7 @@
   <title>Analytics – {{.Profile.Handle}}.fader.bio</title>
   <link rel="stylesheet" href="/static/css/app.css?v=3">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.10/dist/htmx.min.js"></script>
 </head>
 <body class="bg-zinc-950 text-white min-h-screen">
 
@@ -26,7 +27,14 @@
   {{end}}
 </header>
 
-<main class="max-w-4xl mx-auto py-10 px-6 space-y-6">
+<main id="analytics-content" class="max-w-4xl mx-auto py-10 px-6 space-y-6">
+  {{template "analytics_content" .}}
+</main>
+
+</body>
+</html>
+
+{{define "analytics_content"}}
 
   <!-- Stat cards -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -51,11 +59,15 @@
   <!-- Day range tabs -->
   <div class="flex gap-2">
     {{range (list "7" "30" "90")}}
-    <a href="/analytics?profile={{$.Profile.ID}}&days={{.}}"
+    <button
+      hx-get="/analytics?profile={{$.Profile.ID}}&days={{.}}"
+      hx-target="#analytics-content"
+      hx-swap="innerHTML"
+      hx-push-url="true"
       class="px-4 py-1.5 rounded-lg text-sm font-medium transition
         {{if eq . (printf "%d" $.Days)}}bg-white text-black{{else}}bg-zinc-800 text-zinc-400 hover:text-white{{end}}">
       {{.}}d
-    </a>
+    </button>
     {{end}}
   </div>
 
@@ -145,10 +157,9 @@
   </div>
   {{end}}
 
-</main>
-
 <script>
 (function() {
+  if (window._faderChart) { window._faderChart.destroy(); }
   const labels = {{.ChartLabels}};
   const viewsMap = {{.ChartViews}};
   const clicksMap = {{.ChartClicks}};
@@ -158,7 +169,7 @@
   const canvas = document.getElementById('activityChart');
   if (!canvas || labels.length === 0) return;
 
-  new Chart(canvas, {
+  window._faderChart = new Chart(canvas, {
     type: 'line',
     data: {
       labels,
@@ -190,9 +201,7 @@
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: {
-          labels: { color: '#a1a1aa', boxWidth: 12, font: { size: 12 } },
-        },
+        legend: { labels: { color: '#a1a1aa', boxWidth: 12, font: { size: 12 } } },
         tooltip: {
           backgroundColor: '#18181b',
           borderColor: '#3f3f46',
@@ -216,6 +225,4 @@
   });
 })();
 </script>
-
-</body>
-</html>
+{{end}}
