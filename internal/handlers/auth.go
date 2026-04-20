@@ -196,10 +196,12 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	secure := !strings.Contains(BaseDomain, "localhost")
+	cookieDomain := cookieDomainFor(BaseDomain)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "sb-token",
 		Value:    "",
 		Path:     "/",
+		Domain:   cookieDomain,
 		MaxAge:   -1,
 		HttpOnly: true,
 		Secure:   secure,
@@ -210,13 +212,23 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 
 func setAuthCookie(w http.ResponseWriter, token string) {
 	secure := !strings.Contains(BaseDomain, "localhost")
+	cookieDomain := cookieDomainFor(BaseDomain)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "sb-token",
 		Value:    token,
 		Path:     "/",
+		Domain:   cookieDomain,
 		MaxAge:   60 * 60 * 24 * 7,
 		HttpOnly: true,
 		Secure:   secure,
 		SameSite: http.SameSiteLaxMode,
 	})
+}
+
+func cookieDomainFor(baseDomain string) string {
+	host := strings.Split(baseDomain, ":")[0]
+	if host == "localhost" {
+		return ""
+	}
+	return "." + host
 }
