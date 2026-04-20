@@ -98,6 +98,7 @@ func main() {
 	mux.HandleFunc("GET /auth/reset-password", auth.ShowResetPassword)
 	mux.HandleFunc("POST /auth/set-password", auth.SetPassword)
 	mux.HandleFunc("GET /handles/check", auth.CheckHandle)
+	mux.HandleFunc("GET /changelog", handlers.Changelog)
 
 	// Outbound click tracking (public)
 	mux.HandleFunc("/r/", profile.Redirect)

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Changelog – fader.bio</title>
+  <link rel="stylesheet" href="/static/css/app.css?v=3">
+</head>
+<body class="bg-zinc-950 text-white min-h-screen">
+
+<header class="border-b border-zinc-900 px-6 py-4 flex items-center gap-3">
+  <a href="/" class="text-sm text-zinc-400 hover:text-white transition">← fader.bio</a>
+  <span class="text-zinc-700">/</span>
+  <span class="text-sm font-semibold">Changelog</span>
+</header>
+
+<main class="max-w-2xl mx-auto py-14 px-6">
+
+  <div class="mb-10 space-y-1">
+    <h1 class="text-2xl font-bold tracking-tight">What's new</h1>
+    <p class="text-zinc-500 text-sm">Every update to fader.bio, most recent first.</p>
+  </div>
+
+  {{if not .Commits}}
+  <p class="text-zinc-600 text-sm">No commits found.</p>
+  {{else}}
+
+  <!-- Timeline -->
+  <div class="relative">
+    <!-- Vertical line -->
+    <div class="absolute left-[5px] top-2 bottom-2 w-px bg-zinc-800"></div>
+
+    <div class="space-y-8">
+      {{range .Commits}}
+      <div class="flex gap-5 group">
+
+        <!-- Dot -->
+        <div class="relative flex-shrink-0 mt-1.5">
+          <div class="w-[11px] h-[11px] rounded-full border-2 transition-colors
+            {{if eq .Type "feat"}}border-violet-500 bg-violet-950 group-hover:bg-violet-500
+            {{else if eq .Type "fix"}}border-amber-500 bg-amber-950 group-hover:bg-amber-500
+            {{else if eq .Type "perf"}}border-green-500 bg-green-950 group-hover:bg-green-500
+            {{else}}border-zinc-700 bg-zinc-900 group-hover:bg-zinc-600
+            {{end}}"></div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 min-w-0 pb-2">
+          <div class="flex items-center gap-2 mb-0.5 flex-wrap">
+
+            <!-- Type badge -->
+            {{if eq .Type "feat"}}
+            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-violet-950 text-violet-400 border border-violet-900">feature</span>
+            {{else if eq .Type "fix"}}
+            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-900">fix</span>
+            {{else if eq .Type "perf"}}
+            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-green-950 text-green-400 border border-green-900">perf</span>
+            {{else if eq .Type "docs"}}
+            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">docs</span>
+            {{else if eq .Type "style"}}
+            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">style</span>
+            {{else if eq .Type "chore"}}
+            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">chore</span>
+            {{else if eq .Type "refactor"}}
+            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">refactor</span>
+            {{end}}
+
+            {{if .Scope}}
+            <span class="text-xs text-zinc-600 font-mono">{{.Scope}}</span>
+            {{end}}
+
+            <span class="text-xs text-zinc-600 ml-auto font-mono">{{.DateStr}}</span>
+          </div>
+
+          <p class="text-sm text-zinc-200 leading-snug capitalize">{{.Message}}</p>
+          <p class="text-[11px] text-zinc-700 font-mono mt-0.5">{{.Hash}}</p>
+        </div>
+
+      </div>
+      {{end}}
+    </div>
+  </div>
+
+  {{end}}
+
+</main>
+</body>
+</html>
