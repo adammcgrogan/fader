@@ -3,9 +3,9 @@
   :root {
     {{if .AccentColor}}--fader-accent: {{.AccentColor}};{{end}}
     {{if .FontFamily}}
-      {{if eq .FontFamily "serif"}}--fader-font: Georgia, 'Times New Roman', serif;{{end}}
-      {{if eq .FontFamily "mono"}}--fader-font: ui-monospace, SFMono-Regular, Menlo, monospace;{{end}}
-      {{if eq .FontFamily "rounded"}}--fader-font: ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;{{end}}
+      {{if eq (deref .FontFamily) "serif"}}--fader-font: Georgia, 'Times New Roman', serif;{{end}}
+      {{if eq (deref .FontFamily) "mono"}}--fader-font: ui-monospace, SFMono-Regular, Menlo, monospace;{{end}}
+      {{if eq (deref .FontFamily) "rounded"}}--fader-font: ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;{{end}}
     {{end}}
   }
   {{if .AccentColor}}
