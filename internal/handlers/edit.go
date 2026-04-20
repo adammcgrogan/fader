@@ -168,25 +168,47 @@ func (h *EditHandler) ReorderBlocks(w http.ResponseWriter, r *http.Request) {
 
 	// Expect: block_order[]=id1&block_order[]=id2...
 	ids := r.Form["block_order[]"]
-	positions := make(map[uuid.UUID]int, len(ids))
+	if len(ids) == 0 {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
 
+	firstID, err := uuid.Parse(ids[0])
+	if err != nil {
+		http.Error(w, "invalid block id", http.StatusBadRequest)
+		return
+	}
+	firstBlock, err := h.db.GetBlockByID(r.Context(), firstID)
+	if err != nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	profile, err := h.db.GetProfileByID(r.Context(), firstBlock.ProfileID)
+	if err != nil || profile.UserID != userID {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	// Build the set of block IDs the caller is allowed to reorder.
+	owned, err := h.db.GetBlocksByProfileID(r.Context(), profile.ID)
+	if err != nil {
+		http.Error(w, "could not load blocks", http.StatusInternalServerError)
+		return
+	}
+	ownedSet := make(map[uuid.UUID]struct{}, len(owned))
+	for _, b := range owned {
+		ownedSet[b.ID] = struct{}{}
+	}
+
+	positions := make(map[uuid.UUID]int, len(ids))
 	for i, idStr := range ids {
 		id, err := uuid.Parse(idStr)
 		if err != nil {
 			continue
 		}
-		// Verify ownership on first block only (all blocks belong to same profile)
-		if i == 0 {
-			block, err := h.db.GetBlockByID(r.Context(), id)
-			if err != nil {
-				http.Error(w, "not found", http.StatusNotFound)
-				return
-			}
-			profile, err := h.db.GetProfileByID(r.Context(), block.ProfileID)
-			if err != nil || profile.UserID != userID {
-				http.Error(w, "forbidden", http.StatusForbidden)
-				return
-			}
+		if _, ok := ownedSet[id]; !ok {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
 		}
 		positions[id] = i
 	}
