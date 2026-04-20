@@ -88,6 +88,7 @@ var funcMap = template.FuncMap{
 		r2 := rune(code[1]-'A') + 0x1F1E6
 		return string([]rune{r1, r2})
 	},
+	"commitTypeLabel": commitTypeLabel,
 	"ctr": func(clicks, views int) string {
 		if views == 0 {
 			return "0%"

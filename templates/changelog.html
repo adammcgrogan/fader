@@ -14,71 +14,60 @@
   <span class="text-sm font-semibold">Changelog</span>
 </header>
 
-<main class="max-w-2xl mx-auto py-14 px-6">
+<main class="max-w-3xl mx-auto px-6 py-16">
 
-  <div class="mb-10 space-y-1">
-    <h1 class="text-2xl font-bold tracking-tight">What's new</h1>
-    <p class="text-zinc-500 text-sm">Every update to fader.bio, most recent first.</p>
-  </div>
+  <h1 class="text-3xl font-bold tracking-tight">What's new</h1>
+  <p class="text-zinc-500 text-sm mt-2 mb-16">Every update to fader.bio, most recent first.</p>
 
-  {{if not .Commits}}
-  <p class="text-zinc-600 text-sm">No commits found.</p>
+  {{if not .Groups}}
+  <p class="text-zinc-600 text-sm">No changelog available.</p>
   {{else}}
 
-  <!-- Timeline -->
-  <div class="relative">
-    <!-- Vertical line -->
-    <div class="absolute left-[5px] top-2 bottom-2 w-px bg-zinc-800"></div>
+  <div class="space-y-10">
+    {{range .Groups}}
+    <div>
 
-    <div class="space-y-8">
-      {{range .Commits}}
-      <div class="flex gap-5 group">
+      <!-- Date -->
+      <p class="text-xs text-zinc-600 font-mono mb-3">{{.Date}}</p>
+      <div class="border-t border-zinc-800/60 mb-4"></div>
 
-        <!-- Dot -->
-        <div class="relative flex-shrink-0 mt-1.5">
-          <div class="w-[11px] h-[11px] rounded-full border-2 transition-colors
-            {{if eq .Type "feat"}}border-violet-500 bg-violet-950 group-hover:bg-violet-500
-            {{else if eq .Type "fix"}}border-amber-500 bg-amber-950 group-hover:bg-amber-500
-            {{else if eq .Type "perf"}}border-green-500 bg-green-950 group-hover:bg-green-500
-            {{else}}border-zinc-700 bg-zinc-900 group-hover:bg-zinc-600
-            {{end}}"></div>
-        </div>
+      <!-- Commits — three-column grid: badge | message | meta -->
+      <div class="space-y-1">
+        {{range .Commits}}
+        <div class="grid items-start gap-4 py-2 px-3 rounded-lg hover:bg-white/[.03] transition-colors -mx-3"
+             style="grid-template-columns: auto 1fr auto;">
 
-        <!-- Content -->
-        <div class="flex-1 min-w-0 pb-2">
-          <div class="flex items-center gap-2 mb-0.5 flex-wrap">
-
-            <!-- Type badge -->
+          <!-- Badge -->
+          <div>
             {{if eq .Type "feat"}}
-            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-violet-950 text-violet-400 border border-violet-900">feature</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-violet-950 text-violet-300 border border-violet-800/60 whitespace-nowrap">feature</span>
             {{else if eq .Type "fix"}}
-            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-900">fix</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-amber-950 text-amber-300 border border-amber-800/60 whitespace-nowrap">fix</span>
             {{else if eq .Type "perf"}}
-            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-green-950 text-green-400 border border-green-900">perf</span>
-            {{else if eq .Type "docs"}}
-            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">docs</span>
-            {{else if eq .Type "style"}}
-            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">style</span>
-            {{else if eq .Type "chore"}}
-            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">chore</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-green-950 text-green-300 border border-green-800/60 whitespace-nowrap">perf</span>
             {{else if eq .Type "refactor"}}
-            <span class="text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-500 border border-zinc-700">refactor</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-blue-950 text-blue-300 border border-blue-800/60 whitespace-nowrap">refactor</span>
+            {{else}}
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-zinc-800 text-zinc-400 border border-zinc-700/60 whitespace-nowrap">{{commitTypeLabel .Type}}</span>
             {{end}}
-
-            {{if .Scope}}
-            <span class="text-xs text-zinc-600 font-mono">{{.Scope}}</span>
-            {{end}}
-
-            <span class="text-xs text-zinc-600 ml-auto font-mono">{{.DateStr}}</span>
           </div>
 
-          <p class="text-sm text-zinc-200 leading-snug capitalize">{{.Message}}</p>
-          <p class="text-[11px] text-zinc-700 font-mono mt-0.5">{{.Hash}}</p>
-        </div>
+          <!-- Message -->
+          <p class="text-sm text-zinc-300 leading-snug">{{.Message}}</p>
 
+          <!-- Time · hash -->
+          <div class="flex items-center gap-1.5 text-[11px] font-mono text-zinc-700 whitespace-nowrap">
+            <span>{{.Time}}</span>
+            <span>·</span>
+            <span>{{.Hash}}</span>
+          </div>
+
+        </div>
+        {{end}}
       </div>
-      {{end}}
+
     </div>
+    {{end}}
   </div>
 
   {{end}}

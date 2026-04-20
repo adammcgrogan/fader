@@ -47,6 +47,7 @@ func main() {
 
 	handlers.BaseDomain = cfg.BaseDomain
 	handlers.LoadTemplates("templates")
+	handlers.LoadChangelog()
 
 	auth := handlers.NewAuthHandler(queries, supa.Auth)
 	profile := handlers.NewProfileHandler(queries)
