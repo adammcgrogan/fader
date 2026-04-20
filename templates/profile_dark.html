@@ -14,8 +14,9 @@
   <meta name="twitter:title" content="{{.Profile.DisplayName}}">
   {{if .Profile.AvatarURL}}<meta name="twitter:image" content="{{.Profile.AvatarURL}}">{{end}}
   <link rel="stylesheet" href="/static/css/app.css?v=3">
+  {{if .OwnerIsPro}}{{template "profile_branding_style" .Profile}}{{end}}
 </head>
-<body class="bg-zinc-950 text-white min-h-screen">
+<body class="bg-zinc-950 text-white min-h-screen" style="{{if .OwnerIsPro}}{{if .Profile.BackgroundColor}}background-color:{{.Profile.BackgroundColor}};{{end}}{{if .Profile.FontFamily}}font-family:var(--fader-font);{{end}}{{end}}">
   <main class="max-w-lg mx-auto py-14 px-4 space-y-5">
     <div class="flex flex-col items-center text-center space-y-3">
       {{if .Profile.AvatarURL}}
@@ -47,9 +48,11 @@
           Share
         </button>
       </div>
+      {{if not (and .OwnerIsPro .Profile.HideFooter)}}
       <p class="text-center text-xs text-zinc-700">
         <a href="https://fader.bio" class="hover:text-zinc-500 transition">powered by fader.bio</a>
       </p>
+      {{end}}
     </footer>
   </main>
 </body>

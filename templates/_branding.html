@@ -1,0 +1,16 @@
+{{define "profile_branding_style"}}
+<style>
+  :root {
+    {{if .AccentColor}}--fader-accent: {{.AccentColor}};{{end}}
+    {{if .FontFamily}}
+      {{if eq .FontFamily "serif"}}--fader-font: Georgia, 'Times New Roman', serif;{{end}}
+      {{if eq .FontFamily "mono"}}--fader-font: ui-monospace, SFMono-Regular, Menlo, monospace;{{end}}
+      {{if eq .FontFamily "rounded"}}--fader-font: ui-rounded, 'SF Pro Rounded', system-ui, sans-serif;{{end}}
+    {{end}}
+  }
+  {{if .AccentColor}}
+  a:hover, button:hover { color: {{.AccentColor}}; }
+  .text-blue-500, .text-orange-500 { color: {{.AccentColor}} !important; }
+  {{end}}
+</style>
+{{end}}

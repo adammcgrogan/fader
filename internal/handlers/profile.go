@@ -58,9 +58,15 @@ func (h *ProfileHandler) ServeProfile(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 
+	ownerIsPro := false
+	if owner, err := h.db.GetUserByID(r.Context(), profile.UserID); err == nil {
+		ownerIsPro = owner.IsPro()
+	}
+
 	renderTemplate(w, "profile_"+profile.Template+".html", map[string]any{
-		"Profile": profile,
-		"Blocks":  blocks,
+		"Profile":    profile,
+		"Blocks":     blocks,
+		"OwnerIsPro": ownerIsPro,
 	})
 }
 

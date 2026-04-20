@@ -328,6 +328,72 @@
         </form>
       </div>
 
+      <!-- Branding (Pro) -->
+      <div class="px-6 py-5 border-b border-zinc-900">
+        <div class="flex items-center justify-between mb-4">
+          <p class="text-xs font-bold text-zinc-500 uppercase tracking-wider">Branding</p>
+          {{if not .User.IsPro}}
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-violet-600 to-pink-600 text-white">PRO</span>
+          {{end}}
+        </div>
+
+        {{if not .User.IsPro}}
+        <div class="rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-center space-y-3">
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Pick your accent colour, change the background, swap the font and hide the fader.bio footer.
+          </p>
+          <a href="/billing/checkout"
+            class="inline-block w-full py-2.5 bg-gradient-to-r from-violet-600 to-pink-600 text-white text-sm font-bold rounded-xl hover:opacity-90 transition">
+            Unlock with Pro
+          </a>
+        </div>
+        {{else}}
+        <form hx-patch="/profile/branding" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
+          <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-zinc-400">Accent colour</label>
+            <div class="flex items-center gap-2">
+              <input name="accent_color" type="color" value="{{if .Profile.AccentColor}}{{.Profile.AccentColor}}{{else}}#ffffff{{end}}"
+                class="w-11 h-11 p-1 rounded-xl bg-zinc-900 border border-zinc-800 cursor-pointer shrink-0">
+              <input type="text" value="{{if .Profile.AccentColor}}{{.Profile.AccentColor}}{{else}}not set{{end}}" readonly
+                class="flex-1 px-3 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-500 font-mono focus:outline-none"
+                onfocus="this.previousElementSibling.click()">
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-zinc-400">Background colour</label>
+            <div class="flex items-center gap-2">
+              <input name="background_color" type="color" value="{{if .Profile.BackgroundColor}}{{.Profile.BackgroundColor}}{{else}}#000000{{end}}"
+                class="w-11 h-11 p-1 rounded-xl bg-zinc-900 border border-zinc-800 cursor-pointer shrink-0">
+              <input type="text" value="{{if .Profile.BackgroundColor}}{{.Profile.BackgroundColor}}{{else}}theme default{{end}}" readonly
+                class="flex-1 px-3 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-xs text-zinc-500 font-mono focus:outline-none">
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-zinc-400">Font</label>
+            <select name="font_family"
+              class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white focus:outline-none focus:ring-1 focus:ring-zinc-600 transition">
+              <option value="default" {{if or (not .Profile.FontFamily) (eq (deref .Profile.FontFamily) "default")}}selected{{end}}>Default (sans-serif)</option>
+              <option value="serif" {{if eq (deref .Profile.FontFamily) "serif"}}selected{{end}}>Serif</option>
+              <option value="mono" {{if eq (deref .Profile.FontFamily) "mono"}}selected{{end}}>Mono</option>
+              <option value="rounded" {{if eq (deref .Profile.FontFamily) "rounded"}}selected{{end}}>Rounded</option>
+            </select>
+          </div>
+
+          <label class="flex items-center gap-3 px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl cursor-pointer">
+            <input name="hide_footer" type="checkbox" value="on" {{if .Profile.HideFooter}}checked{{end}}
+              class="w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-white focus:ring-1 focus:ring-zinc-500">
+            <span class="text-sm text-zinc-300">Hide fader.bio footer</span>
+          </label>
+
+          <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-100 transition">Save branding</button>
+        </form>
+        {{end}}
+      </div>
+
       <!-- Status -->
       <div class="px-6 py-3">
         <div id="settings-status" class="text-xs text-green-400 text-center min-h-4"></div>

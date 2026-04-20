@@ -131,6 +131,7 @@ func main() {
 	mux.Handle("PATCH /profile/handle", requireAuth(http.HandlerFunc(edit.UpdateHandle)))
 	mux.Handle("POST /profile/avatar", requireAuth(http.HandlerFunc(edit.UploadAvatar)))
 	mux.Handle("PATCH /profile/genres", requireAuth(http.HandlerFunc(edit.UpdateGenres)))
+	mux.Handle("PATCH /profile/branding", requireAuth(http.HandlerFunc(edit.UpdateBranding)))
 	mux.Handle("DELETE /profiles/{id}", requireAuth(http.HandlerFunc(edit.DeleteProfile)))
 
 	// Analytics

@@ -18,8 +18,9 @@
     .neon-card { border: 1px solid rgba(139,92,246,0.3); }
     .neon-card:hover { border-color: rgba(139,92,246,0.7); box-shadow: 0 0 16px rgba(139,92,246,0.2); }
   </style>
+  {{if .OwnerIsPro}}{{template "profile_branding_style" .Profile}}{{end}}
 </head>
-<body class="bg-black text-white min-h-screen">
+<body class="bg-black text-white min-h-screen" style="{{if .OwnerIsPro}}{{if .Profile.BackgroundColor}}background-color:{{.Profile.BackgroundColor}};{{end}}{{if .Profile.FontFamily}}font-family:var(--fader-font);{{end}}{{end}}">
   <main class="max-w-lg mx-auto py-14 px-4 space-y-5">
     <div class="flex flex-col items-center text-center space-y-3">
       {{if .Profile.AvatarURL}}
@@ -51,9 +52,11 @@
           Share
         </button>
       </div>
+      {{if not (and .OwnerIsPro .Profile.HideFooter)}}
       <p class="text-center text-xs text-zinc-800">
         <a href="https://fader.bio" class="hover:text-zinc-600 transition">powered by fader.bio</a>
       </p>
+      {{end}}
     </footer>
   </main>
 </body>

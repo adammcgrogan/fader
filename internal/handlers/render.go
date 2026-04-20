@@ -57,6 +57,12 @@ var funcMap = template.FuncMap{
 	},
 	"join": strings.Join,
 	"list": func(items ...string) []string { return items },
+	"deref": func(s *string) string {
+		if s == nil {
+			return ""
+		}
+		return *s
+	},
 	"blockLabel": func(t string) string {
 		labels := map[string]string{
 			"social": "Social Media", "music_link": "Music", "custom_link": "Custom",

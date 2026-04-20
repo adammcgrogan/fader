@@ -21,15 +21,19 @@ func (u *User) IsPro() bool {
 }
 
 type Profile struct {
-	ID          uuid.UUID  `db:"id"`
-	UserID      uuid.UUID  `db:"user_id"`
-	Handle      string     `db:"handle"`
-	DisplayName string     `db:"display_name"`
-	AvatarURL   *string    `db:"avatar_url"`
-	Template    string     `db:"template"`
-	Bio         *string    `db:"bio"`
-	Genres      []string   `db:"genres"`
-	CreatedAt   time.Time  `db:"created_at"`
+	ID              uuid.UUID `db:"id"`
+	UserID          uuid.UUID `db:"user_id"`
+	Handle          string    `db:"handle"`
+	DisplayName     string    `db:"display_name"`
+	AvatarURL       *string   `db:"avatar_url"`
+	Template        string    `db:"template"`
+	Bio             *string   `db:"bio"`
+	Genres          []string  `db:"genres"`
+	AccentColor     *string   `db:"accent_color"`
+	BackgroundColor *string   `db:"background_color"`
+	FontFamily      *string   `db:"font_family"`
+	HideFooter      bool      `db:"hide_footer"`
+	CreatedAt       time.Time `db:"created_at"`
 }
 
 type Block struct {

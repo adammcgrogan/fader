@@ -1,0 +1,5 @@
+ALTER TABLE profiles
+    ADD COLUMN IF NOT EXISTS accent_color     TEXT,
+    ADD COLUMN IF NOT EXISTS background_color TEXT,
+    ADD COLUMN IF NOT EXISTS font_family      TEXT,
+    ADD COLUMN IF NOT EXISTS hide_footer      BOOLEAN NOT NULL DEFAULT FALSE;

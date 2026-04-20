@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/adammcgrogan/fader/internal/db"
@@ -525,6 +526,80 @@ func (h *EditHandler) UploadAvatar(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("HX-Refresh", "true")
 	w.WriteHeader(http.StatusOK)
+}
+
+var validFontFamilies = map[string]bool{
+	"default": true,
+	"serif":   true,
+	"mono":    true,
+	"rounded": true,
+}
+
+var hexColorRe = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
+
+func (h *EditHandler) UpdateBranding(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.GetUserID(r)
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	profileID, err := uuid.Parse(r.FormValue("profile_id"))
+	if err != nil {
+		http.Error(w, "invalid profile", http.StatusBadRequest)
+		return
+	}
+
+	profile, err := h.db.GetProfileByID(r.Context(), profileID)
+	if err != nil || profile.UserID != userID {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	user, err := h.db.GetUserByID(r.Context(), userID)
+	if err != nil {
+		http.Error(w, "user not found", http.StatusInternalServerError)
+		return
+	}
+	if !user.IsPro() {
+		http.Error(w, "upgrade to Pro to customize branding", http.StatusForbidden)
+		return
+	}
+
+	accentPtr := parseHexColor(r.FormValue("accent_color"))
+	backgroundPtr := parseHexColor(r.FormValue("background_color"))
+
+	var fontPtr *string
+	font := strings.TrimSpace(r.FormValue("font_family"))
+	if font != "" && font != "default" {
+		if !validFontFamilies[font] {
+			http.Error(w, "invalid font choice", http.StatusBadRequest)
+			return
+		}
+		fontPtr = &font
+	}
+
+	hideFooter := r.FormValue("hide_footer") == "on" || r.FormValue("hide_footer") == "true"
+
+	if err := h.db.UpdateProfileBranding(r.Context(), profileID, accentPtr, backgroundPtr, fontPtr, hideFooter); err != nil {
+		http.Error(w, "could not update branding", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Refresh", "true")
+	w.WriteHeader(http.StatusOK)
+}
+
+func parseHexColor(raw string) *string {
+	v := strings.TrimSpace(raw)
+	if v == "" {
+		return nil
+	}
+	if !hexColorRe.MatchString(v) {
+		return nil
+	}
+	lower := strings.ToLower(v)
+	return &lower
 }
 
 func (h *EditHandler) UpdateGenres(w http.ResponseWriter, r *http.Request) {
