@@ -6,6 +6,7 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/adammcgrogan/fader/internal/db"
@@ -333,8 +334,8 @@ func (h *EditHandler) NewProfile(w http.ResponseWriter, r *http.Request) {
 
 func defaultBlockData(blockType string) json.RawMessage {
 	defaults := map[string]any{
-		"social":       map[string]any{"platform": "instagram", "url": ""},
-		"music_link":   map[string]any{"title": "", "url": "", "platform": "soundcloud"},
+		"social":       map[string]any{"platform": "", "url": ""},
+		"music_link":   map[string]any{"title": "", "url": "", "platform": ""},
 		"gig":          map[string]any{"date": "", "venue": "", "location": "", "ticket_url": ""},
 		"bio":          map[string]any{"text": ""},
 		"custom_link":  map[string]any{"label": "", "url": ""},
@@ -352,9 +353,19 @@ func formToBlockData(blockType string, r *http.Request) json.RawMessage {
 	var data map[string]any
 	switch blockType {
 	case "social":
-		data = map[string]any{"platform": r.FormValue("platform"), "url": r.FormValue("url")}
+		u := strings.TrimSpace(r.FormValue("url"))
+		platform := strings.TrimSpace(r.FormValue("platform"))
+		if platform == "" {
+			platform = detectPlatform(u)
+		}
+		data = map[string]any{"platform": platform, "url": u}
 	case "music_link":
-		data = map[string]any{"title": r.FormValue("title"), "url": r.FormValue("url"), "platform": r.FormValue("platform")}
+		u := strings.TrimSpace(r.FormValue("url"))
+		platform := strings.TrimSpace(r.FormValue("platform"))
+		if platform == "" {
+			platform = detectPlatform(u)
+		}
+		data = map[string]any{"title": r.FormValue("title"), "url": u, "platform": platform}
 	case "gig":
 		data = map[string]any{"date": r.FormValue("date"), "venue": r.FormValue("venue"), "location": r.FormValue("location"), "ticket_url": r.FormValue("ticket_url")}
 	case "bio":
@@ -528,4 +539,60 @@ func (h *EditHandler) UpdateGenres(w http.ResponseWriter, r *http.Request) {
 
 func generateHandle() string {
 	return fmt.Sprintf("page%04d", rand.Intn(10000))
+}
+
+// detectPlatform returns a canonical platform slug for a URL, or "" if unknown.
+// Matches by exact suffix on the parsed host so lookalike domains can't spoof.
+func detectPlatform(raw string) string {
+	if raw == "" {
+		return ""
+	}
+	u, err := url.Parse(raw)
+	if err != nil || u.Host == "" {
+		return ""
+	}
+	host := strings.ToLower(u.Host)
+	if i := strings.Index(host, ":"); i != -1 {
+		host = host[:i]
+	}
+	host = strings.TrimPrefix(host, "www.")
+
+	platforms := []struct {
+		domain, name string
+	}{
+		{"instagram.com", "instagram"},
+		{"tiktok.com", "tiktok"},
+		{"twitter.com", "twitter"},
+		{"x.com", "twitter"},
+		{"facebook.com", "facebook"},
+		{"fb.com", "facebook"},
+		{"youtube.com", "youtube"},
+		{"youtu.be", "youtube"},
+		{"twitch.tv", "twitch"},
+		{"threads.net", "threads"},
+		{"soundcloud.com", "soundcloud"},
+		{"spotify.com", "spotify"},
+		{"open.spotify.com", "spotify"},
+		{"mixcloud.com", "mixcloud"},
+		{"bandcamp.com", "bandcamp"},
+		{"beatport.com", "beatport"},
+		{"apple.com", "apple music"},
+		{"music.apple.com", "apple music"},
+		{"tidal.com", "tidal"},
+		{"deezer.com", "deezer"},
+		{"ra.co", "resident advisor"},
+		{"residentadvisor.net", "resident advisor"},
+		{"bandsintown.com", "bandsintown"},
+		{"linkedin.com", "linkedin"},
+		{"discord.gg", "discord"},
+		{"discord.com", "discord"},
+		{"patreon.com", "patreon"},
+		{"linktr.ee", "linktree"},
+	}
+	for _, p := range platforms {
+		if host == p.domain || strings.HasSuffix(host, "."+p.domain) {
+			return p.name
+		}
+	}
+	return ""
 }

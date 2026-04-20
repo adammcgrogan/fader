@@ -393,12 +393,13 @@
       {{else if eq .Type "social"}}
         {{$d := unmarshalSocial .Data}}
         <div>
-          <label class="{{$label}}">Platform</label>
-          <input name="platform" value="{{$d.Platform}}" placeholder="e.g. Instagram, SoundCloud, TikTok" class="{{$input}}">
-        </div>
-        <div>
           <label class="{{$label}}">Profile URL</label>
           <input name="url" type="url" value="{{$d.URL}}" placeholder="https://instagram.com/yourname" class="{{$input}}">
+          <p class="text-xs text-zinc-600 mt-1.5">Just paste the link — we detect the platform automatically.</p>
+        </div>
+        <div>
+          <label class="{{$label}}">Platform <span class="text-zinc-700 font-normal">(auto-detected if empty)</span></label>
+          <input name="platform" value="{{$d.Platform}}" placeholder="leave blank to auto-detect" class="{{$input}}">
         </div>
 
       {{else if eq .Type "music_link"}}
@@ -408,12 +409,13 @@
           <input name="title" value="{{$d.Title}}" placeholder="e.g. Summer Mix 2025" class="{{$input}}">
         </div>
         <div>
-          <label class="{{$label}}">Platform</label>
-          <input name="platform" value="{{$d.Platform}}" placeholder="e.g. SoundCloud, Spotify, Mixcloud" class="{{$input}}">
-        </div>
-        <div>
           <label class="{{$label}}">Link</label>
           <input name="url" type="url" value="{{$d.URL}}" placeholder="https://soundcloud.com/..." class="{{$input}}">
+          <p class="text-xs text-zinc-600 mt-1.5">Paste a SoundCloud, Spotify, Mixcloud, Beatport, Bandcamp or Apple Music link.</p>
+        </div>
+        <div>
+          <label class="{{$label}}">Platform <span class="text-zinc-700 font-normal">(auto-detected if empty)</span></label>
+          <input name="platform" value="{{$d.Platform}}" placeholder="leave blank to auto-detect" class="{{$input}}">
         </div>
 
       {{else if eq .Type "gig"}}
