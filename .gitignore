@@ -2,6 +2,6 @@
 .idea/
 node_modules/
 static/css/app.css
-server
+/server
 CLAUDE.md
 .env.example

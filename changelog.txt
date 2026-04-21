@@ -1,3 +1,4 @@
+8fb9c8fe8ca6f4d8fe7c4fc639772fd13a88f2c8|feat: add discover page with opt-out setting|21 Apr 2026|22:18
 0d0dfaed6d72a57806b573baf19d02195f82dbc2|fix: pre-generate changelog.txt at commit time, read from file at runtime|21 Apr 2026|22:09
 5e52a2964a072f70989ee350be330706cbd2bed2|fix: deploy|21 Apr 2026|22:05
 b5e9d033c9d1af6534b2c7948db1ce2ed7786b03|fix deploy|21 Apr 2026|22:01
