@@ -6,53 +6,88 @@
   <title>Discover DJs — fader.bio</title>
   <link rel="stylesheet" href="/static/css/app.css?v=3">
 </head>
-<body class="bg-zinc-950 text-white min-h-screen">
+<body class="bg-zinc-950 text-white min-h-screen flex flex-col overflow-x-hidden">
 
-<header class="border-b border-zinc-900 px-6 py-4 flex items-center justify-between">
+<!-- Nav -->
+<header class="w-full px-6 py-5 flex items-center justify-between">
   <a href="/" class="font-black text-base tracking-tight">fader.bio</a>
-  <a href="/auth/login" class="text-sm text-zinc-500 hover:text-white transition">Sign in</a>
+  <div class="flex items-center gap-4">
+    <a href="/auth/login" class="text-sm text-zinc-400 hover:text-white transition">Log in</a>
+    <a href="/auth/register" class="text-sm px-4 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-100 transition">Get started free</a>
+  </div>
 </header>
 
-<main class="max-w-4xl mx-auto py-12 px-6">
-
-  <div class="mb-10">
-    <h1 class="text-2xl font-black tracking-tight">Discover</h1>
-    <p class="text-sm text-zinc-500 mt-1">DJ profiles on fader.bio</p>
+<!-- Hero -->
+<section class="relative px-6 pt-14 pb-12 text-center">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-72 bg-violet-600 opacity-10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="relative max-w-xl mx-auto space-y-4">
+    <p class="text-xs font-bold text-violet-500 uppercase tracking-widest">fader.bio</p>
+    <h1 class="text-4xl sm:text-5xl font-black tracking-tight">Discover DJs</h1>
+    <p class="text-base text-zinc-400 max-w-sm mx-auto leading-relaxed">
+      Browse every artist on fader.bio. Find new talent, check out mixes and upcoming gigs.
+    </p>
+    {{if .Profiles}}
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-zinc-400">
+      <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+      {{len .Profiles}} artists
+    </div>
+    {{end}}
   </div>
+</section>
+
+<!-- Grid -->
+<main class="flex-1 max-w-5xl mx-auto w-full px-6 pb-20">
 
   {{if not .Profiles}}
-  <p class="text-sm text-zinc-600">No profiles yet.</p>
+  <div class="text-center py-28 space-y-4">
+    <div class="w-14 h-14 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto">
+      <svg class="w-6 h-6 text-zinc-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/>
+      </svg>
+    </div>
+    <div class="space-y-1">
+      <p class="font-bold text-zinc-300">No artists yet</p>
+      <p class="text-sm text-zinc-600">Be the first to claim your page.</p>
+    </div>
+    <a href="/auth/register"
+      class="inline-block mt-2 px-6 py-2.5 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-100 transition">
+      Get started free
+    </a>
+  </div>
+
   {{else}}
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
     {{range .Profiles}}
     <a href="{{profileURL .Handle}}"
-      class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 hover:border-zinc-700 transition flex flex-col gap-4">
+      class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-150 flex flex-col">
 
-      <div class="flex items-center gap-3">
-        {{if .AvatarURL}}
-        <img src="{{deref .AvatarURL}}" alt="" class="w-11 h-11 rounded-full object-cover shrink-0 ring-1 ring-zinc-700">
-        {{else}}
-        <div class="w-11 h-11 rounded-full bg-gradient-to-br from-violet-700 to-pink-600 flex items-center justify-center font-black text-base shrink-0">
-          {{slice .DisplayName 0 1}}
-        </div>
-        {{end}}
-        <div class="min-w-0">
-          <p class="font-semibold text-sm truncate">{{.DisplayName}}</p>
+      <!-- Avatar banner -->
+      {{if .AvatarURL}}
+      <div class="aspect-square w-full overflow-hidden bg-zinc-800">
+        <img src="{{deref .AvatarURL}}" alt="{{.DisplayName}}"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+      </div>
+      {{else}}
+      <div class="aspect-square w-full bg-gradient-to-br from-violet-800 via-violet-600 to-pink-600 flex items-center justify-center group-hover:opacity-90 transition">
+        <span class="font-black text-5xl text-white/80 select-none">{{slice .DisplayName 0 1}}</span>
+      </div>
+      {{end}}
+
+      <!-- Info -->
+      <div class="p-4 flex flex-col gap-2 flex-1">
+        <div>
+          <p class="font-bold text-sm leading-snug truncate">{{.DisplayName}}</p>
           <p class="text-xs text-zinc-500 truncate mt-0.5">{{.Handle}}.fader.bio</p>
         </div>
-      </div>
 
-      {{if .Bio}}
-      <p class="text-xs text-zinc-400 leading-relaxed line-clamp-2">{{deref .Bio}}</p>
-      {{end}}
-
-      {{if .Genres}}
-      <div class="flex flex-wrap gap-1.5 mt-auto">
-        {{range .Genres}}
-        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700">{{.}}</span>
+        {{if .Genres}}
+        <div class="flex flex-wrap gap-1 mt-auto pt-1">
+          {{range .Genres}}
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-500 border border-zinc-700/60">{{.}}</span>
+          {{end}}
+        </div>
         {{end}}
       </div>
-      {{end}}
 
     </a>
     {{end}}
@@ -60,5 +95,18 @@
   {{end}}
 
 </main>
+
+<!-- Footer -->
+<footer class="border-t border-zinc-800 px-6 py-8 mt-auto">
+  <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+    <a href="/" class="font-black text-sm tracking-tight">fader.bio</a>
+    <p class="text-xs text-zinc-700">© 2025 fader.bio · Built for DJs</p>
+    <div class="flex items-center gap-5 text-xs text-zinc-600">
+      <a href="/auth/login" class="hover:text-zinc-400 transition">Log in</a>
+      <a href="/auth/register" class="hover:text-zinc-400 transition">Sign up</a>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>
