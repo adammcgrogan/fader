@@ -1,4 +1,4 @@
 providers = ["node", "go"]
 
 [phases.setup]
-nixPkgs = ["git"]
+nixPkgs = ["git", "nodejs_20"]
