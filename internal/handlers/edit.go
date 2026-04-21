@@ -634,6 +634,35 @@ func (h *EditHandler) UpdateGenres(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func (h *EditHandler) UpdateDiscoverSettings(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.GetUserID(r)
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	profileID, err := uuid.Parse(r.FormValue("profile_id"))
+	if err != nil {
+		http.Error(w, "invalid profile", http.StatusBadRequest)
+		return
+	}
+
+	profile, err := h.db.GetProfileByID(r.Context(), profileID)
+	if err != nil || profile.UserID != userID {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	hidden := r.FormValue("discover_hidden") == "on"
+	if err := h.db.UpdateDiscoverHidden(r.Context(), profileID, hidden); err != nil {
+		http.Error(w, "could not update settings", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Refresh", "true")
+	w.WriteHeader(http.StatusOK)
+}
+
 func generateHandle() string {
 	return fmt.Sprintf("page%04d", rand.Intn(10000))
 }

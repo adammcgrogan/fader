@@ -76,35 +76,35 @@ func (q *Queries) CreateProfile(ctx context.Context, userID uuid.UUID, handle, d
 	p := &models.Profile{}
 	err := q.pool.QueryRow(ctx,
 		`INSERT INTO profiles (user_id, handle, display_name) VALUES ($1, $2, $3)
-		 RETURNING id, user_id, handle, display_name, avatar_url, template, bio, genres, created_at`,
+		 RETURNING id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, discover_hidden, created_at`,
 		userID, handle, displayName,
-	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.CreatedAt)
+	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.DiscoverHidden, &p.CreatedAt)
 	return p, err
 }
 
 func (q *Queries) GetProfileByHandle(ctx context.Context, handle string) (*models.Profile, error) {
 	p := &models.Profile{}
 	err := q.pool.QueryRow(ctx,
-		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, created_at
+		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, discover_hidden, created_at
 		 FROM profiles WHERE handle = $1`,
 		handle,
-	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.CreatedAt)
+	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.DiscoverHidden, &p.CreatedAt)
 	return p, err
 }
 
 func (q *Queries) GetProfileByID(ctx context.Context, id uuid.UUID) (*models.Profile, error) {
 	p := &models.Profile{}
 	err := q.pool.QueryRow(ctx,
-		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, created_at
+		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, discover_hidden, created_at
 		 FROM profiles WHERE id = $1`,
 		id,
-	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.CreatedAt)
+	).Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.DiscoverHidden, &p.CreatedAt)
 	return p, err
 }
 
 func (q *Queries) GetProfilesByUserID(ctx context.Context, userID uuid.UUID) ([]*models.Profile, error) {
 	rows, err := q.pool.Query(ctx,
-		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, created_at
+		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, discover_hidden, created_at
 		 FROM profiles WHERE user_id = $1 ORDER BY created_at ASC`,
 		userID,
 	)
@@ -116,7 +116,7 @@ func (q *Queries) GetProfilesByUserID(ctx context.Context, userID uuid.UUID) ([]
 	var profiles []*models.Profile
 	for rows.Next() {
 		p := &models.Profile{}
-		if err := rows.Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.CreatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.DiscoverHidden, &p.CreatedAt); err != nil {
 			return nil, err
 		}
 		profiles = append(profiles, p)
@@ -161,7 +161,7 @@ func (q *Queries) HandleExists(ctx context.Context, handle string) (bool, error)
 
 func (q *Queries) ListAllProfiles(ctx context.Context) ([]*models.Profile, error) {
 	rows, err := q.pool.Query(ctx,
-		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, created_at
+		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, discover_hidden, created_at
 		 FROM profiles ORDER BY created_at DESC`,
 	)
 	if err != nil {
@@ -172,12 +172,38 @@ func (q *Queries) ListAllProfiles(ctx context.Context) ([]*models.Profile, error
 	var profiles []*models.Profile
 	for rows.Next() {
 		p := &models.Profile{}
-		if err := rows.Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.CreatedAt); err != nil {
+		if err := rows.Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.DiscoverHidden, &p.CreatedAt); err != nil {
 			return nil, err
 		}
 		profiles = append(profiles, p)
 	}
 	return profiles, rows.Err()
+}
+
+func (q *Queries) ListDiscoverProfiles(ctx context.Context) ([]*models.Profile, error) {
+	rows, err := q.pool.Query(ctx,
+		`SELECT id, user_id, handle, display_name, avatar_url, template, bio, genres, accent_color, background_color, font_family, hide_footer, discover_hidden, created_at
+		 FROM profiles WHERE discover_hidden = FALSE ORDER BY created_at DESC`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var profiles []*models.Profile
+	for rows.Next() {
+		p := &models.Profile{}
+		if err := rows.Scan(&p.ID, &p.UserID, &p.Handle, &p.DisplayName, &p.AvatarURL, &p.Template, &p.Bio, &p.Genres, &p.AccentColor, &p.BackgroundColor, &p.FontFamily, &p.HideFooter, &p.DiscoverHidden, &p.CreatedAt); err != nil {
+			return nil, err
+		}
+		profiles = append(profiles, p)
+	}
+	return profiles, rows.Err()
+}
+
+func (q *Queries) UpdateDiscoverHidden(ctx context.Context, id uuid.UUID, hidden bool) error {
+	_, err := q.pool.Exec(ctx, `UPDATE profiles SET discover_hidden = $1 WHERE id = $2`, hidden, id)
+	return err
 }
 
 func (q *Queries) UpdateProfileBranding(ctx context.Context, id uuid.UUID, accent, background, font *string, hideFooter bool) error {

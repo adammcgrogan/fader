@@ -33,6 +33,7 @@ type Profile struct {
 	BackgroundColor *string   `db:"background_color"`
 	FontFamily      *string   `db:"font_family"`
 	HideFooter      bool      `db:"hide_footer"`
+	DiscoverHidden  bool      `db:"discover_hidden"`
 	CreatedAt       time.Time `db:"created_at"`
 }
 

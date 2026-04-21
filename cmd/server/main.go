@@ -59,6 +59,7 @@ func main() {
 		log.Println("warning: ADMIN_USER_ID not set — admin panel is inaccessible")
 	}
 	admin := handlers.NewAdminHandler(queries, cfg.AdminUserID)
+	discover := handlers.NewDiscoverHandler(queries)
 
 	authMW, err := middleware.NewAuthMiddleware(cfg.SupabaseURL)
 	if err != nil {
@@ -100,6 +101,7 @@ func main() {
 	mux.HandleFunc("POST /auth/set-password", auth.SetPassword)
 	mux.HandleFunc("GET /handles/check", auth.CheckHandle)
 	mux.HandleFunc("GET /changelog", handlers.Changelog)
+	mux.HandleFunc("GET /discover", discover.Show)
 
 	// Outbound click tracking (public)
 	mux.HandleFunc("/r/", profile.Redirect)
@@ -137,6 +139,7 @@ func main() {
 	mux.Handle("POST /profile/avatar", requireAuth(http.HandlerFunc(edit.UploadAvatar)))
 	mux.Handle("PATCH /profile/genres", requireAuth(http.HandlerFunc(edit.UpdateGenres)))
 	mux.Handle("PATCH /profile/branding", requireAuth(http.HandlerFunc(edit.UpdateBranding)))
+	mux.Handle("PATCH /profile/discover", requireAuth(http.HandlerFunc(edit.UpdateDiscoverSettings)))
 	mux.Handle("DELETE /profiles/{id}", requireAuth(http.HandlerFunc(edit.DeleteProfile)))
 
 	// Analytics

@@ -1,3 +1,4 @@
+0d0dfaed6d72a57806b573baf19d02195f82dbc2|fix: pre-generate changelog.txt at commit time, read from file at runtime|21 Apr 2026|22:09
 5e52a2964a072f70989ee350be330706cbd2bed2|fix: deploy|21 Apr 2026|22:05
 b5e9d033c9d1af6534b2c7948db1ce2ed7786b03|fix deploy|21 Apr 2026|22:01
 a32eb8bc792e9c4ff60f3b9e17af7a765d7d532a|fix: add 30s jwt leeway to tolerate clock skew between railway and supabase|21 Apr 2026|21:54

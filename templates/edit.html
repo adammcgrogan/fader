@@ -394,6 +394,23 @@
         {{end}}
       </div>
 
+      <!-- Discover -->
+      <div class="px-6 py-5 border-b border-zinc-900">
+        <p class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4">Discover</p>
+        <form hx-patch="/profile/discover" hx-target="#settings-status" hx-swap="innerHTML" class="space-y-3">
+          <input type="hidden" name="profile_id" value="{{.Profile.ID}}">
+          <label class="flex items-center gap-3 px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl cursor-pointer">
+            <input name="discover_hidden" type="checkbox" value="on" {{if .Profile.DiscoverHidden}}checked{{end}}
+              class="w-4 h-4 rounded border-zinc-700 bg-zinc-800 text-white focus:ring-1 focus:ring-zinc-500">
+            <div>
+              <span class="text-sm text-zinc-300">Hide from Discover</span>
+              <p class="text-xs text-zinc-600 mt-0.5">Your profile won't appear in the public directory</p>
+            </div>
+          </label>
+          <button type="submit" class="w-full py-2.5 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-100 transition">Save</button>
+        </form>
+      </div>
+
       <!-- Status -->
       <div class="px-6 py-3">
         <div id="settings-status" class="text-xs text-green-400 text-center min-h-4"></div>
