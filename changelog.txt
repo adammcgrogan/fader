@@ -1,0 +1,45 @@
+5e52a2964a072f70989ee350be330706cbd2bed2|fix: deploy|21 Apr 2026|22:05
+b5e9d033c9d1af6534b2c7948db1ce2ed7786b03|fix deploy|21 Apr 2026|22:01
+a32eb8bc792e9c4ff60f3b9e17af7a765d7d532a|fix: add 30s jwt leeway to tolerate clock skew between railway and supabase|21 Apr 2026|21:54
+ab9e9f6e9640c2586029e6cdde8408765020e823|fix: include git in nixpacks runtime so changelog can read git log|21 Apr 2026|21:53
+3f186d364b0e28675f1e90a8c20988da4ac1c31b|fix: changelog grid layout, fixed badge column, wrap long messages|20 Apr 2026|22:42
+884236fb572c9239d3292eb3952f45e196605a1b|feat: public changelog page at /changelog with commit timeline|20 Apr 2026|22:29
+2a7b06bfc2fa1cd8fd4f9539812421ab0be482f3|fix: open block links in new tab, pass redirects through worker to browser|20 Apr 2026|22:27
+23fa1c0b2c55b792cb49f2543ccb987e577cf8b8|fix: pass redirects through to browser instead of following server-side|20 Apr 2026|22:25
+ded4a122cdc5d1b0213340da5a2c085fa8e24fff|feat: htmx day range switching on analytics page without full page reload|20 Apr 2026|22:19
+7f87e69f791da3b7a961d744379083457a909801|fix: worker proxies via resolveOverride keeping host header for railway routing|20 Apr 2026|22:16
+2aa9cca6ad0a100b4ecb6b95ba52c7c79ae911ff|feat: purge analytics events older than 90 days on startup and every 24h|20 Apr 2026|22:16
+22282879369a7cd45a0383356fdffb34b7a58211|feat: analytics chart, unique visitors, ctr, day range, country flags|20 Apr 2026|22:16
+c2379b5ec33a337e8129c8ef0bcbe869871e462a|fix: cross-subdomain cookie domain and dynamic footer urls|20 Apr 2026|22:16
+790af1fc47d8d4db90f95dc95d94884866e5a4bb|fix: deref *string before eq comparison in branding template|20 Apr 2026|21:48
+d4f91ca2b687ccc97c3fde5c7d9862c0c7a9684e|fix: worker proxies via resolveOverride to keep host header|20 Apr 2026|21:36
+778789af305e4de51ab9215c88d2348a77d70f14|feat: custom branding controls for pro users|20 Apr 2026|16:55
+a7a38ef68c92d809383fb7f8c92f9fc55c6b6e69|feat: graceful shutdown, request timeouts and health endpoints|20 Apr 2026|16:42
+5ff3fb1f7ebf8e3335140b56517d0dfa3bac8fad|fix: reject cross-profile block ids in reorder|20 Apr 2026|16:41
+948a73e9f04d37d9aec27909c139c28744754dc7|fix: validate http scheme on click-tracker redirects|20 Apr 2026|16:40
+d185ba5b6c5fb05bed0e5e26c5f4d66b89abdaab|feat: add gig, video, image and bio blocks to add menu|20 Apr 2026|16:40
+dad24d27c68d895c912eeb4e172676b5e8fe8343|feat: auto-detect social and music platform from url|20 Apr 2026|16:39
+6e6968f5c3dddd374a4d3ef56531018affda321b|feat: prompt for display name at signup|20 Apr 2026|16:38
+9a18779bc699d38db8c35526d409cb5bda586459|feat: live handle availability check on register and settings|20 Apr 2026|16:35
+846bb43e79b5a866c2fd6f0ba30a28fd0afa2972|style: replace em dashes with hyphens and commas in templates|19 Apr 2026|20:07
+de6e52f57f7c2733f9eb4ea24a8a5e2fdb2674b0|fix: nixpacks fix|19 Apr 2026|20:00
+948491edaddd3a975f51c7855d4ffc7c70d33920|fix: railway deployment css|19 Apr 2026|19:59
+1d62e57ba773348e95b293a1632349a7ddbd315f|fix: railway deployment|19 Apr 2026|18:26
+38a1675656e04ee87eede21af7f04a14a68c56d6|improve visibility of settings and edit info buttons on edit page|19 Apr 2026|12:52
+6ba9e7ecd9952c964a3673d8b666c45d39b6bf15|feat: overhaul landing page with benefits, pricing and auth-aware nav|19 Apr 2026|12:33
+c425c668d45e55f1fa9aab900ed4b7604e83fae7|feat: add forgot password and reset password flow|19 Apr 2026|12:32
+cdcf17e3ddc54777da0802d2e97851726fd897c7|feat: add audio embed, ra link, residency blocks and genre tags|19 Apr 2026|12:32
+e1c9d1282e10514ff675963a656d5e2aedcc9a48|redesign ui: icons, labeled edit forms, icons on profile pages, settings improvements|18 Apr 2026|15:24
+07749db28b0f27ea59808e7c95cccb77c482ef4f|fix analytics: cookie secure flag, view dedup, country fallback, block labels, handle field ui|18 Apr 2026|14:57
+216951c6abe0df8ee53203f5dff35bc9c0d89fd7|fix: use context.Background for analytics goroutines, add analytics links to dashboard and edit for pro users|18 Apr 2026|14:43
+5c17d9f6f5553d2912a0fe8cf56b596464ba400a|fix: center music blocks on profile page, compact block picker, text inputs, 3 block types only|18 Apr 2026|14:40
+9257e922c81f453b96fe1d167af1bd5c40cb3355|fix: limit block types to social media, music, custom — styled single-column picker, text inputs replace selects, dropdown opens downward|18 Apr 2026|14:35
+6e1c250e919816b75c541860941366f1057709eb|fix: cache-bust css link to force zinc classes to load|18 Apr 2026|14:27
+111c8dc5b2906840de31bfe80c41a82135380474|feat: full ui refresh — zinc dark palette, cleaner edit editor, settings drawer|18 Apr 2026|14:23
+e670c42645c5f23a35049a820fc9ad34fd4cba37|fix: use json.Unmarshal in extractURL to handle postgres jsonb spacing|18 Apr 2026|00:43
+414bb0f4f9341655ab9b4e478987f36e63eec481|fix: inline edit page layout, block save flow, auto-open on add, explicit theme save|18 Apr 2026|00:36
+99c62d3af5f55bba7ab8ffbcc31e64503d7348a8|feat: inline edit page, base domain config, subdomain local dev fallback|18 Apr 2026|00:24
+1daad2005d8ae1898148b846c8cc73622f0659f2|fix: jwt validation, auto migrations, .env loading, template rendering, optional stripe vars|17 Apr 2026|22:39
+c563e855438a1ee8c5660cbe60edb009117e3a8c|fix: make stripe and admin env vars optional so server starts without them|17 Apr 2026|22:20
+10f20eb90274b4df5aed5fd1a7f7752266cdabf1|chore: ignore claude.md|17 Apr 2026|22:15
+164fbade1453543b2e4f22ddade489c7c1735027|feat: initial scaffold — go server, db layer, auth, profiles, blocks, analytics, stripe, cloudflare worker, templates|17 Apr 2026|22:12
