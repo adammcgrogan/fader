@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/MicahParks/keyfunc/v3"
 	"github.com/golang-jwt/jwt/v5"
@@ -60,7 +61,7 @@ func (a *AuthMiddleware) extractUserID(r *http.Request) (uuid.UUID, bool) {
 		return uuid.Nil, false
 	}
 
-	token, err := jwt.Parse(tokenStr, a.jwks.Keyfunc)
+	token, err := jwt.Parse(tokenStr, a.jwks.Keyfunc, jwt.WithLeeway(30*time.Second))
 	if err != nil || !token.Valid {
 		log.Printf("auth: jwt validation failed: %v", err)
 		return uuid.Nil, false
