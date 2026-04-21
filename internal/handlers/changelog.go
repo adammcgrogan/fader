@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"log"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -41,13 +42,19 @@ func Changelog(w http.ResponseWriter, r *http.Request) {
 }
 
 func loadCommitGroups() ([]CommitGroup, error) {
-	// %ad uses --date format; we get "20 Apr 2026 14:32" and group by date part
-	out, err := exec.Command("git", "log",
-		"--pretty=format:%H|%s|%ad",
-		"--date=format:%d %b %Y|%H:%M",
-	).Output()
-	if err != nil {
-		return nil, err
+	var out []byte
+	if data, err := os.ReadFile("changelog.txt"); err == nil {
+		out = data
+	} else {
+		// fallback for local development
+		var execErr error
+		out, execErr = exec.Command("git", "log",
+			"--pretty=format:%H|%s|%ad",
+			"--date=format:%d %b %Y|%H:%M",
+		).Output()
+		if execErr != nil {
+			return nil, execErr
+		}
 	}
 
 	var groups []CommitGroup

@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "npm install && npm run css && go build -o server ./cmd/server"
+buildCommand = "npm install && npm run css && git log --pretty=format:'%H|%s|%ad' --date=format:'%d %b %Y|%H:%M' > changelog.txt && go build -o server ./cmd/server"
 
 [deploy]
 startCommand = "./server"
