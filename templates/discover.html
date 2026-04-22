@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Discover DJs — fader.bio</title>
-  <link rel="stylesheet" href="/static/css/app.css?v=3">
+  <link rel="stylesheet" href="/static/css/app.css?v=5">
 </head>
 <body class="bg-zinc-950 text-white min-h-screen flex flex-col overflow-x-hidden">
 
@@ -40,6 +40,29 @@
   </div>
 </section>
 
+<style>
+  .genre-pill {
+    background: rgb(24 24 27);
+    border: 1px solid rgb(63 63 70);
+    color: rgb(161 161 170);
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+  .genre-pill:hover {
+    border-color: rgb(113 113 122);
+    color: #fff;
+  }
+  .genre-pill[data-active="true"] {
+    background: rgb(39 39 42);
+    border-color: rgb(212 212 216);
+    color: #fff;
+  }
+</style>
+
 <!-- Search + Filter -->
 <div class="max-w-5xl mx-auto w-full px-6 pb-6 space-y-4">
 
@@ -49,15 +72,15 @@
       <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
     </svg>
     <input id="dj-search" type="text" placeholder="Search by name or handle…"
-      class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600 transition">
+      class="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition">
   </div>
 
   <!-- Genre pills -->
   {{if .AllGenres}}
   <div id="genre-filters" class="flex flex-wrap gap-2">
-    <button data-genre="" class="genre-pill active text-xs font-semibold px-3 py-1.5 rounded-full border border-zinc-600 bg-zinc-800 text-white transition">All</button>
+    <button data-genre="" data-active="true" class="genre-pill">All</button>
     {{range .AllGenres}}
-    <button data-genre="{{.}}" class="genre-pill text-xs font-semibold px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-600 hover:text-white transition">{{.}}</button>
+    <button data-genre="{{.}}" data-active="false" class="genre-pill">{{.}}</button>
     {{end}}
   </div>
   {{end}}
@@ -155,12 +178,8 @@
 
   pills.forEach(function(pill) {
     pill.addEventListener('click', function() {
-      pills.forEach(function(p) {
-        p.classList.remove('active', 'bg-zinc-800', 'border-zinc-600', 'text-white');
-        p.classList.add('bg-zinc-900', 'border-zinc-800', 'text-zinc-400');
-      });
-      pill.classList.add('active', 'bg-zinc-800', 'border-zinc-600', 'text-white');
-      pill.classList.remove('bg-zinc-900', 'border-zinc-800', 'text-zinc-400');
+      pills.forEach(function(p) { p.dataset.active = 'false'; });
+      pill.dataset.active = 'true';
       activeGenre = pill.dataset.genre;
       filter();
     });

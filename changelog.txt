@@ -1,3 +1,4 @@
+6a707f1ee9e32abbc1a6015f157dfa4bcbbb4731|feat: add search and genre filter to discover page|22 Apr 2026|19:36
 6e76c906ca282640536ce2b4f506623fdb73f345|feat: add discover link to navbars and homepage selling point|22 Apr 2026|19:27
 fb576ff83aa40d04b7018a650f78528d2dbb3e64|redesign: discover page artist cards with square avatar banner|21 Apr 2026|22:35
 0c6cd5364f72cd5a56fed01a75a50197dcace520|fix: scope server gitignore rule to root binary only|21 Apr 2026|22:19
