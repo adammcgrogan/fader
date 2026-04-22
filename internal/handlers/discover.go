@@ -21,9 +21,21 @@ func (h *DiscoverHandler) Show(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "could not load profiles", http.StatusInternalServerError)
 		return
 	}
+	seen := map[string]bool{}
+	var allGenres []string
+	for _, p := range profiles {
+		for _, g := range p.Genres {
+			if g != "" && !seen[g] {
+				seen[g] = true
+				allGenres = append(allGenres, g)
+			}
+		}
+	}
+
 	_, loggedIn := middleware.GetUserID(r)
 	renderTemplate(w, "discover.html", map[string]any{
-		"Profiles": profiles,
-		"LoggedIn": loggedIn,
+		"Profiles":  profiles,
+		"AllGenres": allGenres,
+		"LoggedIn":  loggedIn,
 	})
 }

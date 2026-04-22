@@ -58,6 +58,8 @@ var funcMap = template.FuncMap{
 	},
 	"join": strings.Join,
 	"list": func(items ...string) []string { return items },
+	"lower": strings.ToLower,
+	"joinGenres": func(genres []string) string { return strings.Join(genres, ",") },
 	"deref": func(s *string) string {
 		if s == nil {
 			return ""

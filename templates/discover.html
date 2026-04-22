@@ -40,6 +40,30 @@
   </div>
 </section>
 
+<!-- Search + Filter -->
+<div class="max-w-5xl mx-auto w-full px-6 pb-6 space-y-4">
+
+  <!-- Search -->
+  <div class="relative">
+    <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+    </svg>
+    <input id="dj-search" type="text" placeholder="Search by name or handle…"
+      class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600 transition">
+  </div>
+
+  <!-- Genre pills -->
+  {{if .AllGenres}}
+  <div id="genre-filters" class="flex flex-wrap gap-2">
+    <button data-genre="" class="genre-pill active text-xs font-semibold px-3 py-1.5 rounded-full border border-zinc-600 bg-zinc-800 text-white transition">All</button>
+    {{range .AllGenres}}
+    <button data-genre="{{.}}" class="genre-pill text-xs font-semibold px-3 py-1.5 rounded-full border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-600 hover:text-white transition">{{.}}</button>
+    {{end}}
+  </div>
+  {{end}}
+
+</div>
+
 <!-- Grid -->
 <main class="flex-1 max-w-5xl mx-auto w-full px-6 pb-20">
 
@@ -61,10 +85,13 @@
   </div>
 
   {{else}}
-  <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+  <div id="dj-grid" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
     {{range .Profiles}}
     <a href="{{profileURL .Handle}}"
-      class="group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-150 flex flex-col">
+      data-name="{{lower .DisplayName}}"
+      data-handle="{{lower .Handle}}"
+      data-genres="{{joinGenres .Genres}}"
+      class="dj-card group bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-150 flex flex-col">
 
       <!-- Avatar banner -->
       {{if .AvatarURL}}
@@ -97,9 +124,49 @@
     </a>
     {{end}}
   </div>
+
+  <p id="no-results" class="hidden text-center text-sm text-zinc-600 py-20">No artists match your search.</p>
   {{end}}
 
 </main>
+
+<script>
+(function() {
+  const search = document.getElementById('dj-search');
+  const cards = document.querySelectorAll('.dj-card');
+  const noResults = document.getElementById('no-results');
+  const pills = document.querySelectorAll('.genre-pill');
+  let activeGenre = '';
+
+  function filter() {
+    const q = search ? search.value.toLowerCase().trim() : '';
+    let visible = 0;
+    cards.forEach(function(card) {
+      const nameMatch = !q || card.dataset.name.includes(q) || card.dataset.handle.includes(q);
+      const genreMatch = !activeGenre || card.dataset.genres.split(',').map(function(g){ return g.trim(); }).includes(activeGenre);
+      const show = nameMatch && genreMatch;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (noResults) noResults.classList.toggle('hidden', visible > 0);
+  }
+
+  if (search) search.addEventListener('input', filter);
+
+  pills.forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      pills.forEach(function(p) {
+        p.classList.remove('active', 'bg-zinc-800', 'border-zinc-600', 'text-white');
+        p.classList.add('bg-zinc-900', 'border-zinc-800', 'text-zinc-400');
+      });
+      pill.classList.add('active', 'bg-zinc-800', 'border-zinc-600', 'text-white');
+      pill.classList.remove('bg-zinc-900', 'border-zinc-800', 'text-zinc-400');
+      activeGenre = pill.dataset.genre;
+      filter();
+    });
+  });
+})();
+</script>
 
 <!-- Footer -->
 <footer class="border-t border-zinc-800 px-6 py-8 mt-auto">
