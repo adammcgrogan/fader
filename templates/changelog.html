@@ -4,63 +4,69 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Changelog – fader.bio</title>
-  <link rel="stylesheet" href="/static/css/app.css?v=3">
+  <link rel="stylesheet" href="/static/css/app.css?v=5">
 </head>
-<body class="bg-zinc-950 text-white min-h-screen">
+<body class="bg-zinc-950 text-white min-h-screen flex flex-col overflow-x-hidden">
 
-<header class="border-b border-zinc-900 px-6 py-4 flex items-center gap-3">
-  <a href="/" class="text-sm text-zinc-400 hover:text-white transition">← fader.bio</a>
-  <span class="text-zinc-700">/</span>
-  <span class="text-sm font-semibold">Changelog</span>
+<header class="w-full px-6 py-5 flex items-center justify-between">
+  <a href="/" class="font-black text-base tracking-tight">fader.bio</a>
+  <div class="flex items-center gap-4">
+    <a href="/discover" class="text-sm text-zinc-400 hover:text-white transition">Discover</a>
+    <span class="text-sm text-white font-medium">Changelog</span>
+  </div>
 </header>
 
-<main class="max-w-3xl mx-auto px-6 py-16">
+<!-- Hero -->
+<section class="relative px-6 pt-14 pb-12 text-center">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-56 bg-violet-600 opacity-10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="relative max-w-xl mx-auto space-y-3">
+    <p class="text-xs font-bold text-violet-500 uppercase tracking-widest">fader.bio</p>
+    <h1 class="text-4xl sm:text-5xl font-black tracking-tight">Changelog</h1>
+    <p class="text-base text-zinc-400 max-w-sm mx-auto leading-relaxed">
+      Every update to fader.bio, most recent first.
+    </p>
+  </div>
+</section>
 
-  <h1 class="text-3xl font-bold tracking-tight">What's new</h1>
-  <p class="text-zinc-500 text-sm mt-2 mb-16">Every update to fader.bio, most recent first.</p>
+<main class="flex-1 max-w-2xl mx-auto w-full px-6 pb-24">
 
   {{if not .Groups}}
-  <p class="text-zinc-600 text-sm">No changelog available.</p>
+  <p class="text-zinc-600 text-sm text-center py-20">No changelog available.</p>
   {{else}}
 
-  <div class="space-y-10">
+  <div class="space-y-12">
     {{range .Groups}}
     <div>
 
-      <!-- Date -->
-      <p class="text-xs text-zinc-600 font-mono mb-3">{{.Date}}</p>
-      <div class="border-t border-zinc-800/60 mb-4"></div>
+      <!-- Date header -->
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest whitespace-nowrap">{{.Date}}</span>
+        <div class="flex-1 border-t border-zinc-800"></div>
+      </div>
 
-      <!-- Commits — three-column grid: badge | message | meta -->
+      <!-- Commits -->
       <div class="space-y-1">
         {{range .Commits}}
-        <div class="grid items-start gap-4 py-2 px-3 rounded-lg hover:bg-white/[.03] transition-colors -mx-3"
-             style="grid-template-columns: auto 1fr auto;">
+        <div class="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-white/[.03] transition-colors -mx-3">
 
           <!-- Badge -->
-          <div>
-            {{if eq .Type "feat"}}
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-violet-950 text-violet-300 border border-violet-800/60 whitespace-nowrap">feature</span>
-            {{else if eq .Type "fix"}}
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-amber-950 text-amber-300 border border-amber-800/60 whitespace-nowrap">fix</span>
-            {{else if eq .Type "perf"}}
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-green-950 text-green-300 border border-green-800/60 whitespace-nowrap">perf</span>
-            {{else if eq .Type "refactor"}}
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-blue-950 text-blue-300 border border-blue-800/60 whitespace-nowrap">refactor</span>
-            {{else}}
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-medium min-w-[4.5rem] text-center bg-zinc-800 text-zinc-400 border border-zinc-700/60 whitespace-nowrap">{{commitTypeLabel .Type}}</span>
-            {{end}}
-          </div>
+          {{if eq .Type "feat"}}
+          <span class="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold w-20 justify-center bg-violet-950 text-violet-300 border border-violet-800/60">feature</span>
+          {{else if eq .Type "fix"}}
+          <span class="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold w-20 justify-center bg-amber-950 text-amber-300 border border-amber-800/60">fix</span>
+          {{else if eq .Type "perf"}}
+          <span class="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold w-20 justify-center bg-green-950 text-green-300 border border-green-800/60">perf</span>
+          {{else if eq .Type "refactor"}}
+          <span class="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold w-20 justify-center bg-blue-950 text-blue-300 border border-blue-800/60">refactor</span>
+          {{else}}
+          <span class="shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold w-20 justify-center bg-zinc-800 text-zinc-400 border border-zinc-700/60">{{commitTypeLabel .Type}}</span>
+          {{end}}
 
           <!-- Message -->
-          <p class="text-sm text-zinc-300 leading-snug">{{.Message}}</p>
+          <p class="flex-1 text-sm text-zinc-300 leading-snug">{{.Message}}</p>
 
-          <!-- Time · hash -->
-          <div class="flex items-center gap-1.5 text-[11px] font-mono text-zinc-700 whitespace-nowrap">
-            <span>{{.Time}}</span>
-            <span>·</span>
-            <span>{{.Hash}}</span>
-          </div>
+          <!-- Hash -->
+          <span class="shrink-0 text-[11px] font-mono text-zinc-700">{{.Hash}}</span>
 
         </div>
         {{end}}
@@ -73,5 +79,18 @@
   {{end}}
 
 </main>
+
+<!-- Footer -->
+<footer class="border-t border-zinc-800 px-6 py-8 mt-auto">
+  <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+    <a href="/" class="font-black text-sm tracking-tight">fader.bio</a>
+    <p class="text-xs text-zinc-700">© 2025 fader.bio · Built for DJs</p>
+    <div class="flex items-center gap-5 text-xs text-zinc-600">
+      <a href="/auth/login" class="hover:text-zinc-400 transition">Log in</a>
+      <a href="/auth/register" class="hover:text-zinc-400 transition">Sign up</a>
+    </div>
+  </div>
+</footer>
+
 </body>
 </html>

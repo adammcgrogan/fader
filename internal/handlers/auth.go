@@ -87,7 +87,7 @@ func (h *AuthHandler) SetPassword(w http.ResponseWriter, r *http.Request) {
 		renderTemplate(w, "auth_reset_password.html", map[string]any{"Error": "could not update password — the link may have expired"})
 		return
 	}
-	setAuthCookie(w, token)
+	setAuthCookies(w, token, "")
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
@@ -166,7 +166,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setAuthCookie(w, resp.Session.AccessToken)
+	setAuthCookies(w, resp.Session.AccessToken, resp.Session.RefreshToken)
 	http.Redirect(w, r, "/edit", http.StatusSeeOther)
 }
 
@@ -190,32 +190,34 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("login ok for %s, userID=%s", r.FormValue("email"), resp.User.ID)
-	setAuthCookie(w, resp.Session.AccessToken)
+	setAuthCookies(w, resp.Session.AccessToken, resp.Session.RefreshToken)
 	http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 }
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	secure := !strings.Contains(BaseDomain, "localhost")
 	cookieDomain := cookieDomainFor(BaseDomain)
-	http.SetCookie(w, &http.Cookie{
-		Name:     "sb-token",
-		Value:    "",
-		Path:     "/",
-		Domain:   cookieDomain,
-		MaxAge:   -1,
-		HttpOnly: true,
-		Secure:   secure,
-		SameSite: http.SameSiteLaxMode,
-	})
+	for _, name := range []string{"sb-token", "sb-refresh"} {
+		http.SetCookie(w, &http.Cookie{
+			Name:     name,
+			Value:    "",
+			Path:     "/",
+			Domain:   cookieDomain,
+			MaxAge:   -1,
+			HttpOnly: true,
+			Secure:   secure,
+			SameSite: http.SameSiteLaxMode,
+		})
+	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func setAuthCookie(w http.ResponseWriter, token string) {
+func setAuthCookies(w http.ResponseWriter, access, refresh string) {
 	secure := !strings.Contains(BaseDomain, "localhost")
 	cookieDomain := cookieDomainFor(BaseDomain)
 	http.SetCookie(w, &http.Cookie{
 		Name:     "sb-token",
-		Value:    token,
+		Value:    access,
 		Path:     "/",
 		Domain:   cookieDomain,
 		MaxAge:   60 * 60 * 24 * 7,
@@ -223,6 +225,18 @@ func setAuthCookie(w http.ResponseWriter, token string) {
 		Secure:   secure,
 		SameSite: http.SameSiteLaxMode,
 	})
+	if refresh != "" {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "sb-refresh",
+			Value:    refresh,
+			Path:     "/",
+			Domain:   cookieDomain,
+			MaxAge:   60 * 60 * 24 * 30,
+			HttpOnly: true,
+			Secure:   secure,
+			SameSite: http.SameSiteLaxMode,
+		})
+	}
 }
 
 func cookieDomainFor(baseDomain string) string {

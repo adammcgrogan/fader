@@ -61,7 +61,7 @@ func main() {
 	admin := handlers.NewAdminHandler(queries, cfg.AdminUserID)
 	discover := handlers.NewDiscoverHandler(queries)
 
-	authMW, err := middleware.NewAuthMiddleware(cfg.SupabaseURL)
+	authMW, err := middleware.NewAuthMiddleware(cfg.SupabaseURL, supa.Auth, cfg.BaseDomain)
 	if err != nil {
 		log.Fatalf("auth middleware: %v", err)
 	}
