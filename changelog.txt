@@ -1,3 +1,4 @@
+fb576ff83aa40d04b7018a650f78528d2dbb3e64|redesign: discover page artist cards with square avatar banner|21 Apr 2026|22:35
 0c6cd5364f72cd5a56fed01a75a50197dcace520|fix: scope server gitignore rule to root binary only|21 Apr 2026|22:19
 8fb9c8fe8ca6f4d8fe7c4fc639772fd13a88f2c8|feat: add discover page with opt-out setting|21 Apr 2026|22:18
 0d0dfaed6d72a57806b573baf19d02195f82dbc2|fix: pre-generate changelog.txt at commit time, read from file at runtime|21 Apr 2026|22:09

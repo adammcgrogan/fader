@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/adammcgrogan/fader/internal/db"
+	"github.com/adammcgrogan/fader/internal/middleware"
 )
 
 type DiscoverHandler struct {
@@ -20,7 +21,9 @@ func (h *DiscoverHandler) Show(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "could not load profiles", http.StatusInternalServerError)
 		return
 	}
+	_, loggedIn := middleware.GetUserID(r)
 	renderTemplate(w, "discover.html", map[string]any{
 		"Profiles": profiles,
+		"LoggedIn": loggedIn,
 	})
 }
