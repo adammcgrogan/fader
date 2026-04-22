@@ -14,9 +14,8 @@
   <meta name="twitter:title" content="{{.Profile.DisplayName}}">
   {{if .Profile.AvatarURL}}<meta name="twitter:image" content="{{.Profile.AvatarURL}}">{{end}}
   <link rel="stylesheet" href="/static/css/app.css?v=3">
-  {{if .OwnerIsPro}}{{template "profile_branding_style" .Profile}}{{end}}
 </head>
-<body class="bg-zinc-950 text-white min-h-screen" style="{{if .OwnerIsPro}}{{if .Profile.BackgroundColor}}background-color:{{.Profile.BackgroundColor}};{{end}}{{if .Profile.FontFamily}}font-family:var(--fader-font);{{end}}{{end}}">
+<body class="bg-zinc-950 text-white min-h-screen">
   <main class="max-w-lg mx-auto py-14 px-4 space-y-5">
     <div class="flex flex-col items-center text-center space-y-3">
       {{if .Profile.AvatarURL}}
@@ -84,6 +83,35 @@
 
 <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 <script>
+  function toggleBookingForm(blockID) {
+    document.getElementById('booking-form-' + blockID).classList.toggle('hidden');
+  }
+
+  function submitBookingForm(event, blockID) {
+    event.preventDefault();
+    var form = event.target;
+    var status = document.getElementById('booking-status-' + blockID);
+    status.textContent = 'Sending...';
+    status.className = 'text-xs text-zinc-500';
+
+    fetch('/inquiries', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(form)
+    })
+      .then(async function(res) {
+        var data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.message || 'Could not send inquiry.');
+        form.reset();
+        status.textContent = data.message;
+        status.className = 'text-xs text-green-400';
+      })
+      .catch(function(err) {
+        status.textContent = err.message;
+        status.className = 'text-xs text-red-400';
+      });
+  }
+
   var _profileURL = document.getElementById('share-modal').dataset.url;
   document.getElementById('profile-url-display').value = _profileURL;
   var _qr = new QRCode(document.getElementById('qr-code'), {
@@ -206,6 +234,34 @@
         <p class="text-xs font-semibold text-zinc-400">{{$d.Frequency}}</p>
         {{if $d.Since}}<p class="text-xs text-zinc-600">since {{$d.Since}}</p>{{end}}
       </div>
+    </div>
+  </div>
+{{else if eq .Type "book_me"}}
+  {{$d := unmarshalBookMe .Data}}
+  <div class="w-full space-y-3">
+    <button type="button" onclick="toggleBookingForm('{{.ID}}')" class="flex items-center w-full py-3.5 px-5 rounded-2xl bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 transition font-semibold text-sm relative">
+      <span class="absolute left-4 text-zinc-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a3.375 3.375 0 116.75 0c0 1.418-.767 2.656-1.908 3.292-.394.22-.592.644-.592 1.095v.363m-1.875 3h.008v.008H11v-.008z"/><path stroke-linecap="round" stroke-linejoin="round" d="M5.338 19.348A9 9 0 1118.66 4.652 9 9 0 015.34 19.348z"/></svg>
+      </span>
+      <span class="flex-1 text-center">{{if $d.Label}}{{$d.Label}}{{else}}Book Me{{end}}</span>
+    </button>
+    <div id="booking-form-{{.ID}}" class="hidden rounded-2xl bg-zinc-900 border border-zinc-800 p-4 text-left">
+      {{if $d.IntroText}}<p class="text-sm text-zinc-500 leading-relaxed mb-4">{{$d.IntroText}}</p>{{end}}
+      <form onsubmit="submitBookingForm(event, '{{.ID}}')" class="space-y-3">
+        <input type="hidden" name="profile_id" value="{{.ProfileID}}">
+        <input type="text" name="company" tabindex="-1" autocomplete="off" class="hidden">
+        <input type="text" name="name" placeholder="Name" class="w-full px-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-sm focus:outline-none focus:border-zinc-600">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input type="email" name="email" placeholder="Email" class="w-full px-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-sm focus:outline-none focus:border-zinc-600">
+          <input type="text" name="phone" placeholder="Phone" class="w-full px-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-sm focus:outline-none focus:border-zinc-600">
+        </div>
+        <textarea name="message" rows="4" placeholder="Tell me about the event..." class="w-full px-4 py-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-sm resize-none focus:outline-none focus:border-zinc-600"></textarea>
+        <p class="text-xs text-zinc-600">Email or phone is required.</p>
+        <div class="flex items-center gap-3">
+          <button type="submit" class="px-4 py-2.5 rounded-xl bg-white text-black text-sm font-semibold hover:bg-zinc-100 transition">{{if $d.SubmitText}}{{$d.SubmitText}}{{else}}Send inquiry{{end}}</button>
+          <p id="booking-status-{{.ID}}" class="text-xs text-zinc-500"></p>
+        </div>
+      </form>
     </div>
   </div>
 {{end}}

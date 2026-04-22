@@ -46,6 +46,10 @@
           class="flex-1 text-center text-xs text-zinc-400 hover:text-white transition py-2 px-3 rounded-lg hover:bg-zinc-800">
           Analytics
         </a>
+        <a href="/inquiries?profile={{.ID}}"
+          class="flex-1 text-center text-xs text-zinc-400 hover:text-white transition py-2 px-3 rounded-lg hover:bg-zinc-800">
+          Inquiries{{with index $.UnreadCounts (printf "%s" .ID)}}{{if gt . 0}} ({{.}}){{end}}{{end}}
+        </a>
         {{end}}
         <a href="/edit?profile={{.ID}}"
           class="flex-1 text-center text-xs bg-white text-black font-bold py-2 px-3 rounded-lg hover:bg-zinc-100 transition">

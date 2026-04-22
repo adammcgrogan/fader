@@ -64,6 +64,12 @@
       {{$d := unmarshalVideoLink .Data}}
       <input name="title" type="text" value="{{$d.Title}}" placeholder="Video title" class="w-full px-3 py-2 bg-gray-800 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-600">
       <input name="url" type="url" value="{{$d.URL}}" placeholder="https://..." class="w-full px-3 py-2 bg-gray-800 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-600">
+    {{else if eq .Type "book_me"}}
+      {{$d := unmarshalBookMe .Data}}
+      <input name="label" type="text" value="{{$d.Label}}" placeholder="Book Me" class="w-full px-3 py-2 bg-gray-800 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-600">
+      <textarea name="intro_text" rows="3" placeholder="Tell promoters what to send..."
+        class="w-full px-3 py-2 bg-gray-800 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-600 resize-none">{{$d.IntroText}}</textarea>
+      <input name="submit_text" type="text" value="{{$d.SubmitText}}" placeholder="Send inquiry" class="w-full px-3 py-2 bg-gray-800 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-600">
     {{end}}
 
     <button type="submit" class="w-full py-1.5 bg-gray-700 hover:bg-gray-600 text-sm rounded transition">Save</button>

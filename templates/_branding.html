@@ -9,8 +9,9 @@
     {{end}}
   }
   {{if .AccentColor}}
-  a:hover, button:hover { color: {{.AccentColor}}; }
-  .text-blue-500, .text-orange-500 { color: {{.AccentColor}} !important; }
+  .fader-accent-text { color: {{.AccentColor}} !important; }
+  .fader-accent-border { border-color: {{.AccentColor}} !important; }
+  .fader-accent-hover:hover { color: {{.AccentColor}} !important; }
   {{end}}
 </style>
 {{end}}

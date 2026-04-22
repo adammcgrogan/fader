@@ -30,8 +30,19 @@ func (h *DashboardHandler) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	unreadCounts := map[string]int{}
+	if user.IsPro() {
+		for _, profile := range profiles {
+			count, err := h.db.CountUnreadInquiriesByProfileID(r.Context(), profile.ID)
+			if err == nil {
+				unreadCounts[profile.ID.String()] = count
+			}
+		}
+	}
+
 	renderTemplate(w, "dashboard.html", map[string]any{
-		"User":     user,
-		"Profiles": profiles,
+		"User":         user,
+		"Profiles":     profiles,
+		"UnreadCounts": unreadCounts,
 	})
 }

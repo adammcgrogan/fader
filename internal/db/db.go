@@ -206,6 +206,11 @@ func (q *Queries) UpdateDiscoverHidden(ctx context.Context, id uuid.UUID, hidden
 	return err
 }
 
+func (q *Queries) UpdateProfileHideFooter(ctx context.Context, id uuid.UUID, hideFooter bool) error {
+	_, err := q.pool.Exec(ctx, `UPDATE profiles SET hide_footer = $1 WHERE id = $2`, hideFooter, id)
+	return err
+}
+
 func (q *Queries) UpdateProfileBranding(ctx context.Context, id uuid.UUID, accent, background, font *string, hideFooter bool) error {
 	_, err := q.pool.Exec(ctx,
 		`UPDATE profiles SET accent_color = $1, background_color = $2, font_family = $3, hide_footer = $4 WHERE id = $5`,
@@ -289,6 +294,73 @@ func (q *Queries) UpdateBlockPositions(ctx context.Context, positions map[uuid.U
 		}
 	}
 	return tx.Commit(ctx)
+}
+
+// ── Inquiries ──────────────────────────────────────────────────────────────
+
+func (q *Queries) CreateInquiry(ctx context.Context, profileID uuid.UUID, name string, email, phone *string, message, ipHash string) error {
+	_, err := q.pool.Exec(ctx,
+		`INSERT INTO inquiries (profile_id, name, email, phone, message, ip_hash)
+		 VALUES ($1, $2, $3, $4, $5, $6)`,
+		profileID, name, email, phone, message, nullStr(ipHash),
+	)
+	return err
+}
+
+func (q *Queries) ListInquiriesByProfileID(ctx context.Context, profileID uuid.UUID) ([]*models.Inquiry, error) {
+	rows, err := q.pool.Query(ctx,
+		`SELECT id, profile_id, name, email, phone, message, read_at, created_at
+		 FROM inquiries
+		 WHERE profile_id = $1
+		 ORDER BY created_at DESC`,
+		profileID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var inquiries []*models.Inquiry
+	for rows.Next() {
+		inquiry := &models.Inquiry{}
+		if err := rows.Scan(&inquiry.ID, &inquiry.ProfileID, &inquiry.Name, &inquiry.Email, &inquiry.Phone, &inquiry.Message, &inquiry.ReadAt, &inquiry.CreatedAt); err != nil {
+			return nil, err
+		}
+		inquiries = append(inquiries, inquiry)
+	}
+	return inquiries, rows.Err()
+}
+
+func (q *Queries) CountUnreadInquiriesByProfileID(ctx context.Context, profileID uuid.UUID) (int, error) {
+	var count int
+	err := q.pool.QueryRow(ctx,
+		`SELECT COUNT(*) FROM inquiries WHERE profile_id = $1 AND read_at IS NULL`,
+		profileID,
+	).Scan(&count)
+	return count, err
+}
+
+func (q *Queries) MarkInquiriesReadByProfileID(ctx context.Context, profileID uuid.UUID) error {
+	_, err := q.pool.Exec(ctx,
+		`UPDATE inquiries
+		 SET read_at = NOW()
+		 WHERE profile_id = $1 AND read_at IS NULL`,
+		profileID,
+	)
+	return err
+}
+
+func (q *Queries) CountRecentInquiriesByIP(ctx context.Context, profileID uuid.UUID, ipHash string, windowMinutes int) (int, error) {
+	var count int
+	err := q.pool.QueryRow(ctx,
+		`SELECT COUNT(*)
+		 FROM inquiries
+		 WHERE profile_id = $1
+		   AND ip_hash = $2
+		   AND created_at > NOW() - ($3 * INTERVAL '1 minute')`,
+		profileID, ipHash, windowMinutes,
+	).Scan(&count)
+	return count, err
 }
 
 // ── Analytics ──────────────────────────────────────────────────────────────

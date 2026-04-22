@@ -54,6 +54,7 @@ func main() {
 	edit := handlers.NewEditHandler(queries, cfg.SupabaseURL)
 	dashboard := handlers.NewDashboardHandler(queries)
 	analytics := handlers.NewAnalyticsHandler(queries)
+	inquiries := handlers.NewInquiriesHandler(queries)
 	stripeH := handlers.NewStripeHandler(queries, cfg)
 	if cfg.AdminUserID == "" {
 		log.Println("warning: ADMIN_USER_ID not set — admin panel is inaccessible")
@@ -123,6 +124,7 @@ func main() {
 
 	// Dashboard
 	mux.Handle("GET /dashboard", requireAuth(http.HandlerFunc(dashboard.Show)))
+	mux.Handle("GET /inquiries", requireAuth(http.HandlerFunc(inquiries.Show)))
 
 	// Edit
 	mux.Handle("GET /edit", requireAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -138,12 +140,15 @@ func main() {
 	mux.Handle("PATCH /profile/handle", requireAuth(http.HandlerFunc(edit.UpdateHandle)))
 	mux.Handle("POST /profile/avatar", requireAuth(http.HandlerFunc(edit.UploadAvatar)))
 	mux.Handle("PATCH /profile/genres", requireAuth(http.HandlerFunc(edit.UpdateGenres)))
-	mux.Handle("PATCH /profile/branding", requireAuth(http.HandlerFunc(edit.UpdateBranding)))
 	mux.Handle("PATCH /profile/discover", requireAuth(http.HandlerFunc(edit.UpdateDiscoverSettings)))
+	mux.Handle("PATCH /profile/footer", requireAuth(http.HandlerFunc(edit.UpdateFooterSettings)))
 	mux.Handle("DELETE /profiles/{id}", requireAuth(http.HandlerFunc(edit.DeleteProfile)))
 
 	// Analytics
 	mux.Handle("GET /analytics", requireAuth(http.HandlerFunc(analytics.Show)))
+
+	// Public inquiries
+	mux.HandleFunc("POST /inquiries", inquiries.Submit)
 
 	// Billing
 	mux.Handle("GET /billing/checkout", requireAuth(http.HandlerFunc(stripeH.Checkout)))

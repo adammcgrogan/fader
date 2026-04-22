@@ -1,4 +1,5 @@
-0a96c7621287cefcf0c254081290401e5e67a6f9|feat: changelog nav link, redesign, jwt auto-refresh, fix hook lag|22 Apr 2026|19:47
+ebcb782c90d60fa72c66aa8743be4027083e67d5|feat: inquiry form. theme upgrade. remove branding|22 Apr 2026|22:31
+be193f3a4d526bc75948f2da788fc1404e3bccb3|feat: changelog nav link, redesign, jwt auto-refresh, fix hook lag|22 Apr 2026|19:47
 c2ef36f02ae8325dd18f076a35c8a4ce8318f4c5|fix: discover search/filter styling and rebuild css|22 Apr 2026|19:38
 6a707f1ee9e32abbc1a6015f157dfa4bcbbb4731|feat: add search and genre filter to discover page|22 Apr 2026|19:36
 6e76c906ca282640536ce2b4f506623fdb73f345|feat: add discover link to navbars and homepage selling point|22 Apr 2026|19:27

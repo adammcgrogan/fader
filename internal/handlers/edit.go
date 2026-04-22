@@ -7,7 +7,6 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strings"
 
 	"github.com/adammcgrogan/fader/internal/db"
@@ -88,6 +87,17 @@ func (h *EditHandler) AddBlock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	blockType := r.FormValue("type")
+	if blockType == "book_me" {
+		user, err := h.db.GetUserByID(r.Context(), userID)
+		if err != nil {
+			http.Error(w, "user not found", http.StatusInternalServerError)
+			return
+		}
+		if !user.IsPro() {
+			http.Error(w, "upgrade to Pro to add booking inquiries", http.StatusForbidden)
+			return
+		}
+	}
 	data := defaultBlockData(blockType)
 
 	block, err := h.db.CreateBlock(r.Context(), profileID, blockType, data)
@@ -247,9 +257,12 @@ func (h *EditHandler) UpdateTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.db.UpdateProfileTemplate(r.Context(), profileID, tmpl)
-	w.Header().Set("HX-Refresh", "true")
+	if err := h.db.UpdateProfileTemplate(r.Context(), profileID, tmpl); err != nil {
+		http.Error(w, "could not update theme", http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Theme saved"))
 }
 
 func (h *EditHandler) UpdateProfileInfo(w http.ResponseWriter, r *http.Request) {
@@ -357,16 +370,17 @@ func (h *EditHandler) NewProfile(w http.ResponseWriter, r *http.Request) {
 
 func defaultBlockData(blockType string) json.RawMessage {
 	defaults := map[string]any{
-		"social":       map[string]any{"platform": "", "url": ""},
-		"music_link":   map[string]any{"title": "", "url": "", "platform": ""},
-		"gig":          map[string]any{"date": "", "venue": "", "location": "", "ticket_url": ""},
-		"bio":          map[string]any{"text": ""},
-		"custom_link":  map[string]any{"label": "", "url": ""},
-		"image":        map[string]any{"url": "", "caption": ""},
-		"video_link":   map[string]any{"title": "", "url": ""},
-		"audio_embed":  map[string]any{"url": "", "title": ""},
-		"ra_link":      map[string]any{"username": ""},
-		"residency":    map[string]any{"venue": "", "location": "", "frequency": "", "since": ""},
+		"social":      map[string]any{"platform": "", "url": ""},
+		"music_link":  map[string]any{"title": "", "url": "", "platform": ""},
+		"gig":         map[string]any{"date": "", "venue": "", "location": "", "ticket_url": ""},
+		"bio":         map[string]any{"text": ""},
+		"custom_link": map[string]any{"label": "", "url": ""},
+		"image":       map[string]any{"url": "", "caption": ""},
+		"video_link":  map[string]any{"title": "", "url": ""},
+		"audio_embed": map[string]any{"url": "", "title": ""},
+		"ra_link":     map[string]any{"username": ""},
+		"residency":   map[string]any{"venue": "", "location": "", "frequency": "", "since": ""},
+		"book_me":     map[string]any{"label": "Book Me", "intro_text": "Send a booking inquiry.", "submit_text": "Send inquiry"},
 	}
 	d, _ := json.Marshal(defaults[blockType])
 	return d
@@ -405,6 +419,12 @@ func formToBlockData(blockType string, r *http.Request) json.RawMessage {
 		data = map[string]any{"username": strings.TrimSpace(r.FormValue("username"))}
 	case "residency":
 		data = map[string]any{"venue": r.FormValue("venue"), "location": r.FormValue("location"), "frequency": r.FormValue("frequency"), "since": r.FormValue("since")}
+	case "book_me":
+		data = map[string]any{
+			"label":       strings.TrimSpace(r.FormValue("label")),
+			"intro_text":  strings.TrimSpace(r.FormValue("intro_text")),
+			"submit_text": strings.TrimSpace(r.FormValue("submit_text")),
+		}
 	default:
 		data = map[string]any{}
 	}
@@ -528,80 +548,6 @@ func (h *EditHandler) UploadAvatar(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-var validFontFamilies = map[string]bool{
-	"default": true,
-	"serif":   true,
-	"mono":    true,
-	"rounded": true,
-}
-
-var hexColorRe = regexp.MustCompile(`^#[0-9a-fA-F]{6}$`)
-
-func (h *EditHandler) UpdateBranding(w http.ResponseWriter, r *http.Request) {
-	userID, _ := middleware.GetUserID(r)
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "bad request", http.StatusBadRequest)
-		return
-	}
-
-	profileID, err := uuid.Parse(r.FormValue("profile_id"))
-	if err != nil {
-		http.Error(w, "invalid profile", http.StatusBadRequest)
-		return
-	}
-
-	profile, err := h.db.GetProfileByID(r.Context(), profileID)
-	if err != nil || profile.UserID != userID {
-		http.Error(w, "forbidden", http.StatusForbidden)
-		return
-	}
-
-	user, err := h.db.GetUserByID(r.Context(), userID)
-	if err != nil {
-		http.Error(w, "user not found", http.StatusInternalServerError)
-		return
-	}
-	if !user.IsPro() {
-		http.Error(w, "upgrade to Pro to customize branding", http.StatusForbidden)
-		return
-	}
-
-	accentPtr := parseHexColor(r.FormValue("accent_color"))
-	backgroundPtr := parseHexColor(r.FormValue("background_color"))
-
-	var fontPtr *string
-	font := strings.TrimSpace(r.FormValue("font_family"))
-	if font != "" && font != "default" {
-		if !validFontFamilies[font] {
-			http.Error(w, "invalid font choice", http.StatusBadRequest)
-			return
-		}
-		fontPtr = &font
-	}
-
-	hideFooter := r.FormValue("hide_footer") == "on" || r.FormValue("hide_footer") == "true"
-
-	if err := h.db.UpdateProfileBranding(r.Context(), profileID, accentPtr, backgroundPtr, fontPtr, hideFooter); err != nil {
-		http.Error(w, "could not update branding", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("HX-Refresh", "true")
-	w.WriteHeader(http.StatusOK)
-}
-
-func parseHexColor(raw string) *string {
-	v := strings.TrimSpace(raw)
-	if v == "" {
-		return nil
-	}
-	if !hexColorRe.MatchString(v) {
-		return nil
-	}
-	lower := strings.ToLower(v)
-	return &lower
-}
-
 func (h *EditHandler) UpdateGenres(w http.ResponseWriter, r *http.Request) {
 	userID, _ := middleware.GetUserID(r)
 	if err := r.ParseForm(); err != nil {
@@ -656,6 +602,45 @@ func (h *EditHandler) UpdateDiscoverSettings(w http.ResponseWriter, r *http.Requ
 	hidden := r.FormValue("discover_hidden") == "on"
 	if err := h.db.UpdateDiscoverHidden(r.Context(), profileID, hidden); err != nil {
 		http.Error(w, "could not update settings", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("HX-Refresh", "true")
+	w.WriteHeader(http.StatusOK)
+}
+
+func (h *EditHandler) UpdateFooterSettings(w http.ResponseWriter, r *http.Request) {
+	userID, _ := middleware.GetUserID(r)
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "bad request", http.StatusBadRequest)
+		return
+	}
+
+	profileID, err := uuid.Parse(r.FormValue("profile_id"))
+	if err != nil {
+		http.Error(w, "invalid profile", http.StatusBadRequest)
+		return
+	}
+
+	profile, err := h.db.GetProfileByID(r.Context(), profileID)
+	if err != nil || profile.UserID != userID {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	user, err := h.db.GetUserByID(r.Context(), userID)
+	if err != nil {
+		http.Error(w, "user not found", http.StatusInternalServerError)
+		return
+	}
+	if !user.IsPro() {
+		http.Error(w, "upgrade to Pro to hide the footer", http.StatusForbidden)
+		return
+	}
+
+	hideFooter := r.FormValue("hide_footer") == "on"
+	if err := h.db.UpdateProfileHideFooter(r.Context(), profileID, hideFooter); err != nil {
+		http.Error(w, "could not update footer settings", http.StatusInternalServerError)
 		return
 	}
 

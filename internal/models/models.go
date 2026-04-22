@@ -81,9 +81,9 @@ type MusicLinkData struct {
 }
 
 type GigData struct {
-	Date     string `json:"date"`
-	Venue    string `json:"venue"`
-	Location string `json:"location"`
+	Date      string `json:"date"`
+	Venue     string `json:"venue"`
+	Location  string `json:"location"`
 	TicketURL string `json:"ticket_url,omitempty"`
 }
 
@@ -120,6 +120,23 @@ type ResidencyData struct {
 	Location  string `json:"location"`
 	Frequency string `json:"frequency"`
 	Since     string `json:"since,omitempty"`
+}
+
+type BookMeData struct {
+	Label      string `json:"label"`
+	IntroText  string `json:"intro_text"`
+	SubmitText string `json:"submit_text"`
+}
+
+type Inquiry struct {
+	ID        int64      `db:"id"`
+	ProfileID uuid.UUID  `db:"profile_id"`
+	Name      string     `db:"name"`
+	Email     *string    `db:"email"`
+	Phone     *string    `db:"phone"`
+	Message   string     `db:"message"`
+	ReadAt    *time.Time `db:"read_at"`
+	CreatedAt time.Time  `db:"created_at"`
 }
 
 // AnalyticsSummary is used for the analytics dashboard

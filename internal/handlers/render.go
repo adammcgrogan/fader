@@ -35,6 +35,7 @@ var funcMap = template.FuncMap{
 	"unmarshalAudioEmbed": unmarshalFn[models.AudioEmbedData],
 	"unmarshalRALink":     unmarshalFn[models.RALinkData],
 	"unmarshalResidency":  unmarshalFn[models.ResidencyData],
+	"unmarshalBookMe":     unmarshalFn[models.BookMeData],
 	"audioEmbedURL": func(rawURL string) template.URL {
 		if rawURL == "" {
 			return ""
@@ -56,9 +57,9 @@ var funcMap = template.FuncMap{
 		}
 		return ""
 	},
-	"join": strings.Join,
-	"list": func(items ...string) []string { return items },
-	"lower": strings.ToLower,
+	"join":       strings.Join,
+	"list":       func(items ...string) []string { return items },
+	"lower":      strings.ToLower,
 	"joinGenres": func(genres []string) string { return strings.Join(genres, ",") },
 	"deref": func(s *string) string {
 		if s == nil {
@@ -70,6 +71,7 @@ var funcMap = template.FuncMap{
 		labels := map[string]string{
 			"social": "Social Media", "music_link": "Music", "custom_link": "Custom",
 			"audio_embed": "Audio Player", "ra_link": "RA Profile", "residency": "Residency",
+			"book_me": "Book Me",
 		}
 		if l, ok := labels[t]; ok {
 			return l
