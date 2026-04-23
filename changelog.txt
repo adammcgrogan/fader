@@ -1,4 +1,5 @@
-98a50a51f1758c30cbe2b900e1f94d9108dd4acc|fix: wrap changelog and discover in optionalAuth so logged-in nav state is correct|23 Apr 2026|22:41
+b231ca95b7869deae230f3a3e264cd3e41c61a35|fix: add dashboard back link to account settings page|23 Apr 2026|22:43
+ff9df09f4672252fa9fbf717bd80fcb7b785deab|fix: wrap changelog and discover in optionalAuth so logged-in nav state is correct|23 Apr 2026|22:41
 a530e9afb552b754855dc44ba615d7e577ad4ebf|feat: account settings page — change password, billing, delete account|23 Apr 2026|22:35
 2ea007c5852439c7d34fcc676c41d15a631079b8|ux: unify discover + changelog navbars — consistent order, login/cta, mobile menu|23 Apr 2026|22:30
 a010f77e8d7a7423b0cd44663a9940f314b554df|ux: add discover + changelog links to authenticated navs, wordmark links to dashboard|23 Apr 2026|22:27
