@@ -146,6 +146,9 @@ func main() {
 	mux.Handle("DELETE /profiles/{id}", requireAuth(http.HandlerFunc(edit.DeleteProfile)))
 
 	// Settings
+	mux.Handle("GET /account", requireAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/settings", http.StatusMovedPermanently)
+	})))
 	mux.Handle("GET /settings", requireAuth(http.HandlerFunc(settings.Show)))
 	mux.Handle("POST /settings/password", requireAuth(http.HandlerFunc(settings.ChangePassword)))
 	mux.Handle("POST /settings/delete", requireAuth(http.HandlerFunc(settings.DeleteAccount)))
