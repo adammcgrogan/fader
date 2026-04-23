@@ -1,4 +1,5 @@
-b324cdae88fd2ea91d599e5bc9550f9dcf28d6ea|ux: mobile nav, profile touch targets, dashboard card actions, css v6|23 Apr 2026|22:23
+a2cc377b0a1e544175f79e3a6c9402d90c91f6c4|redesign: landing page — remove duplicate sections, add profile mockup hero|23 Apr 2026|22:23
+4794c6a4c968d3dc7a6c5240c8386dedeb1fe8dc|ux: mobile nav, profile touch targets, dashboard card actions, css v6|23 Apr 2026|22:23
 5d7f89a137dad19edea96524e18a7629ae809228|feat: inquiry form. theme upgrade. remove branding|22 Apr 2026|22:31
 be193f3a4d526bc75948f2da788fc1404e3bccb3|feat: changelog nav link, redesign, jwt auto-refresh, fix hook lag|22 Apr 2026|19:47
 c2ef36f02ae8325dd18f076a35c8a4ce8318f4c5|fix: discover search/filter styling and rebuild css|22 Apr 2026|19:38
