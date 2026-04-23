@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - fader.bio</title>
-  <link rel="stylesheet" href="/static/css/app.css?v=3">
+  <link rel="stylesheet" href="/static/css/app.css?v=6">
 </head>
 <body class="bg-zinc-950 text-white min-h-screen">
 
@@ -36,25 +36,27 @@
           <p class="text-xs text-zinc-500 mt-0.5">{{.Handle}}.fader.bio</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 mt-4 pt-4 border-t border-zinc-800">
-        <a href="{{profileURL .Handle}}" target="_blank"
-          class="flex-1 text-center text-xs text-zinc-400 hover:text-white transition py-2 px-3 rounded-lg hover:bg-zinc-800">
-          View ↗
-        </a>
-        {{if $.User.IsPro}}
-        <a href="/analytics?profile={{.ID}}"
-          class="flex-1 text-center text-xs text-zinc-400 hover:text-white transition py-2 px-3 rounded-lg hover:bg-zinc-800">
-          Analytics
-        </a>
-        <a href="/inquiries?profile={{.ID}}"
-          class="flex-1 text-center text-xs text-zinc-400 hover:text-white transition py-2 px-3 rounded-lg hover:bg-zinc-800">
-          Inquiries{{with index $.UnreadCounts (printf "%s" .ID)}}{{if gt . 0}} ({{.}}){{end}}{{end}}
-        </a>
-        {{end}}
+      <div class="mt-4 pt-4 border-t border-zinc-800 space-y-2">
         <a href="/edit?profile={{.ID}}"
-          class="flex-1 text-center text-xs bg-white text-black font-bold py-2 px-3 rounded-lg hover:bg-zinc-100 transition">
-          Edit
+          class="block w-full text-center text-sm bg-white text-black font-bold py-2.5 px-3 rounded-xl hover:bg-zinc-100 transition">
+          Edit page
         </a>
+        <div class="flex items-center gap-1.5">
+          <a href="{{profileURL .Handle}}" target="_blank"
+            class="flex-1 text-center text-xs text-zinc-500 hover:text-white transition py-2 px-2 rounded-lg hover:bg-zinc-800">
+            View ↗
+          </a>
+          {{if $.User.IsPro}}
+          <a href="/analytics?profile={{.ID}}"
+            class="flex-1 text-center text-xs text-zinc-500 hover:text-white transition py-2 px-2 rounded-lg hover:bg-zinc-800">
+            Analytics
+          </a>
+          <a href="/inquiries?profile={{.ID}}"
+            class="flex-1 text-center text-xs text-zinc-500 hover:text-white transition py-2 px-2 rounded-lg hover:bg-zinc-800">
+            Inquiries{{with index $.UnreadCounts (printf "%s" .ID)}}{{if gt . 0}} <span class="text-violet-400 font-semibold">({{.}})</span>{{end}}{{end}}
+          </a>
+          {{end}}
+        </div>
       </div>
     </div>
     {{end}}

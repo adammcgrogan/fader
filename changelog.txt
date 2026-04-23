@@ -1,4 +1,5 @@
-ebcb782c90d60fa72c66aa8743be4027083e67d5|feat: inquiry form. theme upgrade. remove branding|22 Apr 2026|22:31
+b324cdae88fd2ea91d599e5bc9550f9dcf28d6ea|ux: mobile nav, profile touch targets, dashboard card actions, css v6|23 Apr 2026|22:23
+5d7f89a137dad19edea96524e18a7629ae809228|feat: inquiry form. theme upgrade. remove branding|22 Apr 2026|22:31
 be193f3a4d526bc75948f2da788fc1404e3bccb3|feat: changelog nav link, redesign, jwt auto-refresh, fix hook lag|22 Apr 2026|19:47
 c2ef36f02ae8325dd18f076a35c8a4ce8318f4c5|fix: discover search/filter styling and rebuild css|22 Apr 2026|19:38
 6a707f1ee9e32abbc1a6015f157dfa4bcbbb4731|feat: add search and genre filter to discover page|22 Apr 2026|19:36

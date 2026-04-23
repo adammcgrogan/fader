@@ -13,36 +13,38 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="{{.Profile.DisplayName}}">
   {{if .Profile.AvatarURL}}<meta name="twitter:image" content="{{.Profile.AvatarURL}}">{{end}}
-  <link rel="stylesheet" href="/static/css/app.css?v=3">
+  <link rel="stylesheet" href="/static/css/app.css?v=6">
 </head>
 <body class="bg-white text-gray-900 min-h-screen">
-  <main class="max-w-lg mx-auto py-14 px-4 space-y-5">
-    <div class="flex flex-col items-center text-center space-y-3">
+  <main class="max-w-md mx-auto py-12 px-4 space-y-6">
+    <div class="flex flex-col items-center text-center space-y-4 pb-2">
       {{if .Profile.AvatarURL}}
-      <img src="{{.Profile.AvatarURL}}" alt="{{.Profile.DisplayName}}" class="w-20 h-20 rounded-full object-cover">
+      <img src="{{.Profile.AvatarURL}}" alt="{{.Profile.DisplayName}}" class="w-24 h-24 rounded-full object-cover shadow-sm">
       {{else}}
-      <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-2xl font-black text-gray-400">
+      <div class="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center text-3xl font-black text-gray-400">
         {{slice .Profile.DisplayName 0 1}}
       </div>
       {{end}}
-      <h1 class="text-xl font-black tracking-tight">{{.Profile.DisplayName}}</h1>
-      {{if .Profile.Bio}}<p class="text-gray-500 text-sm max-w-xs leading-relaxed">{{.Profile.Bio}}</p>{{end}}
+      <div class="space-y-1.5">
+        <h1 class="text-2xl font-black tracking-tight">{{.Profile.DisplayName}}</h1>
+        {{if .Profile.Bio}}<p class="text-gray-500 text-sm max-w-xs mx-auto leading-relaxed">{{.Profile.Bio}}</p>{{end}}
+      </div>
       {{if .Profile.Genres}}
       <div class="flex flex-wrap justify-center gap-1.5">
-        {{range .Profile.Genres}}<span class="px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-500">{{.}}</span>{{end}}
+        {{range .Profile.Genres}}<span class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-500 border border-gray-200">{{.}}</span>{{end}}
       </div>
       {{end}}
     </div>
 
-    <div class="space-y-2.5">
+    <div class="space-y-3">
       {{range .Blocks}}
         {{template "block_minimal" .}}
       {{end}}
     </div>
 
-    <footer class="pt-4 space-y-3">
+    <footer class="pt-2 space-y-3">
       <div class="flex justify-center">
-        <button onclick="handleShare()" class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition px-3 py-2 rounded-xl hover:bg-gray-100">
+        <button onclick="handleShare()" class="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-600 transition px-4 py-2.5 rounded-xl hover:bg-gray-100">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
           Share
         </button>
@@ -141,47 +143,56 @@
 {{define "block_minimal"}}
 {{if eq .Type "bio"}}
   {{$d := unmarshalBio .Data}}
-  <p class="text-gray-500 text-sm text-center leading-relaxed">{{$d.Text}}</p>
+  <p class="text-gray-500 text-sm text-center leading-relaxed px-2">{{$d.Text}}</p>
 {{else if eq .Type "social"}}
   {{$d := unmarshalSocial .Data}}
-  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-4 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition font-semibold text-sm relative">
     <span class="absolute left-4 text-gray-400">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
     </span>
     <span class="flex-1 text-center capitalize">{{$d.Platform}}</span>
+    <span class="absolute right-4 text-gray-300">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+    </span>
   </a>
 {{else if eq .Type "music_link"}}
   {{$d := unmarshalMusicLink .Data}}
-  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-4 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition font-semibold text-sm relative">
     <span class="absolute left-4 text-gray-400">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a2.25 2.25 0 001.632-2.163zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 01-.99-3.467l2.31-.66A2.25 2.25 0 009 15.553z"/></svg>
     </span>
     <span class="flex-1 text-center">{{$d.Title}}</span>
+    <span class="absolute right-4 text-gray-300">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+    </span>
   </a>
 {{else if eq .Type "gig"}}
   {{$d := unmarshalGig .Data}}
-  <div class="w-full py-3.5 px-5 rounded-2xl border border-gray-200">
+  <div class="w-full py-4 px-5 rounded-2xl border border-gray-200">
     <div class="flex items-center gap-3">
-      <span class="text-gray-400 shrink-0">
+      <div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
-      </span>
+      </div>
       <div class="flex-1 min-w-0">
         <p class="font-semibold text-sm">{{$d.Venue}}</p>
-        <p class="text-xs text-gray-400">{{$d.Location}}</p>
+        <p class="text-xs text-gray-400 mt-0.5">{{$d.Location}}</p>
       </div>
       <div class="text-right shrink-0">
-        <p class="text-sm text-gray-600 font-medium">{{$d.Date}}</p>
-        {{if $d.TicketURL}}<a href="/r/{{$.ID}}" class="text-xs text-blue-500 hover:underline">Tickets →</a>{{end}}
+        <p class="text-sm text-gray-700 font-semibold">{{$d.Date}}</p>
+        {{if $d.TicketURL}}<a href="/r/{{$.ID}}" class="text-xs text-gray-500 hover:text-gray-700 underline underline-offset-2">Tickets →</a>{{end}}
       </div>
     </div>
   </div>
 {{else if eq .Type "custom_link"}}
   {{$d := unmarshalCustomLink .Data}}
-  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-4 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition font-semibold text-sm relative">
     <span class="absolute left-4 text-gray-400">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
     </span>
     <span class="flex-1 text-center">{{$d.Label}}</span>
+    <span class="absolute right-4 text-gray-300">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+    </span>
   </a>
 {{else if eq .Type "image"}}
   {{$d := unmarshalImage .Data}}
@@ -191,22 +202,25 @@
   </div>
 {{else if eq .Type "video_link"}}
   {{$d := unmarshalVideoLink .Data}}
-  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-4 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition font-semibold text-sm relative">
     <span class="absolute left-4 text-gray-400">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
     </span>
     <span class="flex-1 text-center">{{$d.Title}}</span>
+    <span class="absolute right-4 text-gray-300">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+    </span>
   </a>
 {{else if eq .Type "audio_embed"}}
   {{$d := unmarshalAudioEmbed .Data}}
   {{$embed := audioEmbedURL $d.URL}}
   {{if $embed}}
   <div class="rounded-2xl overflow-hidden border border-gray-200">
-    <div class="flex items-center py-3.5 px-5 relative">
+    <div class="flex items-center py-4 px-5 relative bg-gray-50">
       <span class="absolute left-4 text-gray-400">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.328l5.603 3.113z"/></svg>
       </span>
-      <span class="flex-1 text-center font-semibold text-sm">{{if $d.Title}}{{$d.Title}}{{else}}Listen{{end}}</span>
+      <span class="flex-1 text-center font-semibold text-sm text-gray-700">{{if $d.Title}}{{$d.Title}}{{else}}Listen{{end}}</span>
     </div>
     <div class="overflow-hidden" style="height:140px">
       <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="{{$embed}}"></iframe>
@@ -215,50 +229,50 @@
   {{end}}
 {{else if eq .Type "ra_link"}}
   {{$d := unmarshalRALink .Data}}
-  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-3.5 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition font-semibold text-sm relative">
+  <a href="/r/{{.ID}}" target="_blank" rel="noopener noreferrer" class="flex items-center w-full py-4 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition font-semibold text-sm relative">
     <span class="absolute left-4 font-black text-sm text-orange-500">RA</span>
     <span class="flex-1 text-center">Resident Advisor</span>
+    <span class="absolute right-4 text-gray-300">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+    </span>
   </a>
 {{else if eq .Type "residency"}}
   {{$d := unmarshalResidency .Data}}
-  <div class="w-full py-3.5 px-5 rounded-2xl border border-gray-200">
-    <div class="flex items-start gap-3">
-      <span class="text-gray-400 shrink-0 mt-0.5">
+  <div class="w-full py-4 px-5 rounded-2xl border border-gray-200">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
-      </span>
+      </div>
       <div class="flex-1 min-w-0">
         <p class="font-semibold text-sm">{{$d.Venue}}</p>
         <p class="text-xs text-gray-400 mt-0.5">{{$d.Location}}</p>
       </div>
       <div class="text-right shrink-0">
         <p class="text-xs font-semibold text-gray-600">{{$d.Frequency}}</p>
-        {{if $d.Since}}<p class="text-xs text-gray-400">since {{$d.Since}}</p>{{end}}
+        {{if $d.Since}}<p class="text-xs text-gray-400 mt-0.5">since {{$d.Since}}</p>{{end}}
       </div>
     </div>
   </div>
 {{else if eq .Type "book_me"}}
   {{$d := unmarshalBookMe .Data}}
-  <div class="w-full space-y-3">
-    <button type="button" onclick="toggleBookingForm('{{.ID}}')" class="flex items-center w-full py-3.5 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition font-semibold text-sm relative">
+  <div class="w-full space-y-2">
+    <button type="button" onclick="toggleBookingForm('{{.ID}}')" class="flex items-center w-full py-4 px-5 rounded-2xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition font-semibold text-sm relative">
       <span class="absolute left-4 text-gray-400">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a3.375 3.375 0 116.75 0c0 1.418-.767 2.656-1.908 3.292-.394.22-.592.644-.592 1.095v.363m-1.875 3h.008v.008H11v-.008z"/><path stroke-linecap="round" stroke-linejoin="round" d="M5.338 19.348A9 9 0 1118.66 4.652 9 9 0 015.34 19.348z"/></svg>
       </span>
       <span class="flex-1 text-center">{{if $d.Label}}{{$d.Label}}{{else}}Book Me{{end}}</span>
     </button>
-    <div id="booking-form-{{.ID}}" class="hidden rounded-2xl border border-gray-200 p-4 text-left">
+    <div id="booking-form-{{.ID}}" class="hidden rounded-2xl border border-gray-200 p-5 text-left">
       {{if $d.IntroText}}<p class="text-sm text-gray-500 leading-relaxed mb-4">{{$d.IntroText}}</p>{{end}}
       <form onsubmit="submitBookingForm(event, '{{.ID}}')" class="space-y-3">
         <input type="hidden" name="profile_id" value="{{.ProfileID}}">
         <input type="text" name="company" tabindex="-1" autocomplete="off" class="hidden">
-        <input type="text" name="name" placeholder="Name" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-gray-400">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <input type="email" name="email" placeholder="Email" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-gray-400">
-          <input type="text" name="phone" placeholder="Phone" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-gray-400">
-        </div>
-        <textarea name="message" rows="4" placeholder="Tell me about the event..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm resize-none focus:outline-none focus:border-gray-400"></textarea>
-        <p class="text-xs text-gray-400">Email or phone is required.</p>
+        <input type="text" name="name" placeholder="Your name" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-gray-400 transition">
+        <input type="email" name="email" placeholder="Email address" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-gray-400 transition">
+        <input type="text" name="phone" placeholder="Phone (optional)" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-gray-400 transition">
+        <textarea name="message" rows="4" placeholder="Tell me about the event..." class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm resize-none focus:outline-none focus:border-gray-400 transition"></textarea>
         <div class="flex items-center gap-3">
-          <button type="submit" class="px-4 py-2.5 rounded-xl bg-black text-white text-sm font-semibold hover:bg-gray-800 transition">{{if $d.SubmitText}}{{$d.SubmitText}}{{else}}Send inquiry{{end}}</button>
+          <button type="submit" class="flex-1 py-3 rounded-xl bg-black text-white text-sm font-semibold hover:bg-gray-800 active:scale-[0.98] transition">{{if $d.SubmitText}}{{$d.SubmitText}}{{else}}Send inquiry{{end}}</button>
           <p id="booking-status-{{.ID}}" class="text-xs text-gray-500"></p>
         </div>
       </form>
