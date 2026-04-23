@@ -16,8 +16,8 @@
 
   <!-- Desktop nav -->
   <nav class="hidden sm:flex items-center gap-4">
-    <a href="/changelog" class="text-sm text-zinc-400 hover:text-white transition">Changelog</a>
     <span class="text-sm text-white font-semibold">Discover</span>
+    <a href="/changelog" class="text-sm text-zinc-400 hover:text-white transition">Changelog</a>
     {{if .LoggedIn}}
     <a href="/dashboard" class="text-sm px-4 py-2 bg-white text-black font-bold rounded-lg hover:bg-zinc-100 transition">My account</a>
     {{else}}
@@ -43,6 +43,7 @@
   <div x-show="open" x-cloak @click.outside="open = false"
     class="absolute top-full left-0 right-0 bg-zinc-900 border-b border-zinc-800 p-3 space-y-1 shadow-xl">
     <a href="/changelog" class="flex items-center px-4 py-3 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-xl transition">Changelog</a>
+    <a href="/discover" class="flex items-center px-4 py-3 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-xl transition">Discover</a>
     {{if .LoggedIn}}
     <a href="/dashboard" class="flex items-center px-4 py-3 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-xl transition">My account</a>
     {{else}}

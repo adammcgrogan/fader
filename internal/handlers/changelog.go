@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/adammcgrogan/fader/internal/middleware"
 )
 
 type Commit struct {
@@ -36,8 +38,10 @@ func LoadChangelog() {
 }
 
 func Changelog(w http.ResponseWriter, r *http.Request) {
+	_, loggedIn := middleware.GetUserID(r)
 	renderTemplate(w, "changelog.html", map[string]any{
-		"Groups": cachedCommitGroups,
+		"Groups":   cachedCommitGroups,
+		"LoggedIn": loggedIn,
 	})
 }
 
