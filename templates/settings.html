@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account settings – fader.bio</title>
+  <link rel="stylesheet" href="/static/css/app.css?v=6">
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>[x-cloak]{display:none!important}</style>
+</head>
+<body class="bg-zinc-950 text-white min-h-screen">
+
+<!-- Primary nav -->
+<header class="border-b border-zinc-900 px-6 py-4 flex items-center justify-between sticky top-0 bg-zinc-950/95 backdrop-blur z-40">
+  <a href="/dashboard" class="font-black text-base tracking-tight">fader.bio</a>
+  <div class="flex items-center gap-4">
+    <a href="/discover" class="hidden sm:inline text-sm text-zinc-400 hover:text-white transition">Discover</a>
+    <a href="/changelog" class="hidden sm:inline text-sm text-zinc-400 hover:text-white transition">Changelog</a>
+    <a href="/settings" class="hidden sm:inline text-sm text-zinc-400 hover:text-white transition font-semibold text-white">Account</a>
+    {{if .User.IsPro}}
+    <span class="text-xs bg-violet-950 text-violet-300 border border-violet-800/60 px-2.5 py-1 rounded-full font-semibold">Pro</span>
+    {{end}}
+    <form method="POST" action="/auth/logout">
+      <button type="submit" class="text-sm text-zinc-500 hover:text-white transition">Log out</button>
+    </form>
+  </div>
+</header>
+
+<main class="max-w-xl mx-auto py-12 px-6 space-y-6">
+
+  <h1 class="text-lg font-bold">Account settings</h1>
+
+  {{if eq .Success "password"}}
+  <div class="bg-green-950 border border-green-800 text-green-300 text-sm px-4 py-3 rounded-xl">
+    Password updated successfully.
+  </div>
+  {{end}}
+
+  <!-- Account info -->
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
+    <h2 class="text-sm font-bold">Account</h2>
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-zinc-500 uppercase tracking-wider">Email</span>
+        <span class="text-sm text-zinc-200">{{.User.Email}}</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-zinc-500 uppercase tracking-wider">Member since</span>
+        <span class="text-sm text-zinc-200">{{.User.CreatedAt.Format "2 Jan 2006"}}</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-zinc-500 uppercase tracking-wider">Plan</span>
+        {{if .User.IsPro}}
+        <span class="text-xs bg-violet-950 text-violet-300 border border-violet-800/60 px-2.5 py-1 rounded-full font-semibold">Pro</span>
+        {{else}}
+        <span class="text-xs text-zinc-400 bg-zinc-800 border border-zinc-700 px-2.5 py-1 rounded-full">Free</span>
+        {{end}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Change password -->
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
+    <h2 class="text-sm font-bold">Change password</h2>
+    {{if .PasswordError}}
+    <p class="text-xs text-red-400">{{.PasswordError}}</p>
+    {{end}}
+    <form method="POST" action="/settings/password" class="space-y-3">
+      <div class="space-y-1">
+        <label class="text-xs text-zinc-500">New password</label>
+        <input type="password" name="password" required minlength="8" placeholder="Min. 8 characters"
+          class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition">
+      </div>
+      <div class="space-y-1">
+        <label class="text-xs text-zinc-500">Confirm new password</label>
+        <input type="password" name="confirm" required minlength="8" placeholder="Repeat password"
+          class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition">
+      </div>
+      <button type="submit"
+        class="w-full py-2.5 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-100 transition">
+        Update password
+      </button>
+    </form>
+  </div>
+
+  <!-- Billing -->
+  <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
+    <h2 class="text-sm font-bold">Billing</h2>
+    {{if .User.IsPro}}
+    <p class="text-sm text-zinc-400">You're on the Pro plan. Manage your subscription, update payment details, or cancel anytime.</p>
+    <a href="/billing/portal"
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-zinc-800 border border-zinc-700 text-sm font-semibold rounded-xl hover:border-zinc-500 hover:text-white transition text-zinc-300">
+      Manage subscription ↗
+    </a>
+    {{else}}
+    <p class="text-sm text-zinc-400">Upgrade to Pro for analytics, multiple pages, and booking inquiries.</p>
+    <a href="/billing/checkout"
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-600 text-white text-sm font-bold rounded-xl hover:bg-violet-500 transition">
+      Upgrade to Pro →
+    </a>
+    {{end}}
+  </div>
+
+  <!-- Danger zone -->
+  <div x-data="{ open: false }" class="bg-zinc-900 border border-red-900/50 rounded-2xl p-6 space-y-4">
+    <h2 class="text-sm font-bold text-red-400">Danger zone</h2>
+    <p class="text-sm text-zinc-400">Permanently delete your account and all associated pages, blocks, analytics, and inquiries. This cannot be undone.</p>
+
+    {{if .DeleteError}}
+    <p class="text-xs text-red-400">{{.DeleteError}}</p>
+    {{end}}
+
+    <button @click="open = !open"
+      class="text-sm text-red-400 border border-red-900/60 px-4 py-2 rounded-xl hover:bg-red-950/40 hover:border-red-700 transition font-medium">
+      Delete my account
+    </button>
+
+    <div x-show="open" x-cloak class="border-t border-zinc-800 pt-4 space-y-3">
+      <p class="text-xs text-zinc-500">Type <span class="font-mono font-bold text-zinc-300">DELETE</span> to confirm.</p>
+      <form method="POST" action="/settings/delete" class="space-y-3">
+        <input type="text" name="confirm" placeholder="DELETE" autocomplete="off"
+          class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-red-700 transition font-mono">
+        <button type="submit"
+          class="w-full py-2.5 bg-red-700 text-white text-sm font-bold rounded-xl hover:bg-red-600 transition">
+          Permanently delete account
+        </button>
+      </form>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

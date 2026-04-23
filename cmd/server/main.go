@@ -61,6 +61,7 @@ func main() {
 	}
 	admin := handlers.NewAdminHandler(queries, cfg.AdminUserID)
 	discover := handlers.NewDiscoverHandler(queries)
+	settings := handlers.NewSettingsHandler(queries, supa.Auth)
 
 	authMW, err := middleware.NewAuthMiddleware(cfg.SupabaseURL, supa.Auth, cfg.BaseDomain)
 	if err != nil {
@@ -143,6 +144,11 @@ func main() {
 	mux.Handle("PATCH /profile/discover", requireAuth(http.HandlerFunc(edit.UpdateDiscoverSettings)))
 	mux.Handle("PATCH /profile/footer", requireAuth(http.HandlerFunc(edit.UpdateFooterSettings)))
 	mux.Handle("DELETE /profiles/{id}", requireAuth(http.HandlerFunc(edit.DeleteProfile)))
+
+	// Settings
+	mux.Handle("GET /settings", requireAuth(http.HandlerFunc(settings.Show)))
+	mux.Handle("POST /settings/password", requireAuth(http.HandlerFunc(settings.ChangePassword)))
+	mux.Handle("POST /settings/delete", requireAuth(http.HandlerFunc(settings.DeleteAccount)))
 
 	// Analytics
 	mux.Handle("GET /analytics", requireAuth(http.HandlerFunc(analytics.Show)))

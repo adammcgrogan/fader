@@ -523,6 +523,29 @@ func (q *Queries) UpsertSubscription(ctx context.Context, userID uuid.UUID, stri
 	return err
 }
 
+func (q *Queries) DeleteUserData(ctx context.Context, userID uuid.UUID) error {
+	tx, err := q.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	stmts := []string{
+		`DELETE FROM analytics_events WHERE profile_id IN (SELECT id FROM profiles WHERE user_id = $1)`,
+		`DELETE FROM inquiries WHERE profile_id IN (SELECT id FROM profiles WHERE user_id = $1)`,
+		`DELETE FROM blocks WHERE profile_id IN (SELECT id FROM profiles WHERE user_id = $1)`,
+		`DELETE FROM profiles WHERE user_id = $1`,
+		`DELETE FROM subscriptions WHERE user_id = $1`,
+		`DELETE FROM users WHERE id = $1`,
+	}
+	for _, stmt := range stmts {
+		if _, err := tx.Exec(ctx, stmt, userID); err != nil {
+			return err
+		}
+	}
+	return tx.Commit(ctx)
+}
+
 func (q *Queries) GetUserByStripeCustomerID(ctx context.Context, customerID string) (*models.User, error) {
 	u := &models.User{}
 	err := q.pool.QueryRow(ctx,
