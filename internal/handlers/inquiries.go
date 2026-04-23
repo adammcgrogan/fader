@@ -76,6 +76,7 @@ func (h *InquiriesHandler) Show(w http.ResponseWriter, r *http.Request) {
 		"Inquiries":   inquiries,
 		"AllProfiles": allProfiles,
 		"UnreadCount": unreadCount,
+		"User":        user,
 	})
 }
 
