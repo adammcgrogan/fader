@@ -17,8 +17,10 @@
 
 <!-- Primary nav -->
 <header class="border-b border-zinc-900 px-6 py-4 flex items-center justify-between sticky top-0 bg-zinc-950/95 backdrop-blur z-40">
-  <span class="font-black text-base tracking-tight">fader.bio</span>
+  <a href="/dashboard" class="font-black text-base tracking-tight">fader.bio</a>
   <div class="flex items-center gap-4">
+    <a href="/discover" class="hidden sm:inline text-sm text-zinc-400 hover:text-white transition">Discover</a>
+    <a href="/changelog" class="hidden sm:inline text-sm text-zinc-400 hover:text-white transition">Changelog</a>
     {{if .User.IsPro}}
     <span class="text-xs bg-violet-950 text-violet-300 border border-violet-800/60 px-2.5 py-1 rounded-full font-semibold">Pro</span>
     {{end}}
