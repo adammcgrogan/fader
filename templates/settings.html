@@ -42,6 +42,11 @@
     Password updated successfully.
   </div>
   {{end}}
+  {{if eq .Success "cancelled"}}
+  <div class="bg-amber-950 border border-amber-800 text-amber-300 text-sm px-4 py-3 rounded-xl">
+    Your subscription has been cancelled. You'll keep Pro access until the end of your billing period.
+  </div>
+  {{end}}
 
   <!-- Account info -->
   <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
@@ -94,15 +99,60 @@
   <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
     <h2 class="text-sm font-bold">Billing</h2>
     {{if .User.IsPro}}
-    <p class="text-sm text-zinc-400">You're on the Pro plan. Manage your subscription, update payment details, or cancel anytime.</p>
-    <a href="/billing/portal"
-      class="inline-flex items-center gap-2 px-4 py-2.5 bg-zinc-800 border border-zinc-700 text-sm font-semibold rounded-xl hover:border-zinc-500 hover:text-white transition text-zinc-300">
-      Manage subscription ↗
-    </a>
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-zinc-500 uppercase tracking-wider">Plan</span>
+        <span class="text-xs bg-violet-950 text-violet-300 border border-violet-800/60 px-2.5 py-1 rounded-full font-semibold">Pro · £4.99/mo</span>
+      </div>
+      {{if .Subscription}}
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-zinc-500 uppercase tracking-wider">Status</span>
+        {{if .Subscription.CancelAtPeriodEnd}}
+        {{if .Subscription.CurrentPeriodEnd}}
+        <span class="text-xs text-amber-400">Cancels {{.Subscription.CurrentPeriodEnd.Format "2 Jan 2006"}}</span>
+        {{else}}
+        <span class="text-xs text-amber-400">Cancelling at period end</span>
+        {{end}}
+        {{else}}
+        {{if .Subscription.CurrentPeriodEnd}}
+        <span class="text-xs text-zinc-400">Renews {{.Subscription.CurrentPeriodEnd.Format "2 Jan 2006"}}</span>
+        {{else}}
+        <span class="text-xs text-zinc-400">Active</span>
+        {{end}}
+        {{end}}
+      </div>
+      {{end}}
+    </div>
+    <div class="flex flex-col gap-3 pt-1">
+      <a href="/billing/portal"
+        class="inline-flex items-center gap-2 px-4 py-2.5 bg-zinc-800 border border-zinc-700 text-sm font-semibold rounded-xl hover:border-zinc-500 hover:text-white transition text-zinc-300 w-fit">
+        Manage payment details ↗
+      </a>
+      {{if .Subscription}}
+      {{if not .Subscription.CancelAtPeriodEnd}}
+      <div x-data="{ open: false }">
+        <button @click="open = !open" class="text-xs text-zinc-600 hover:text-red-400 transition">
+          Cancel subscription
+        </button>
+        <div x-show="open" x-cloak class="mt-3 p-4 bg-zinc-800/60 border border-zinc-700 rounded-xl space-y-3">
+          <p class="text-xs text-zinc-400">Your Pro access continues until the end of the current billing period. No refunds for partial months.</p>
+          <form method="POST" action="/billing/cancel">
+            <button type="submit"
+              class="text-xs text-red-400 border border-red-900/60 px-3 py-1.5 rounded-lg hover:bg-red-950/40 hover:border-red-700 transition font-medium">
+              Yes, cancel my subscription
+            </button>
+          </form>
+        </div>
+      </div>
+      {{else}}
+      <p class="text-xs text-zinc-500">Want to keep Pro? <a href="/billing/portal" class="text-violet-400 hover:text-violet-300 transition">Reactivate via billing portal.</a></p>
+      {{end}}
+      {{end}}
+    </div>
     {{else}}
     <p class="text-sm text-zinc-400">Upgrade to Pro for analytics, multiple pages, and booking inquiries.</p>
     <a href="/billing/checkout"
-      class="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-600 text-white text-sm font-bold rounded-xl hover:bg-violet-500 transition">
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-violet-600 text-white text-sm font-bold rounded-xl hover:bg-violet-500 transition w-fit">
       Upgrade to Pro →
     </a>
     {{end}}

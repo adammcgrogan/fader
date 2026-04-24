@@ -27,9 +27,11 @@ func (h *SettingsHandler) Show(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "user not found", http.StatusInternalServerError)
 		return
 	}
+	sub, _ := h.db.GetSubscriptionByUserID(r.Context(), userID) // nil for free users
 	renderTemplate(w, "settings.html", map[string]any{
-		"User":    user,
-		"Success": r.URL.Query().Get("success"),
+		"User":         user,
+		"Subscription": sub,
+		"Success":      r.URL.Query().Get("success"),
 	})
 }
 

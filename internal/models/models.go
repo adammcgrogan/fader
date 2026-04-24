@@ -64,6 +64,7 @@ type Subscription struct {
 	StripeSubscriptionID string     `db:"stripe_subscription_id"`
 	Status               string     `db:"status"`
 	CurrentPeriodEnd     *time.Time `db:"current_period_end"`
+	CancelAtPeriodEnd    bool       `db:"cancel_at_period_end"`
 	CreatedAt            time.Time  `db:"created_at"`
 }
 

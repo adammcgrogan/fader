@@ -1,4 +1,5 @@
-f225eb48e6b05a0c61e47d91d3e95d4d2226de7d|chore: fix .gitignore — untrack css, claude.md, env.example from ignore list|23 Apr 2026|22:48
+b99b1fce3927051f82e826f25c0e96627fbd07e0|feat: payments end-to-end — stripe checkout, cancel, webhooks, billing ux|24 Apr 2026|21:31
+83fd27ac1da89a39df40622d407819f300868581|chore: fix .gitignore — untrack css, claude.md, env.example from ignore list|23 Apr 2026|22:48
 5114148028aa53689853b58351ba99b14d2b1e44|fix: rebuild css v7, add /account redirect, wire /settings routes|23 Apr 2026|22:47
 fda9ee410d7ef0a0c0e54712d6f96d356fd4cb6e|fix: add dashboard back link to account settings page|23 Apr 2026|22:43
 ff9df09f4672252fa9fbf717bd80fcb7b785deab|fix: wrap changelog and discover in optionalAuth so logged-in nav state is correct|23 Apr 2026|22:41

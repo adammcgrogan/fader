@@ -263,7 +263,7 @@
         <div class="absolute top-4 right-4 px-2.5 py-0.5 bg-violet-600 rounded-full text-xs font-bold">Pro</div>
         <div>
           <p class="text-xs font-bold text-violet-400 uppercase tracking-widest mb-2">Pro</p>
-          <p class="text-4xl font-black">£5<span class="text-lg text-zinc-500 font-medium">/mo</span></p>
+          <p class="text-4xl font-black">£4.99<span class="text-lg text-zinc-500 font-medium">/mo</span></p>
           <p class="text-xs text-zinc-500 mt-1">Everything in Free, plus:</p>
         </div>
         <ul class="space-y-2.5 text-sm text-zinc-400 flex-1">
@@ -288,9 +288,15 @@
             Hide fader.bio footer
           </li>
         </ul>
+        {{if .LoggedIn}}
+        <a href="/billing/checkout" class="block w-full py-2.5 text-center bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm rounded-xl transition">
+          Upgrade to Pro →
+        </a>
+        {{else}}
         <a href="/auth/register" class="block w-full py-2.5 text-center bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm rounded-xl transition">
           Start with Pro
         </a>
+        {{end}}
       </div>
 
     </div>

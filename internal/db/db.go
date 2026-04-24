@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -512,15 +513,25 @@ func (q *Queries) PurgeOldAnalyticsEvents(ctx context.Context) (int64, error) {
 
 // ── Subscriptions ──────────────────────────────────────────────────────────
 
-func (q *Queries) UpsertSubscription(ctx context.Context, userID uuid.UUID, stripeSubID, status string) error {
+func (q *Queries) UpsertSubscription(ctx context.Context, userID uuid.UUID, stripeSubID, status string, periodEnd *time.Time, cancelAtPeriodEnd bool) error {
 	_, err := q.pool.Exec(ctx,
-		`INSERT INTO subscriptions (user_id, stripe_subscription_id, status)
-		 VALUES ($1, $2, $3)
+		`INSERT INTO subscriptions (user_id, stripe_subscription_id, status, current_period_end, cancel_at_period_end)
+		 VALUES ($1, $2, $3, $4, $5)
 		 ON CONFLICT (stripe_subscription_id)
-		 DO UPDATE SET status = EXCLUDED.status`,
-		userID, stripeSubID, status,
+		 DO UPDATE SET status = EXCLUDED.status, current_period_end = EXCLUDED.current_period_end, cancel_at_period_end = EXCLUDED.cancel_at_period_end`,
+		userID, stripeSubID, status, periodEnd, cancelAtPeriodEnd,
 	)
 	return err
+}
+
+func (q *Queries) GetSubscriptionByUserID(ctx context.Context, userID uuid.UUID) (*models.Subscription, error) {
+	s := &models.Subscription{}
+	err := q.pool.QueryRow(ctx,
+		`SELECT id, user_id, stripe_subscription_id, status, current_period_end, cancel_at_period_end, created_at
+		 FROM subscriptions WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1`,
+		userID,
+	).Scan(&s.ID, &s.UserID, &s.StripeSubscriptionID, &s.Status, &s.CurrentPeriodEnd, &s.CancelAtPeriodEnd, &s.CreatedAt)
+	return s, err
 }
 
 func (q *Queries) DeleteUserData(ctx context.Context, userID uuid.UUID) error {

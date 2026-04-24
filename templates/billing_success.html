@@ -3,20 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Pro - fader.bio</title>
+  <title>Welcome to Pro – fader.bio</title>
   <link rel="stylesheet" href="/static/css/app.css?v=7">
 </head>
-<body class="bg-gray-950 text-white">
-<main class="min-h-screen flex items-center justify-center px-4">
-  <div class="max-w-md text-center space-y-6">
-    <div class="text-5xl">✦</div>
-    <h1 class="text-2xl font-bold">You're on Pro!</h1>
-    <p class="text-gray-400">Analytics and multiple personas are now unlocked.</p>
-    <div class="flex gap-4 justify-center">
-      <a href="/dashboard" class="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-200 transition">Go to dashboard</a>
-      <a href="/analytics" class="px-6 py-3 border border-gray-700 text-white rounded-lg hover:bg-gray-800 transition">View analytics</a>
+<body class="bg-zinc-950 text-white min-h-screen flex flex-col">
+
+<header class="border-b border-zinc-900 px-6 py-4 flex items-center justify-between shrink-0">
+  <a href="/dashboard" class="font-black text-base tracking-tight">fader.bio</a>
+  <div class="flex items-center gap-4">
+    <span class="text-xs bg-violet-950 text-violet-300 border border-violet-800/60 px-2.5 py-1 rounded-full font-semibold">Pro</span>
+    <form method="POST" action="/auth/logout">
+      <button type="submit" class="text-sm text-zinc-500 hover:text-white transition">Log out</button>
+    </form>
+  </div>
+</header>
+
+<main class="flex-1 flex items-center justify-center px-6 py-12">
+  <div class="w-full max-w-xs space-y-8 text-center">
+
+    <!-- Icon -->
+    <div class="flex justify-center">
+      <div class="relative">
+        <div class="absolute inset-0 bg-violet-600/30 rounded-full blur-xl"></div>
+        <div class="relative w-16 h-16 rounded-2xl bg-zinc-900 border border-violet-600/40 flex items-center justify-center">
+          <svg class="w-7 h-7 text-violet-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+          </svg>
+        </div>
+      </div>
     </div>
+
+    <!-- Headline -->
+    <div class="space-y-2">
+      <h1 class="text-3xl font-black tracking-tight">You're on Pro</h1>
+      <p class="text-zinc-400 text-sm leading-relaxed">Everything is unlocked. Here's what you now have access to.</p>
+    </div>
+
+    <!-- Features -->
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 text-left space-y-4">
+      <div class="flex items-start gap-3">
+        <svg class="w-4 h-4 text-violet-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        <div>
+          <p class="text-sm font-semibold leading-none mb-1">Analytics</p>
+          <p class="text-xs text-zinc-500">Views, clicks, countries &amp; referrers</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <svg class="w-4 h-4 text-violet-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        <div>
+          <p class="text-sm font-semibold leading-none mb-1">Multiple pages</p>
+          <p class="text-xs text-zinc-500">Different DJ personas under one account</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <svg class="w-4 h-4 text-violet-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        <div>
+          <p class="text-sm font-semibold leading-none mb-1">Booking inquiries</p>
+          <p class="text-xs text-zinc-500">Receive and manage booking requests</p>
+        </div>
+      </div>
+      <div class="flex items-start gap-3">
+        <svg class="w-4 h-4 text-violet-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+        <div>
+          <p class="text-sm font-semibold leading-none mb-1">Hide fader.bio footer</p>
+          <p class="text-xs text-zinc-500">Toggle it on in each profile's settings</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <a href="/dashboard"
+      class="block w-full py-3.5 text-center bg-white text-black font-bold text-sm rounded-xl hover:bg-zinc-100 active:scale-[0.98] transition">
+      Go to dashboard
+    </a>
+
   </div>
 </main>
+
 </body>
 </html>

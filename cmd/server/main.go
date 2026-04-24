@@ -163,6 +163,7 @@ func main() {
 	mux.Handle("GET /billing/checkout", requireAuth(http.HandlerFunc(stripeH.Checkout)))
 	mux.Handle("GET /billing/portal", requireAuth(http.HandlerFunc(stripeH.Portal)))
 	mux.Handle("GET /billing/success", requireAuth(http.HandlerFunc(stripeH.BillingSuccess)))
+	mux.Handle("POST /billing/cancel", requireAuth(http.HandlerFunc(stripeH.Cancel)))
 	mux.Handle("POST /webhooks/stripe", http.HandlerFunc(stripeH.Webhook))
 
 	// Admin (superadmin only)
